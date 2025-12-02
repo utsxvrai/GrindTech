@@ -3,7 +3,7 @@ const CrudRepository = require("./crud-repository");
 
 class UserRepository extends CrudRepository {
     constructor() {
-        super(prisma.user);
+        super(prisma.user, 'uuid');
     }
 
     async getUserByEmail(email){

@@ -1,3 +1,6 @@
 module.exports = {
-    UserRepository : require("./user-repository")
+    UserRepository : require("./user-repository"),
+    TechRepository : require("./tech-repository"),
+    TopicRepository : require("./topic-repository"),
+    ResourceRepository : require("./resource-repository")
 }

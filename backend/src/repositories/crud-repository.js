@@ -1,6 +1,7 @@
 class CrudRepository {
-    constructor(model) {
+    constructor(model, primaryKey = 'id') {
         this.model = model;
+        this.primaryKey = primaryKey;
     }
 
 
@@ -9,7 +10,7 @@ class CrudRepository {
     }
 
     async findById(id) {
-        return await this.model.findUnique({ where: { id } });
+        return await this.model.findUnique({ where: { [this.primaryKey]: id } });
     }
 
     async findAll() {
@@ -17,11 +18,11 @@ class CrudRepository {
     }
 
     async update(id, data) {
-        return await this.model.update({ where: { id }, data });
+        return await this.model.update({ where: { [this.primaryKey]: id }, data });
     }
 
     async delete(id) {
-        return await this.model.delete({ where: { id } });
+        return await this.model.delete({ where: { [this.primaryKey]: id } });
     }
 }
 

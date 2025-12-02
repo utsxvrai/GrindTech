@@ -1,3 +1,6 @@
 module.exports = {
-    UserController : require("./user-controller")
+    UserController : require("./user-controller"),
+    TechController : require("./tech-controller"),
+    TopicController : require("./topic-controller"),
+    ResourceController : require("./resource-controller")
 }
