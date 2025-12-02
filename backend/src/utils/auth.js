@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { StatusCodes } = require('http-status-codes');
 require('dotenv').config();
@@ -10,11 +10,9 @@ function checkPassword(plainPassword, hashedPassword) {
     return bcrypt.compare(plainPassword, hashedPassword);
 }
 
-function generateToken(user) {
+function generateToken(userId) {
     const payload = {
-        id: user.id,
-        email: user.email,
-        name: user.name
+        id: userId,
     };
     return jwt.sign(payload, JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '1h' });
 }

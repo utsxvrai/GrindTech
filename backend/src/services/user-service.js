@@ -1,6 +1,7 @@
 const {UserRepository} = require("../repositories");
 const {StatusCodes} = require("http-status-codes");
 const bcrypt = require("bcryptjs");
+const {checkPassword, generateToken, revokeToken} = require("../utils/auth");
 
 const userRepository = new UserRepository();
 
@@ -21,6 +22,96 @@ async function create(data){
     }
 }
 
+async function signin(data){
+    try{
+        console.log("Signin attempt for email:", data.useremail);
+        const user = await userRepository.getUserByEmail(data.useremail);
+        console.log("User found:", user ? "Yes" : "No");
+        
+        if(!user){
+            return {
+                status : StatusCodes.NOT_FOUND,
+                message : "User not found"
+            };
+        }
+        
+        const isPasswordValid = await checkPassword(data.password, user.password);
+        console.log("Password matched:", isPasswordValid);
+        
+        if(!isPasswordValid){
+            return {
+                status : StatusCodes.UNAUTHORIZED,
+                message : "Invalid password"
+            };
+        }
+        
+        const token = generateToken(user.id);
+        console.log("Token generated successfully");
+        
+        return {
+            status : StatusCodes.OK,
+            data : user,
+            token
+        };
+    }catch(error){
+        console.error("Error in signin service:", error);
+        console.error("Error message:", error.message);
+        console.error("Error stack:", error.stack);
+        return {
+            status : StatusCodes.INTERNAL_SERVER_ERROR,
+            error: {
+                message: error.message,
+                stack: error.stack
+            }
+        };
+    }
+}
+
+async function get(id){
+    try{
+        const user = await userRepository.findById(id);
+        return {
+            status : StatusCodes.OK,
+            data : user
+        };
+    }catch(error){
+        return {
+            status : StatusCodes.INTERNAL_SERVER_ERROR,
+            error
+        };
+    }
+}
+
+// async function signout(token){
+//     try{
+//         if(!token){
+//             return {
+//                 status : StatusCodes.BAD_REQUEST,
+//                 message : "Token is required"
+//             };
+//         }
+        
+//         // Revoke the token
+//         revokeToken(token);
+        
+//         return {
+//             status : StatusCodes.OK,
+//             message : "Signed out successfully"
+//         };
+//     }catch(error){
+//         console.error("Error in signout service:", error);
+//         return {
+//             status : StatusCodes.INTERNAL_SERVER_ERROR,
+//             error: {
+//                 message: error.message || "Failed to sign out"
+//             }
+//         };
+//     }
+// }
+
 module.exports = {
-    create
+    create,
+    signin,
+    // signout,
+    get
 }
