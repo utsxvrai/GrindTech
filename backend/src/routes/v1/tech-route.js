@@ -7,11 +7,11 @@ router.post("/create",TechController.create);
 
 router.get("/all",TechController.getAll);
 
-router.get("/get/:id",TechController.get);
+router.get("/:id",TechController.get);
 
-router.put("/update/:id",TechController.update);
+router.put("/:id",TechController.update);
 
-router.delete("/remove/:id",TechController.remove);
+router.delete("/:id",TechController.remove);
 
 module.exports = router;
 

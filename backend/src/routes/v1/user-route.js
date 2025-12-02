@@ -9,7 +9,9 @@ router.post("/signin",UserController.signin);
 
 // router.post("/signout",UserController.signout);
 
-router.get("/get/:id",UserController.get);
+router.get("/:id",UserController.get);
+
+
 
 module.exports = router;
 

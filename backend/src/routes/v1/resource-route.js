@@ -8,8 +8,8 @@ router.get("/all",ResourceController.getAll);
 
 router.get("/:rid",ResourceController.get); 
 
-router.put("/update/:rid",ResourceController.update); 
+router.put("/:rid",ResourceController.update); 
 
-router.delete("/remove/:rid",ResourceController.remove); 
+router.delete("/:rid",ResourceController.remove); 
 
 module.exports = router;

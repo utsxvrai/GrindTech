@@ -7,10 +7,10 @@ router.post("/create",TopicController.create);
 
 router.get("/all",TopicController.getAll);
 
-router.get("/get/:id",TopicController.get);
+router.get("/:id",TopicController.get);
 
-router.put("/update/:id",TopicController.update);
+router.put("/:id",TopicController.update);
 
-router.delete("/delete/:id",TopicController.remove);
+router.delete("/:id",TopicController.remove);
 
 module.exports = router;
