@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-deep-dark text-white font-sans antialiased;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/10 backdrop-blur-lg border border-white/20;
+  }
+  
+  .glass-strong {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+  
+  .neon-glow {
+    @apply drop-shadow-[0_0_15px_rgba(108,99,255,0.7)];
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 20px rgba(108, 99, 255, 0.5);
+  }
+}
+
+/* Hide Scrollbar for Dot Indicator */
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: none;
+}
