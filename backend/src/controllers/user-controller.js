@@ -1,29 +1,29 @@
-const {UserService} = require("../services");
-const {StatusCodes} = require("http-status-codes");
+const { UserService } = require("../services");
+const { StatusCodes } = require("http-status-codes");
 
 
-async function create(req,res){
-    try{
+async function create(req, res) {
+    try {
         const user = await UserService.create({
-            username : req.body.username,
-            useremail : req.body.useremail,
-            password : req.body.password
+            username: req.body.username,
+            useremail: req.body.useremail,
+            password: req.body.password
         });
         return res.status(user.status || StatusCodes.INTERNAL_SERVER_ERROR).json(user);
-    }catch(error){
-        console.log("CanNot create user",error);
+    } catch (error) {
+        console.log("CanNot create user", error);
         return res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 }
 
-async function signin(req,res){
-    try{
+async function signin(req, res) {
+    try {
         const user = await UserService.signin({
-            "useremail" : req.body.useremail,
-            "password" : req.body.password
+            "useremail": req.body.useremail,
+            "password": req.body.password
         });
         return res.status(user.status || StatusCodes.INTERNAL_SERVER_ERROR).json(user);
-    }catch(error){
+    } catch (error) {
         console.log("CanNot signin user - Error details:", error);
         console.log("Error message:", error.message);
         console.log("Error stack:", error.stack);
@@ -37,13 +37,28 @@ async function signin(req,res){
     }
 }
 
-async function get(req,res){
-    try{
+async function get(req, res) {
+    try {
         const user = await UserService.get(req.params.id);
         return res.status(user.status || StatusCodes.INTERNAL_SERVER_ERROR).json(user);
-    }catch(error){
-        console.log("CanNot get user",error);
+    } catch (error) {
+        console.log("CanNot get user", error);
         return res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).json(error);
+    }
+}
+
+async function getMe(req, res) {
+    try {
+        // req.auth is populated by Clerk middleware
+        const clerkId = req.auth.userId;
+        if (!clerkId) {
+            return res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
+        }
+        const user = await UserService.getByClerkId(clerkId);
+        return res.status(user.status || StatusCodes.INTERNAL_SERVER_ERROR).json(user);
+    } catch (error) {
+        console.log("CanNot get current user", error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 }
 
@@ -66,5 +81,6 @@ module.exports = {
     create,
     signin,
     get,
+    getMe,
     // signOut
 }

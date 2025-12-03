@@ -1,64 +1,64 @@
-const {UserRepository} = require("../repositories");
-const {StatusCodes} = require("http-status-codes");
+const { UserRepository } = require("../repositories");
+const { StatusCodes } = require("http-status-codes");
 const bcrypt = require("bcryptjs");
-const {checkPassword, generateToken, revokeToken} = require("../utils/auth");
+const { checkPassword, generateToken, revokeToken } = require("../utils/auth");
 
 const userRepository = new UserRepository();
 
 
-async function create(data){
-    try{
+async function create(data) {
+    try {
         data.password = await bcrypt.hash(data.password, 10);
         const user = await userRepository.create(data);
         return {
-            status : StatusCodes.CREATED,
-            data : user
+            status: StatusCodes.CREATED,
+            data: user
         };
-    }catch(error){
+    } catch (error) {
         return {
-            status : StatusCodes.INTERNAL_SERVER_ERROR,
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
             error
         };
     }
 }
 
-async function signin(data){
-    try{
+async function signin(data) {
+    try {
         console.log("Signin attempt for email:", data.useremail);
         const user = await userRepository.getUserByEmail(data.useremail);
         console.log("User found:", user ? "Yes" : "No");
-        
-        if(!user){
+
+        if (!user) {
             return {
-                status : StatusCodes.NOT_FOUND,
-                message : "User not found"
+                status: StatusCodes.NOT_FOUND,
+                message: "User not found"
             };
         }
-        
+
         const isPasswordValid = await checkPassword(data.password, user.password);
         console.log("Password matched:", isPasswordValid);
-        
-        if(!isPasswordValid){
+
+        if (!isPasswordValid) {
             return {
-                status : StatusCodes.UNAUTHORIZED,
-                message : "Invalid password"
+                status: StatusCodes.UNAUTHORIZED,
+                message: "Invalid password"
             };
         }
-        
+
         const token = generateToken(user.id);
         console.log("Token generated successfully");
-        
+
         return {
-            status : StatusCodes.OK,
-            data : user,
+            status: StatusCodes.OK,
+            data: user,
             token
         };
-    }catch(error){
+    } catch (error) {
         console.error("Error in signin service:", error);
         console.error("Error message:", error.message);
         console.error("Error stack:", error.stack);
         return {
-            status : StatusCodes.INTERNAL_SERVER_ERROR,
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
             error: {
                 message: error.message,
                 stack: error.stack
@@ -67,16 +67,37 @@ async function signin(data){
     }
 }
 
-async function get(id){
-    try{
+async function get(id) {
+    try {
         const user = await userRepository.findById(id);
         return {
-            status : StatusCodes.OK,
-            data : user
+            status: StatusCodes.OK,
+            data: user
         };
-    }catch(error){
+    } catch (error) {
         return {
-            status : StatusCodes.INTERNAL_SERVER_ERROR,
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            error
+        };
+    }
+}
+
+async function getByClerkId(clerkId) {
+    try {
+        const user = await userRepository.getUserByClerkId(clerkId);
+        if (!user) {
+            return {
+                status: StatusCodes.NOT_FOUND,
+                message: "User not found"
+            };
+        }
+        return {
+            status: StatusCodes.OK,
+            data: user
+        };
+    } catch (error) {
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
             error
         };
     }
@@ -90,10 +111,10 @@ async function get(id){
 //                 message : "Token is required"
 //             };
 //         }
-        
+
 //         // Revoke the token
 //         revokeToken(token);
-        
+
 //         return {
 //             status : StatusCodes.OK,
 //             message : "Signed out successfully"
@@ -113,5 +134,6 @@ module.exports = {
     create,
     signin,
     // signout,
-    get
+    get,
+    getByClerkId
 }

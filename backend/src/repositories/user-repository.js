@@ -6,10 +6,18 @@ class UserRepository extends CrudRepository {
         super(prisma.user, 'uuid');
     }
 
-    async getUserByEmail(email){
+    async getUserByEmail(email) {
         return await this.model.findUnique({
-            where:{
-                useremail : email
+            where: {
+                useremail: email
+            }
+        })
+    }
+
+    async getUserByClerkId(clerkId) {
+        return await this.model.findUnique({
+            where: {
+                clerkId: clerkId
             }
         })
     }

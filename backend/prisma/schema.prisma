@@ -19,7 +19,8 @@ model User {
   uuid                 String      @id @default(uuid())
   username             String
   useremail            String      @unique
-  password             String
+  clerkId              String      @unique
+  password             String?
   plan                 String      @default("free")
   questionsContributed Int         @default(0)
   levelsDone           Int         @default(0)
