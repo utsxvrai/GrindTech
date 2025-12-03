@@ -1,4 +1,3 @@
-
 const { Webhook } = require('svix');
 const prisma = require('../config/db-config');
 require('dotenv').config();
@@ -51,20 +50,15 @@ const handleClerkWebhook = async (req, res) => {
       const email = email_addresses[0]?.email_address;
       const name = username || `${first_name || ''} ${last_name || ''}`.trim() || 'User';
 
-      await prisma.user.upsert({
-        where: { clerkId: id },
-        update: {
-          useremail: email,
-          username: name,
-        },
-        create: {
+      await prisma.user.create({
+        data: {
           clerkId: id,
           useremail: email,
           username: name,
           plan: 'free', // Default plan
         },
       });
-      console.log(`User created/upserted: ${id}`);
+      console.log(`User created: ${id}`);
     } else if (eventType === 'user.updated') {
       const email = email_addresses[0]?.email_address;
       const name = username || `${first_name || ''} ${last_name || ''}`.trim();
@@ -78,18 +72,10 @@ const handleClerkWebhook = async (req, res) => {
       });
       console.log(`User updated: ${id}`);
     } else if (eventType === 'user.deleted') {
-      try {
-        await prisma.user.delete({
-          where: { clerkId: id },
-        });
-        console.log(`User deleted: ${id}`);
-      } catch (error) {
-        if (error.code === 'P2025') {
-          console.log(`User to delete not found: ${id}`);
-        } else {
-          throw error;
-        }
-      }
+      await prisma.user.delete({
+        where: { clerkId: id },
+      });
+      console.log(`User deleted: ${id}`);
     }
 
     return res.status(200).json({ success: true, message: 'Webhook received' });
