@@ -1,8 +1,13 @@
-
 const express = require("express");
 const routes = require("./routes");
 
 const app = express();
+const cors = require('cors');
+
+app.use(cors({
+    origin: 'https://grindtech.vercel.app',
+    credentials: true
+}));
 
 app.use(express.json({
     verify: (req, res, buf) => {

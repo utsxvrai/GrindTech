@@ -2,7 +2,16 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import AuthPage from './pages/AuthPage'
 
+import { useEffect } from 'react'
+import api from './api/axios'
+
 function App() {
+  useEffect(() => {
+    api.get('/health')
+      .then(res => console.log('Backend connection successful:', res.data))
+      .catch(err => console.error('Backend connection failed:', err));
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
