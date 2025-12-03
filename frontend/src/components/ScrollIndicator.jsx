@@ -42,9 +42,9 @@ export default function ScrollIndicator() {
     <AnimatePresence>
       {isScrolling && (
         <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 20 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
           className="fixed z-50 flex gap-3 bottom-6 left-1/2 -translate-x-1/2 flex-row lg:right-6 lg:top-1/2 lg:left-auto lg:bottom-auto lg:translate-x-0 lg:-translate-y-1/2 lg:flex-col"
         >
