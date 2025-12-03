@@ -46,7 +46,7 @@ export default function ScrollIndicator() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 20 }}
           transition={{ duration: 0.3 }}
-          className="fixed right-6 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-3"
+          className="fixed z-50 flex gap-3 bottom-6 left-1/2 -translate-x-1/2 flex-row lg:right-6 lg:top-1/2 lg:left-auto lg:bottom-auto lg:translate-x-0 lg:-translate-y-1/2 lg:flex-col"
         >
           {sections.map((section, index) => (
             <div
@@ -73,7 +73,7 @@ export default function ScrollIndicator() {
               </motion.div>
 
               {/* Label on hover */}
-              <div className="absolute right-6 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+              <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap bottom-full left-1/2 -translate-x-1/2 mb-2 lg:right-6 lg:top-1/2 lg:-translate-y-1/2 lg:left-auto lg:bottom-auto lg:mb-0 lg:translate-x-0">
                 <div className="px-2 py-1 bg-white rounded text-[10px] font-semibold text-black">
                   {section}
                 </div>
