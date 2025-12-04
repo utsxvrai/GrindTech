@@ -29,9 +29,9 @@ export default function AuthPage() {
 
         <div className="flex justify-center">
             {isSignUp ? (
-                <SignUp routing="hash" signInUrl="/auth#signin" />
+                <SignUp routing="hash" signInUrl="/auth#signin" forceRedirectUrl="/" />
             ) : (
-                <SignIn routing="hash" signUpUrl="/auth#signup" />
+                <SignIn routing="hash" signUpUrl="/auth#signup" forceRedirectUrl="/" />
             )}
         </div>
         
