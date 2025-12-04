@@ -5,6 +5,8 @@ import AuthPage from './pages/AuthPage'
 import { useEffect } from 'react'
 import api from './api/axios'
 
+import { AuthenticateWithRedirectCallback } from '@clerk/clerk-react'
+
 function App() {
   useEffect(() => {
     api.get('/health')
@@ -17,6 +19,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/auth/sso-callback" element={<AuthenticateWithRedirectCallback />} />
       </Routes>
     </BrowserRouter>
   )
