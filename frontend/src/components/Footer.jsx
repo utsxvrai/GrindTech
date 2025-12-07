@@ -1,4 +1,4 @@
-import { Github, Twitter, Linkedin } from 'lucide-react'
+import { Github, Twitter, Linkedin, Target } from 'lucide-react'
 
 export default function Footer() {
     return (
@@ -10,8 +10,8 @@ export default function Footer() {
                 <div className="flex flex-col md:flex-row justify-between items-center gap-8">
                     {/* Logo */}
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-indigo-glow to-neon-purple flex items-center justify-center">
-                            <span className="text-2xl font-black">G</span>
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-glow via-neon-purple to-neon-pink flex items-center justify-center shadow-lg">
+                            <Target className="w-8 h-8 text-black" />
                         </div>
                         <span className="text-2xl font-black">
                             <span className="bg-gradient-to-r from-indigo-glow to-neon-purple bg-clip-text text-transparent">
@@ -54,7 +54,7 @@ export default function Footer() {
 
                 {/* Copyright */}
                 <div className="mt-8 pt-8 border-t border-white/10 text-center text-sm text-gray-400">
-                    <p>© 2024 GrindTech. All rights reserved. Powered by AI.</p>
+                    <p>© 2025 GrindTech. All rights reserved.</p>
                 </div>
             </div>
         </footer>

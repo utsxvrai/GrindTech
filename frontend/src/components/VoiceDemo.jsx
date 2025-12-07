@@ -157,7 +157,7 @@ export default function VoiceDemo() {
                     <motion.div
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      className="absolute -top-8 -right-8 z-50 pointer-events-none"
+                      className="absolute top-1/2 left-1/2 z-50 pointer-events-none"
                     >
                       <svg
                         width="28"
@@ -216,7 +216,7 @@ export default function VoiceDemo() {
                     <motion.div
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      className="absolute -top-8 right-4 z-50 pointer-events-none"
+                      className="absolute top-1/2 left-1/2 z-50 pointer-events-none"
                     >
                       <svg
                         width="28"

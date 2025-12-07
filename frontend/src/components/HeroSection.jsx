@@ -44,7 +44,7 @@ export default function HeroSection({ onGetStarted }) {
             >
               {/* Logo Icon */}
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-glow via-neon-purple to-neon-pink flex items-center justify-center shadow-lg">
-                <Target className="w-6 h-6 text-black" />
+                <Target className="w-8 h-8 text-black" />
               </div>
 
               {/* Logo Text */}
@@ -52,7 +52,7 @@ export default function HeroSection({ onGetStarted }) {
                 <span className="text-2xl font-black bg-gradient-to-r from-indigo-glow via-neon-purple to-neon-pink bg-clip-text text-transparent">
                   GrindTech
                 </span>
-                <span className="text-xs text-gray-400 font-medium -mt-1">AI Interview Prep</span>
+                <span className="text-xs text-gray-400 font-medium -mt-1">Ace Technical Interviews</span>
               </div>
             </motion.div>
 
@@ -73,10 +73,9 @@ export default function HeroSection({ onGetStarted }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
             >
-              <span className="block text-4xl sm:text-5xl md:text-6xl font-black leading-tight">
+              <span className="block text-4xl sm:text-5xl md:text-6xl mb-2  font-black leading-tight">
                 Ace Technical
               </span>
-              <br />
               <span className="text-white text-4xl sm:text-5xl md:text-6xl font-black">Interviews</span>
             </motion.h1>
 
@@ -85,7 +84,7 @@ export default function HeroSection({ onGetStarted }) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="text-lg text-gray-300 mb-8 leading-relaxed"
+              className="text-lg text-gray-300 mb-8 leading-relaxed "
             >
               Master Node.js, System Design, DevOps & more through real interview questions with instant AI evaluation.
             </motion.p>
