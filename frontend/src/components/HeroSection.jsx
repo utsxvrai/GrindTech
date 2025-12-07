@@ -3,8 +3,16 @@ import { Sparkles, Target } from 'lucide-react'
 import GrindTechVisual from './GrindTechVisual'
 import { useNavigate } from 'react-router-dom'
 
-export default function HeroSection() {
+export default function HeroSection({ onGetStarted }) {
   const navigate = useNavigate()
+
+  const handleGetStarted = () => {
+    if (onGetStarted) {
+      onGetStarted();
+    } else {
+      navigate('/auth');
+    }
+  }
 
   return (
     <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden py-20">
@@ -38,7 +46,7 @@ export default function HeroSection() {
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-glow via-neon-purple to-neon-pink flex items-center justify-center shadow-lg">
                 <Target className="w-6 h-6 text-black" />
               </div>
-              
+
               {/* Logo Text */}
               <div className="flex flex-col">
                 <span className="text-2xl font-black bg-gradient-to-r from-indigo-glow via-neon-purple to-neon-pink bg-clip-text text-transparent">
@@ -92,7 +100,7 @@ export default function HeroSection() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/auth')}
+                onClick={handleGetStarted}
                 className="px-8 py-4 bg-white rounded-full font-bold text-lg text-black shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] transition-shadow"
               >
                 Get Started

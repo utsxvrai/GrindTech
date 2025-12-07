@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import AuthPage from './pages/AuthPage'
+import NodeJsPage from './pages/NodeJsPage'
 
 import { useEffect } from 'react'
 import api from './api/axios'
@@ -20,6 +21,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/auth/sso-callback" element={<AuthenticateWithRedirectCallback />} />
+        <Route path="/preparation/nodejs" element={<NodeJsPage />} />
       </Routes>
     </BrowserRouter>
   )
