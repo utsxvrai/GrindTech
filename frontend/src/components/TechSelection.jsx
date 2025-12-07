@@ -102,54 +102,57 @@ export default function TechSelection({ onClose }) {
           <X className="w-6 h-6" />
         </button>
 
-        <div className="relative z-10">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+        <div className="relative z-10 flex flex-col h-full">
+          <div className="text-center mb-6 shrink-0">
+            <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
               Choose Your Path
             </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              Select a technology to start your interview preparation journey. 
-              Master the core concepts and ace your next technical interview.
+            <p className="text-gray-400 text-sm md:text-base max-w-2xl mx-auto">
+              Select a technology to start your interview preparation journey.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {technologies.map((tech) => (
-              <motion.div
-                key={tech.id}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => tech.available && handleTechClick(tech.id)}
-                className={`
-                  relative group p-6 rounded-xl border transition-all duration-300 cursor-pointer
-                  ${tech.available 
-                    ? `${tech.bg} ${tech.border} ${tech.hover} cursor-pointer` 
-                    : 'bg-gray-800/50 border-gray-700/50 opacity-60 cursor-not-allowed'}
-                `}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`p-3 rounded-lg ${tech.available ? 'bg-black/20' : 'bg-gray-700/20'}`}>
-                    <tech.icon className={`w-8 h-8 ${tech.available ? tech.color : 'text-gray-500'}`} />
+          <div className="flex-grow overflow-y-auto p-2 scrollbar-hide">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {technologies.map((tech) => (
+                <motion.div
+                  key={tech.id}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => tech.available && handleTechClick(tech.id)}
+                  className={`
+                    relative group p-4 rounded-xl border transition-all duration-300 cursor-pointer flex items-center gap-4
+                    ${tech.available 
+                      ? `${tech.bg} ${tech.border} ${tech.hover} cursor-pointer` 
+                      : 'bg-gray-800/50 border-gray-700/50 opacity-60 cursor-not-allowed'}
+                  `}
+                >
+                  <div className={`p-2.5 rounded-lg shrink-0 ${tech.available ? 'bg-black/20' : 'bg-gray-700/20'}`}>
+                    <tech.icon className={`w-6 h-6 ${tech.available ? tech.color : 'text-gray-500'}`} />
                   </div>
-                  {!tech.available && (
-                    <span className="px-2 py-1 text-xs font-medium text-gray-400 bg-gray-800 rounded-full border border-gray-700">
-                      Coming Soon
-                    </span>
+                  
+                  <div className="flex-grow min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className={`text-base font-bold truncate ${tech.available ? 'text-white' : 'text-gray-400'}`}>
+                        {tech.name}
+                      </h3>
+                      {!tech.available && (
+                        <span className="px-1.5 py-0.5 text-[10px] font-medium text-gray-400 bg-gray-800 rounded-full border border-gray-700 shrink-0">
+                          Soon
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-400 line-clamp-1 hidden sm:block">
+                      {tech.description}
+                    </p>
+                  </div>
+
+                  {tech.available && (
+                    <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/10 group-hover:ring-white/20 transition-all" />
                   )}
-                </div>
-
-                <h3 className={`text-xl font-bold mb-2 ${tech.available ? 'text-white' : 'text-gray-400'}`}>
-                  {tech.name}
-                </h3>
-                <p className="text-sm text-gray-400">
-                  {tech.description}
-                </p>
-
-                {tech.available && (
-                  <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/10 group-hover:ring-white/20 transition-all" />
-                )}
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </motion.div>

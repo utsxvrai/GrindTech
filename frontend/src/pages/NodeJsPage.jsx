@@ -84,6 +84,7 @@ const modules = [
 export default function NodeJsPage() {
   const { user } = useUser();
   const [showMeter, setShowMeter] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const isPro = false; // Mock status for now
 
   useEffect(() => {
@@ -140,30 +141,89 @@ fill="currentColor" viewBox="0 0 24 24" >
               Contribute
             </button>
 
-            {/* Profile Button */}
-            <div className="flex items-center gap-3 pl-4 border-l border-white/10">
-              <div className="text-right hidden md:block">
-                <div className="text-sm font-bold text-white leading-none mb-1">
-                  {user?.firstName || 'Guest'}
+            {/* Profile Section with Mobile Dropdown */}
+            <div className="relative">
+              <div 
+                className="flex items-center gap-3 pl-4 border-l border-white/10 cursor-pointer"
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+              >
+                <div className="text-right hidden md:block">
+                  <div className="text-sm font-bold text-white leading-none mb-1">
+                    {user?.firstName || 'Guest'}
+                  </div>
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isPro ? 'bg-neon-green text-black' : 'bg-gray-800 text-gray-400'}`}>
+                      {isPro ? 'PRO' : 'FREE'}
+                    </span>
+                    {!isPro && (
+                      <button className="text-[10px] font-bold text-neon-green hover:underline">
+                        UPGRADE
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center justify-end gap-1.5">
-                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isPro ? 'bg-neon-green text-black' : 'bg-gray-800 text-gray-400'}`}>
-                    {isPro ? 'PRO' : 'FREE'}
-                  </span>
-                  {!isPro && (
-                    <button className="text-[10px] font-bold text-neon-green hover:underline">
-                      UPGRADE
-                    </button>
-                  )}
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-800 to-black border border-white/10 flex items-center justify-center overflow-hidden relative z-50">
+                   {user?.imageUrl ? (
+                     <img src={user.imageUrl} alt="Profile" className="w-full h-full object-cover" />
+                   ) : (
+                     <User className="w-5 h-5 text-gray-400" />
+                   )}
                 </div>
               </div>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-800 to-black border border-white/10 flex items-center justify-center overflow-hidden">
-                 {user?.imageUrl ? (
-                   <img src={user.imageUrl} alt="Profile" className="w-full h-full object-cover" />
-                 ) : (
-                   <User className="w-5 h-5 text-gray-400" />
-                 )}
-              </div>
+
+              {/* Mobile Dropdown Menu */}
+              {showProfileMenu && (
+                <>
+                  <div 
+                    className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+                    onClick={() => setShowProfileMenu(false)}
+                  />
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-0 top-14 w-64 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl p-4 z-50 md:hidden"
+                  >
+                    {/* Mobile Profile Info */}
+                    <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/5">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gray-800 to-black border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
+                        {user?.imageUrl ? (
+                          <img src={user.imageUrl} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                          <User className="w-6 h-6 text-gray-400" />
+                        )}
+                      </div>
+                      <div>
+                        <div className="text-base font-bold text-white leading-none mb-1">
+                          {user?.firstName || 'Guest'}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isPro ? 'bg-neon-green text-black' : 'bg-gray-800 text-gray-400'}`}>
+                            {isPro ? 'PRO' : 'FREE'}
+                          </span>
+                          {!isPro && (
+                            <button className="text-[10px] font-bold text-neon-green hover:underline">
+                              UPGRADE
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Mobile Menu Items */}
+                    <div className="space-y-2">
+                      <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                        <Zap className="w-4 h-4 text-neon-green" />
+                        Contribute
+                      </button>
+                      <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 text-sm font-medium text-gray-400 hover:text-white transition-colors">
+                        <User className="w-4 h-4" />
+                        Profile Settings
+                      </button>
+                    </div>
+                  </motion.div>
+                </>
+              )}
             </div>
           </div>
         </div>
