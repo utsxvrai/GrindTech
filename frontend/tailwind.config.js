@@ -11,6 +11,9 @@ export default {
         'indigo-glow': '#FFFFFF',
         'neon-purple': '#FFFFFF',
         'neon-pink': '#FFFFFF',
+        'neon-green': '#6cc24a',
+        'dark-bg': '#000000',
+        'card-dark': '#000000',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

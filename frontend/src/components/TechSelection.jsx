@@ -86,12 +86,12 @@ export default function TechSelection({ onClose }) {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
-        className="relative w-full max-w-5xl bg-gray-900/90 border border-white/10 rounded-2xl p-8 shadow-2xl overflow-hidden"
+        className="relative w-full max-w-5xl bg-black/90 border border-white/90 rounded-2xl p-8 shadow-2xl overflow-hidden"
       >
         {/* Background Gradients */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
+          <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-neon-green/10 rounded-full blur-3xl animate-float" />
+          <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-neon-green/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
         </div>
 
         {/* Close Button */}
