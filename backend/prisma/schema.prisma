@@ -55,6 +55,7 @@ model Tech {
 
 model Resource {
   rid       String   @id @default(uuid())
+  name      String
   resource  String
   topicId   String
 

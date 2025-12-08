@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Hexagon, User, Zap } from 'lucide-react'; // Using Hexagon as generic Node icon placeholder if specific one not available
 import { useState, useEffect } from 'react';
-import CodeRain from '../components/CodeRain';
 import TechCard from '../components/TechCard';
 import LearningMeter from '../components/LearningMeter';
 

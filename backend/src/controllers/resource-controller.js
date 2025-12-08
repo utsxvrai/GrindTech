@@ -5,6 +5,7 @@ const {StatusCodes} = require("http-status-codes");
 async function create(req,res){
     try{
         const resource = await ResourceService.create({
+            name : req.body.name,
             resource : req.body.resource,
             topicId : req.body.topicId
         });
