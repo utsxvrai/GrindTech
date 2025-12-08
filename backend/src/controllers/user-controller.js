@@ -62,6 +62,16 @@ async function getMe(req, res) {
     }
 }
 
+async function getAll(req, res) {
+    try {
+        const users = await UserService.getAll();
+        return res.status(users.status || StatusCodes.INTERNAL_SERVER_ERROR).json(users);
+    } catch (error) {
+        console.log("CanNot get all users", error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+}
+
 // async function signOut(req, res) {
 //     try {
 //         const authHeader = req.headers.authorization;
@@ -82,5 +92,6 @@ module.exports = {
     signin,
     get,
     getMe,
+    getAll,
     // signOut
 }

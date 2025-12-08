@@ -7,50 +7,80 @@ const resourceRepository = new ResourceRepository();
 async function create(data){
     try{
         const resource = await resourceRepository.create(data);
-        return resource;
+        return {
+            status: StatusCodes.CREATED,
+            data: resource
+        };
     }catch(error){
         console.log("CanNot create resource",error);
-        return error;
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            error: error
+        };
     }
 }
 
 async function getAll(){
     try{
         const resource = await resourceRepository.findAll();
-        return resource;
+        return {
+            status: StatusCodes.OK,
+            data: resource
+        };
     }catch(error){
         console.log("CanNot get all resource",error);
-        return error;
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            error: error
+        };
     }
 }
 
 async function get(rid){
     try{
         const resource = await resourceRepository.findById(rid);
-        return resource;
+        return {
+            status: StatusCodes.OK,
+            data: resource
+        };
     }catch(error){
         console.log("CanNot get resource",error);
-        return error;
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            error: error
+        };
     }
 }
 
 async function update(rid,data){
     try{
         const resource = await resourceRepository.update(rid,data);
-        return resource;
+        return {
+            status: StatusCodes.OK,
+            data: resource
+        };
     }catch(error){
         console.log("CanNot update resource",error);
-        return error;
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            error: error
+        };
     }
 }
 
 async function remove(rid){
     try{
         const resource = await resourceRepository.delete(rid);
-        return resource;
+        return {
+            status: StatusCodes.OK,
+            data: resource
+        };
     }catch(error){
         console.log("CanNot remove resource",error);
-        return error;
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            error: error
+        };
     }
 }
 

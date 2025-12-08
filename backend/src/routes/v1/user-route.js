@@ -13,6 +13,7 @@ router.post("/signin", UserController.signin); // Legacy/Optional
 
 // Protected routes
 router.get("/me", requireClerkAuth, UserController.getMe);
+router.get("/all", UserController.getAll);
 router.get("/:id", UserController.get);
 
 module.exports = router;

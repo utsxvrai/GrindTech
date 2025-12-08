@@ -21,8 +21,12 @@ async function getAll(req,res){
         const resource = await ResourceService.getAll();
         return res.status(resource.status || StatusCodes.INTERNAL_SERVER_ERROR).json(resource);
     }catch(error){
-        console.log("CanNot get all resource",error);
-        return res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).json(error);
+        console.error("CanNot get all resource", error);
+        return res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: error.message || "Internal Server Error",
+            stack: error.stack,
+            error: error
+        });
     }
 }
 

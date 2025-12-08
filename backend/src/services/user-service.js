@@ -103,6 +103,21 @@ async function getByClerkId(clerkId) {
     }
 }
 
+async function getAll() {
+    try {
+        const users = await userRepository.findAll();
+        return {
+            status: StatusCodes.OK,
+            data: users
+        };
+    } catch (error) {
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            error
+        };
+    }
+}
+
 // async function signout(token){
 //     try{
 //         if(!token){
@@ -135,5 +150,6 @@ module.exports = {
     signin,
     // signout,
     get,
-    getByClerkId
+    getByClerkId,
+    getAll
 }
