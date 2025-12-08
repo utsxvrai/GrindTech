@@ -1,76 +1,58 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
-
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  uuid                 String      @id @default(uuid())
+  uuid                 String     @id @default(uuid())
   username             String
-  useremail            String      @unique
-  clerkId              String      @unique
+  useremail            String     @unique
   password             String?
-  plan                 String      @default("free")
-  questionsContributed Int         @default(0)
-  levelsDone           Int         @default(0)
-
-  // Relations
-  topics    Topic[]
-  questions Question[]
-
-  createdAt DateTime   @default(now())
+  plan                 String     @default("free")
+  questionsContributed Int        @default(0)
+  levelsDone           Int        @default(0)
+  createdAt            DateTime   @default(now())
+  clerkId              String     @unique
+  questions            Question[]
+  topics               Topic[]
 }
 
 model Topic {
-  topicId  String     @id @default(uuid())
-  name     String
-  userId   String
-  techId   String
-
-  // Relations
-  user     User       @relation(fields: [userId], references: [uuid])
-  tech     Tech       @relation(fields: [techId], references: [techId])
-  resources Resource[]
+  topicId   String     @id @default(uuid())
+  name      String
+  userId    String
+  techId    String
   questions Question[]
+  resources Resource[]
+  tech      Tech       @relation(fields: [techId], references: [techId])
+  user      User       @relation(fields: [userId], references: [uuid])
 }
 
 model Tech {
-  techId    String     @id @default(uuid())
-  techName  String
-
-  // Relations
-  topics    Topic[]
+  techId   String  @id @default(uuid())
+  techName String
+  topics   Topic[]
 }
 
 model Resource {
-  rid       String   @id @default(uuid())
-  name      String
-  resource  String
-  topicId   String
-
-  topic     Topic    @relation(fields: [topicId], references: [topicId])
+  rid      String @id @default(uuid())
+  resource String
+  topicId  String
+  name     String
+  topic    Topic  @relation(fields: [topicId], references: [topicId])
 }
 
 model Question {
   qid       String   @id @default(uuid())
-  question      String
+  question  String
   topicId   String
   userId    String
-
-  // Relations
+  createdAt DateTime @default(now())
   topic     Topic    @relation(fields: [topicId], references: [topicId])
   user      User     @relation(fields: [userId], references: [uuid])
-
-  createdAt DateTime @default(now())
 }
