@@ -11,6 +11,11 @@ router.get("/:id",TopicController.get);
 
 router.put("/:id",TopicController.update);
 
+
+router.get("/name/:name", TopicController.getByName);
+
+router.get("/tech/:techId", TopicController.getTopicsByTechId);
+
 router.delete("/:id",TopicController.remove);
 
 module.exports = router;

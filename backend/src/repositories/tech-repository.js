@@ -5,6 +5,16 @@ class TechRepository extends CrudRepository {
     constructor() {
         super(prisma.tech, 'techId');
     }
+    async findByName(name) {
+        return await this.model.findFirst({
+            where: {
+                techName: {
+                    equals: name,
+                    mode: 'insensitive'
+                }
+            }
+        });
+    }
 } 
 
 module.exports = TechRepository;

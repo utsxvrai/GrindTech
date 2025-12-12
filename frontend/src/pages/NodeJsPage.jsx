@@ -1,84 +1,13 @@
 import { useUser } from '@clerk/clerk-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Hexagon, User, Zap } from 'lucide-react'; // Using Hexagon as generic Node icon placeholder if specific one not available
+import { ArrowLeft, Hexagon, User, Zap, X, Mic, Send, FileText, ChevronRight, Loader2 } from 'lucide-react'; 
 import { useState, useEffect } from 'react';
 import TechCard from '../components/TechCard';
 import LearningMeter from '../components/LearningMeter';
+import api from '../api/axios';
+import TechPageLoader from '../components/TechPageLoader';
 
-const modules = [
-  // ... (modules array remains same, assuming it's outside component or I should preserve it)
-  {
-    id: 'event-loop',
-    title: 'Event Loop',
-    description: 'Reactor pattern & non-blocking I/O.',
-    level: 0,
-    status: 'unlocked'
-  },
-  {
-    id: 'streams',
-    title: 'Streams',
-    description: 'Efficient data processing.',
-    level: 1,
-    status: 'locked'
-  },
-  {
-    id: 'file-system',
-    title: 'File System',
-    description: 'Deep dive into fs module.',
-    level: 1,
-    status: 'locked'
-  },
-  {
-    id: 'express',
-    title: 'Express.js',
-    description: 'Robust API development.',
-    level: 2,
-    status: 'locked'
-  },
-  {
-    id: 'middleware',
-    title: 'Middleware',
-    description: 'Request-response cycle mastery.',
-    level: 2,
-    status: 'locked'
-  },
-  {
-    id: 'cluster',
-    title: 'Cluster',
-    description: 'Multi-core scaling.',
-    level: 3,
-    status: 'locked'
-  },
-  {
-    id: 'redis',
-    title: 'Redis',
-    description: 'High-performance caching.',
-    level: 3,
-    status: 'locked'
-  },
-  {
-    id: 'async',
-    title: 'Async Patterns',
-    description: 'Advanced control flow.',
-    level: 4,
-    status: 'locked'
-  },
-  {
-    id: 'architecture',
-    title: 'Architecture',
-    description: 'Scalable system design.',
-    level: 5,
-    status: 'locked'
-  },
-  {
-    id: 'microservices',
-    title: 'Microservices',
-    description: 'Distributed services.',
-    level: 5,
-    status: 'locked'
-  }
-];
 
 export default function NodeJsPage() {
   const { user } = useUser();
@@ -86,13 +15,98 @@ export default function NodeJsPage() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const isPro = false; // Mock status for now
 
+  // Dialog State
+  const [selectedTopic, setSelectedTopic] = useState(null);
+  const [dialogStep, setDialogStep] = useState(0); // 0: resources, 1: questions
+  const [topicData, setTopicData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answer, setAnswer] = useState("");
+  const [fetchedTopics, setFetchedTopics] = useState([]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowMeter(true);
     }, 3000); // 3 seconds delay
 
+    const fetchTopics = async () => {
+        try {
+            // First try to get the Tech ID for NodeJS
+            // Assuming the tech name in DB matches "NodeJS" or "Node.js"
+            let techResponse;
+            try {
+                 techResponse = await api.get('/tech/name/NodeJS');
+            } catch (e) {
+                 // Fallback to Node.js if NodeJS not found
+                 techResponse = await api.get('/tech/name/Node.js');
+            }
+
+            if (techResponse && techResponse.data && techResponse.data.data) {
+                const techId = techResponse.data.data.techId;
+                // Fetch sorted topics
+                const topicsResponse = await api.get(`/topic/tech/${techId}`);
+                if (topicsResponse.data && Array.isArray(topicsResponse.data.data)) {
+                    setFetchedTopics(topicsResponse.data.data);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to initialize topics:", error);
+        }
+    };
+
+    fetchTopics();
+
     return () => clearTimeout(timer);
   }, []);
+
+  const handleCardClick = (module, index) => {
+    // Check lock status based on index and user progress
+    const isLocked = index > (user?.publicMetadata?.levelsDone || user?.levelsDone || 0);
+    if (isLocked) return;
+
+    setSelectedTopic(module);
+    setDialogStep(0);
+    setCurrentQuestionIndex(0);
+    setAnswer("");
+    
+    // For fetched topics, the module itself is the topic data
+    // But we need to make sure we have the full included data (resources/questions)
+    // The previous implementation inferred module was just a UI card object.
+    // Here 'module' passed from the map is the full topic object from DB (which includes resources/questions from the repository include)
+    setTopicData(module);
+  };
+
+  const handleCloseDialog = () => {
+      setSelectedTopic(null);
+      setTopicData(null);
+      setDialogStep(0);
+      setCurrentQuestionIndex(0);
+      setAnswer("");
+  };
+
+  const handleStartPrepare = () => {
+    setDialogStep(1);
+    setCurrentQuestionIndex(0);
+  };
+
+  const handleSubmitAnswer = () => {
+    // Logic to validate answer or move to next
+    // For now just console log and maybe move next if exists
+    console.log("Submitted:", answer);
+    if (topicData?.questions && currentQuestionIndex < topicData.questions.length - 1) {
+        setCurrentQuestionIndex(prev => prev + 1);
+        setAnswer("");
+    } else {
+        // Finished?
+        console.log("All questions done or last question");
+    }
+  };
+
+  // Helper to clean topic name
+  const getCleanTopicName = (name) => {
+      // Remove trailing numbers and hyphens (e.g. "basic 0-1", "module-3")
+      return name.replace(/[- ]\d+(?:-\d+)?$/, '');
+  };
 
   return (
     <div className="h-screen w-screen bg-black text-white relative overflow-hidden font-sans selection:bg-neon-green/30 flex flex-col">
@@ -247,26 +261,207 @@ fill="currentColor" viewBox="0 0 24 24" >
           )}
         </div>
 
-        {/* Scrollable Grid Area */}
+
         <div className="flex-grow overflow-y-auto w-full pr-2 pb-20 scrollbar-hide">
-          <div className="flex flex-wrap justify-center gap-6 w-full">
-            {modules.map((module, index) => (
-              <motion.div
-                key={module.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.05 }}
-                className="h-28 w-64"
-              >
-                <TechCard 
-                  {...module} 
-                  isCurrent={index === 0} // Assuming first module is current for now
-                />
-              </motion.div>
-            ))}
-          </div>
+          {fetchedTopics.length === 0 ? (
+             <TechPageLoader />
+          ) : (
+            <div className="flex flex-wrap justify-center gap-6 w-full">
+              {fetchedTopics.map((module, index) => {
+                const title = getCleanTopicName(module.name);
+                const userLevel = user?.publicMetadata?.levelsDone || user?.levelsDone || 0; // Use clerk metadata if available or user obj
+                // Note: user object from useUser() might not have custom fields directly on root. 
+                // Usually it's in publicMetadata. But checking both for safety as per schema earlier.
+                // Assuming standard Clerk integration, custom attributes might be in publicMetadata.
+                // Schema has 'levelsDone' in User model, which syncs to Clerk? Or just local DB?
+                // If local DB, we might need to fetch user status separately. 
+                // For now, assuming user.levelsDone is available or defaulting to 0. 
+                // Wait, useUser gives Clerk user object. It doesn't have levelsDone unless added to publicMetadata.
+                // If it's not there, everything is locked except level 0.
+                
+                // Let's assume for now user starts at 0.
+                const isLocked = index > 0; // For temporary testing, unlock only first.
+                // Actually, let's unlock index 0 always.
+                // If we want real sync, we need to fetch user data from our backend using the Clerk ID.
+                
+                return (
+                  <motion.div
+                    key={module.topicId}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="h-28 w-64"
+                    onClick={() => handleCardClick(module, index)}
+                  >
+                    <TechCard 
+                      title={title}
+                      description={`Master ${title}`} // Fallback description
+                      level={index}
+                      status={isLocked ? 'locked' : 'unlocked'}
+                      isCurrent={!isLocked && index === 0} // Simplify current logic for now
+                    />
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </main>
+
+
+      {/* Dialog Overlay */}
+      <AnimatePresence>
+        {selectedTopic && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="w-full max-w-2xl bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]"
+            >
+              {/* Dialog Header */}
+              <div className="p-6 border-b border-white/5 flex justify-between items-center bg-zinc-900/50">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-neon-green/10 text-neon-green">
+                        <Hexagon className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-bold text-white tracking-tight">{getCleanTopicName(selectedTopic.name)}</h2>
+                        <p className="text-xs text-gray-400 font-medium tracking-wide uppercase">Topic Module</p>
+                    </div>
+                </div>
+                <button 
+                  onClick={handleCloseDialog}
+                  className="p-2 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Dialog Content */}
+              <div className="flex-grow overflow-y-auto p-6 scrollbar-hide">
+                {loading ? (
+                    <div className="h-96 flex items-center justify-center overflow-hidden">
+                        <TechPageLoader />
+                    </div>
+                ) : !topicData ? (
+                    <div className="flex flex-col items-center justify-center h-64 gap-3 text-gray-400">
+                         <p>Content not found for this module.</p>
+                         <p className="text-xs text-gray-500">Ensure backend has data for "{getCleanTopicName(selectedTopic.name)}"</p>
+                    </div>
+                ) : (
+                    <>
+                    {dialogStep === 0 ? (
+                        /* Step 1: Resources */
+                        <div className="flex flex-col gap-6">
+                            <div className="space-y-4">
+                                <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider flex items-center gap-2">
+                                    <FileText className="w-4 h-4 text-neon-green" />
+                                    Learning Resources
+                                </h3>
+                                <div className="grid gap-3">
+                                    {topicData.resources && topicData.resources.length > 0 ? (
+                                        topicData.resources.map((res, i) => (
+                                            <a 
+                                                key={i} 
+                                                href={res.resource} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-neon-green/30 hover:bg-white/10 transition-all group flex items-start gap-4"
+                                            >
+                                                <div className="shrink-0 w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center text-gray-400 group-hover:text-neon-green transition-colors">
+                                                    <span className="text-xs font-bold">{i + 1}</span>
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-semibold text-white group-hover:text-neon-green transition-colors">{res.name}</h4>
+                                                    <p className="text-xs text-gray-400 mt-1 line-clamp-1">{res.resource}</p>
+                                                </div>
+                                            </a>
+                                        ))
+                                    ) : (
+                                        <p className="text-gray-500 text-sm">No resources available yet.</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        /* Step 2: Questions */
+                        <div className="flex flex-col h-full">
+                           <div className="flex items-center justify-between mb-6">
+                             <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider">
+                                 Question {currentQuestionIndex + 1} of {topicData.questions?.length || 0}
+                             </h3>
+                             <div className="h-1.5 w-32 bg-gray-800 rounded-full overflow-hidden">
+                                <div 
+                                    className="h-full bg-neon-green transition-all duration-300"
+                                    style={{ width: `${((currentQuestionIndex + 1) / (topicData.questions?.length || 1)) * 100}%` }}
+                                />
+                             </div>
+                           </div>
+
+                           {topicData.questions && topicData.questions.length > 0 ? (
+                             <div className="flex-grow flex flex-col gap-6">
+                                <div className="p-5 rounded-2xl bg-zinc-900/50 border border-white/5 shadow-inner min-h-[120px] flex items-center justify-center text-center">
+                                    <p className="text-lg font-medium text-white/90 leading-relaxed">
+                                        {topicData.questions[currentQuestionIndex].question}
+                                    </p>
+                                </div>
+
+                                <div className="mt-auto space-y-4">
+                                    <div className="relative">
+                                        <textarea 
+                                            value={answer}
+                                            onChange={(e) => setAnswer(e.target.value)}
+                                            placeholder="Type your answer here..."
+                                            className="w-full h-32 bg-black/40 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-neon-green/50 resize-none transition-all"
+                                        />
+                                        <button className="absolute bottom-3 right-3 p-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-neon-green transition-colors">
+                                            <Mic className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                    <button 
+                                        onClick={handleSubmitAnswer}
+                                        disabled={!answer.trim()}
+                                        className="w-full py-3.5 rounded-xl bg-neon-green hover:bg-[#5ab33e] text-black font-bold text-sm tracking-wide transition-all shadow-lg shadow-neon-green/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    >
+                                        <Send className="w-4 h-4" />
+                                        SUBMIT ANSWER
+                                    </button>
+                                </div>
+                             </div>
+                           ) : (
+                             <div className="text-center text-gray-400 py-10">
+                                 No questions available.
+                             </div>
+                           )}
+                        </div>
+                    )}
+                    </>
+                )}
+              </div>
+
+              {/* Dialog Footer */}
+              {!loading && topicData && dialogStep === 0 && (
+                <div className="p-6 border-t border-white/5 bg-zinc-900/50 flex justify-end">
+                    <button 
+                        onClick={handleStartPrepare}
+                        className="px-6 py-3 rounded-xl bg-neon-green hover:bg-[#5ab33e] text-black font-bold text-sm tracking-wide transition-all shadow-lg shadow-neon-green/20 flex items-center gap-2"
+                    >
+                        Let's Prepare
+                        <ChevronRight className="w-4 h-4" />
+                    </button>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+

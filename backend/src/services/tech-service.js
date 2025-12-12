@@ -80,10 +80,33 @@ async function remove(id){
     }
 }
 
+
+async function getByName(name){
+    try{
+        const tech = await techRepository.findByName(name);
+        if(!tech){
+             return{
+                status : StatusCodes.NOT_FOUND,
+                error : { message: "Tech not found" }
+            }
+        }
+        return{
+            status : StatusCodes.OK,
+            data : tech
+        }
+    }catch(error){
+        return{
+            status : StatusCodes.INTERNAL_SERVER_ERROR,
+            error   
+        }
+    }
+}
+
 module.exports = {
     create,
     getAll,
     get,
+    getByName,
     update,
     remove
 }

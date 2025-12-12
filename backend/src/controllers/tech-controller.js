@@ -54,10 +54,22 @@ async function remove(req,res){
     }
 }
 
+
+async function getByName(req, res){
+    try{
+        const tech = await TechService.getByName(req.params.name);
+        return res.status(tech.status || StatusCodes.INTERNAL_SERVER_ERROR).json(tech);
+    }catch(error){
+        console.log("CanNot get tech by name",error);
+        return res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).json(error);
+    }
+}
+
 module.exports = {
     create,
     getAll,
     get,
+    getByName,
     update,
     remove
 }
