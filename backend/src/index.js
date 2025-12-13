@@ -12,7 +12,7 @@ const app = express();
 app.use(
   cors({
     origin: [
-    //   "https://grindtech.vercel.app",
+      "https://grindtech.vercel.app",
       "http://localhost:5173",
     ],
     credentials: true,
