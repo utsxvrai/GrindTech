@@ -1,8 +1,5 @@
 const { EvaluationService } = require('../services');
 
-
-
-
 async function evaluate(req, res) {
     try {
         const tech = req.body.tech;
