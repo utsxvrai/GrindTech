@@ -4,5 +4,6 @@ module.exports = {
     TopicController: require("./topic-controller"),
     ResourceController: require("./resource-controller"),
     QuestionController: require("./question-controller"),
-    WebhookController: require("./webhook-controller")
+    WebhookController: require("./webhook-controller"),
+    EvaluationController : require("./evaluation-controller"),
 }
