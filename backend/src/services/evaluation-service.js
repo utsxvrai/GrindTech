@@ -39,7 +39,7 @@ ${answer}
     const timeout = setTimeout(() => controller.abort(), 6000);
 
     const response = await googleGenAI.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.5-flash-lite",
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       config: {
         responseMimeType: "application/json",

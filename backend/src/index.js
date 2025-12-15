@@ -48,13 +48,6 @@ async function warmDB() {
 
 
 
-/* ---------- KEEP NEON AWAKE ---------- */
-setInterval(async () => {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-  } catch (e) {}
-}, 5 * 60 * 1000);
-
 /* ---------- START SERVER ---------- */
 const PORT = process.env.PORT || 3000;
 

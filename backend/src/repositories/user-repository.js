@@ -21,6 +21,17 @@ class UserRepository extends CrudRepository {
             }
         })
     }
+
+    async updatePlan(clerkId, plan) {
+        return await this.model.update({
+            where: {
+                clerkId: clerkId
+            },
+            data: {
+                plan: plan
+            }
+        })
+    }
 }
 
 

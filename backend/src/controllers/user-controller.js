@@ -54,10 +54,34 @@ async function getMe(req, res) {
         if (!clerkId) {
             return res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
         }
-        const user = await UserService.getByClerkId(clerkId);
-        return res.status(user.status || StatusCodes.INTERNAL_SERVER_ERROR).json(user);
+        
+        let result = await UserService.getByClerkId(clerkId);
+        
+        // If user not found, create them automatically
+        if (result.status === StatusCodes.NOT_FOUND) {
+            console.log(`User not found for clerkId: ${clerkId}, creating...`);
+            
+            // Get user info from Clerk (req.auth contains basic info)
+            const clerkUser = req.auth;
+            
+            // Create user with default values
+            const createResult = await UserService.create({
+                clerkId: clerkId,
+                username: clerkUser.sessionClaims?.username || clerkUser.sessionClaims?.email?.split('@')[0] || 'User',
+                useremail: clerkUser.sessionClaims?.email || `${clerkId}@temp.com`,
+                plan: 'free'
+            });
+            
+            if (createResult.status === StatusCodes.CREATED) {
+                result = createResult;
+            } else {
+                return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to create user" });
+            }
+        }
+        
+        return res.status(result.status || StatusCodes.INTERNAL_SERVER_ERROR).json(result);
     } catch (error) {
-        console.log("CanNot get current user", error);
+        console.log("Cannot get current user", error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 }
@@ -84,7 +108,24 @@ async function getAll(req, res) {
 //         console.error('Error in signOut controller:', error);
 //         res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
 //     }
-// }
+// }\r
+
+
+async function upgradeToPro(req, res) {
+    try {
+        // req.auth is populated by Clerk middleware
+        const clerkId = req.auth.userId;
+        if (!clerkId) {
+            return res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
+        }
+
+        const result = await UserService.updatePlan(clerkId, 'pro');
+        return res.status(result.status || StatusCodes.INTERNAL_SERVER_ERROR).json(result);
+    } catch (error) {
+        console.log("Cannot upgrade to pro", error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+}
 
 
 module.exports = {
@@ -93,5 +134,6 @@ module.exports = {
     get,
     getMe,
     getAll,
+    upgradeToPro,
     // signOut
 }

@@ -8,7 +8,10 @@ const userRepository = new UserRepository();
 
 async function create(data) {
     try {
-        data.password = await bcrypt.hash(data.password, 10);
+        // Only hash password if provided (for Clerk users, password might not be needed)
+        if (data.password) {
+            data.password = await bcrypt.hash(data.password, 10);
+        }
         const user = await userRepository.create(data);
         return {
             status: StatusCodes.CREATED,
@@ -143,7 +146,30 @@ async function getAll() {
 //             }
 //         };
 //     }
-// }
+// }\r
+
+async function updatePlan(clerkId, plan) {
+    try {
+        if (!['free', 'pro'].includes(plan)) {
+            return {
+                status: StatusCodes.BAD_REQUEST,
+                message: "Invalid plan type. Must be 'free' or 'pro'"
+            };
+        }
+
+        const user = await userRepository.updatePlan(clerkId, plan);
+        return {
+            status: StatusCodes.OK,
+            data: user
+        };
+    } catch (error) {
+        console.error("Error updating plan:", error);
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            error
+        };
+    }
+}
 
 module.exports = {
     create,
@@ -151,5 +177,6 @@ module.exports = {
     // signout,
     get,
     getByClerkId,
-    getAll
+    getAll,
+    updatePlan
 }

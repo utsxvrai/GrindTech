@@ -48,29 +48,30 @@ const handleClerkWebhook = async (req, res) => {
   try {
     if (eventType === 'user.created') {
       const email = email_addresses[0]?.email_address;
-      const name = username || `${first_name || ''} ${last_name || ''}`.trim() || 'User';
+      // Build full name from firstName and lastName, or fall back to username
+      const fullName = `${first_name || ''} ${last_name || ''}`.trim() || username || email?.split('@')[0] || 'User';
 
       await prisma.user.create({
         data: {
           clerkId: id,
           useremail: email,
-          username: name,
+          username: fullName,
           plan: 'free', // Default plan
         },
       });
-      console.log(`User created: ${id}`);
+      console.log(`User created: ${id} with name: ${fullName}`);
     } else if (eventType === 'user.updated') {
       const email = email_addresses[0]?.email_address;
-      const name = username || `${first_name || ''} ${last_name || ''}`.trim();
+      const fullName = `${first_name || ''} ${last_name || ''}`.trim() || username || undefined;
 
       await prisma.user.update({
         where: { clerkId: id },
         data: {
           useremail: email,
-          username: name || undefined,
+          username: fullName || undefined,
         },
       });
-      console.log(`User updated: ${id}`);
+      console.log(`User updated: ${id} with name: ${fullName}`);
     } else if (eventType === 'user.deleted') {
       await prisma.user.delete({
         where: { clerkId: id },

@@ -1,6 +1,6 @@
 
 const BASE_PROMPTS = {
-  nodejs: `
+  "Node.Js": `
 You are a Senior Node.js Backend Interviewer.
 
 Evaluate strictly at interview level.
@@ -23,7 +23,7 @@ Return ONLY valid JSON:
 Keep feedback concise (max 3 sentences).
 `,
 
-  react: `
+  "React": `
 You are a Senior React Interviewer.
 
 Evaluate strictly at interview level.

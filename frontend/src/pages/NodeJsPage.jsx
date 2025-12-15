@@ -1,7 +1,7 @@
-import { useUser } from '@clerk/clerk-react';
+import { useUser, useAuth } from '@clerk/clerk-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Hexagon, User, Zap, X, Mic, Send, FileText, ChevronRight, Loader2 } from 'lucide-react'; 
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Hexagon, User, Zap, X, Mic, Send, FileText, ChevronRight, Loader2, Lock, RefreshCw } from 'lucide-react'; 
 import { useState, useEffect } from 'react';
 import TechCard from '../components/TechCard';
 import LearningMeter from '../components/LearningMeter';
@@ -11,9 +11,12 @@ import TechPageLoader from '../components/TechPageLoader';
 
 export default function NodeJsPage() {
   const { user } = useUser();
+  const { getToken } = useAuth();
+  const navigate = useNavigate();
   const [showMeter, setShowMeter] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const isPro = false; // Mock status for now
+  const [isPro, setIsPro] = useState(false); // Will be loaded from backend
+  const [userData, setUserData] = useState(null);
 
   // Dialog State
   const [selectedTopic, setSelectedTopic] = useState(null);
@@ -24,22 +27,46 @@ export default function NodeJsPage() {
   const [answer, setAnswer] = useState("");
   const [fetchedTopics, setFetchedTopics] = useState([]);
 
+  const [evaluationResult, setEvaluationResult] = useState(null);
+  const [isEvaluating, setIsEvaluating] = useState(false);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowMeter(true);
     }, 3000); // 3 seconds delay
 
+    const fetchUserData = async () => {
+        try {
+            const token = await getToken();
+            const userResponse = await api.get('/user/me',
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`
+                }
+              }
+            );
+            console.log(userResponse.data.data.plan);
+            if (userResponse.data && userResponse.data.data) {
+                setUserData(userResponse.data.data);
+                setIsPro(userResponse.data.data.plan === 'pro');
+            }
+        } catch (error) {
+            console.error("Failed to fetch user data:", error);
+        }
+    };
+
     const fetchTopics = async () => {
         try {
             // First try to get the Tech ID for NodeJS
             // Assuming the tech name in DB matches "NodeJS" or "Node.js"
-            let techResponse;
+            let techResponse; 
             try {
-                 techResponse = await api.get('/tech/name/NodeJS');
+                 techResponse = await api.get('/tech/name/Node.Js');
             } catch (e) {
                  // Fallback to Node.js if NodeJS not found
-                 techResponse = await api.get('/tech/name/Node.js');
+                 techResponse = await api.get('/tech/name/Node.Js');
             }
+            // console.log(techResponse)
 
             if (techResponse && techResponse.data && techResponse.data.data) {
                 const techId = techResponse.data.data.techId;
@@ -54,6 +81,7 @@ export default function NodeJsPage() {
         }
     };
 
+    fetchUserData();
     fetchTopics();
 
     return () => clearTimeout(timer);
@@ -68,6 +96,8 @@ export default function NodeJsPage() {
     setDialogStep(0);
     setCurrentQuestionIndex(0);
     setAnswer("");
+    setEvaluationResult(null);
+    setIsEvaluating(false);
     
     // For fetched topics, the module itself is the topic data
     // But we need to make sure we have the full included data (resources/questions)
@@ -82,23 +112,57 @@ export default function NodeJsPage() {
       setDialogStep(0);
       setCurrentQuestionIndex(0);
       setAnswer("");
+      setEvaluationResult(null);
+      setIsEvaluating(false);
   };
 
   const handleStartPrepare = () => {
     setDialogStep(1);
     setCurrentQuestionIndex(0);
+    setAnswer("");
+    setEvaluationResult(null);
   };
 
-  const handleSubmitAnswer = () => {
-    // Logic to validate answer or move to next
-    // For now just console log and maybe move next if exists
-    console.log("Submitted:", answer);
-    if (topicData?.questions && currentQuestionIndex < topicData.questions.length - 1) {
-        setCurrentQuestionIndex(prev => prev + 1);
-        setAnswer("");
-    } else {
-        // Finished?
-        console.log("All questions done or last question");
+  const handleNextQuestion = () => {
+      setEvaluationResult(null);
+      setAnswer("");
+      if (topicData?.questions && currentQuestionIndex < topicData.questions.length - 1) {
+          setCurrentQuestionIndex(prev => prev + 1);
+      }
+  };
+
+  const handleSubmitAnswer = async () => {
+    if (!answer.trim()) return;
+
+    setIsEvaluating(true);
+    setEvaluationResult(null);
+
+    try {
+        const currentQuestion = topicData.questions[currentQuestionIndex];
+        
+        // Call backend evaluation service
+        // We need the tech name. 'fetchedTopics' doesn't explicitly store tech name on topic, 
+        // but we know this is the NodeJS page. Ideally pass "NodeJS" or fetch from parent.
+        // Let's hardcode "NodeJS" for this specific page or derive it.
+        const response = await api.post('/evaluation/evaluate', {
+            tech: 'Node.Js',
+            question: currentQuestion.question,
+            answer: answer
+        });
+        console.log(response.data);
+
+        if (response.data) {
+            setEvaluationResult(response.data);
+        }
+    } catch (error) {
+        console.error("Evaluation failed:", error);
+        // Fallback or error state
+        setEvaluationResult({
+            error: true,
+            feedback: "Failed to evaluate answer. Please try again or check your connection."
+        });
+    } finally {
+        setIsEvaluating(false);
     }
   };
 
@@ -412,27 +476,112 @@ fill="currentColor" viewBox="0 0 24 24" >
                                     </p>
                                 </div>
 
-                                <div className="mt-auto space-y-4">
-                                    <div className="relative">
-                                        <textarea 
-                                            value={answer}
-                                            onChange={(e) => setAnswer(e.target.value)}
-                                            placeholder="Type your answer here..."
-                                            className="w-full h-32 bg-black/40 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-neon-green/50 resize-none transition-all"
-                                        />
-                                        <button className="absolute bottom-3 right-3 p-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-neon-green transition-colors">
-                                            <Mic className="w-5 h-5" />
-                                        </button>
+                                    <div className="mt-auto space-y-4">
+                                    {evaluationResult ? (
+                                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                            <div className={`p-4 rounded-xl border ${evaluationResult.score >= 7 ? 'bg-green-500/10 border-green-500/30' : 'bg-yellow-500/10 border-yellow-500/30'}`}>
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <div className={`p-1.5 rounded-full ${evaluationResult.score >= 7 ? 'bg-green-500/20 text-green-500' : 'bg-yellow-500/20 text-yellow-500'}`}>
+                                                        {evaluationResult.score >= 7 ? <Zap className="w-4 h-4" /> : <Loader2 className="w-4 h-4" />}
+                                                    </div>
+                                                    <span className={`font-bold ${evaluationResult.score >= 7 ? 'text-green-500' : 'text-yellow-500'}`}>
+                                                        Score: {evaluationResult.score}/10
+                                                    </span>
+                                                </div>
+                                                <p className="text-sm text-gray-300 leading-relaxed mb-4">
+                                                    {evaluationResult.feedback}
+                                                </p>
+                                                
+                                                {/* Complete Feedback / Ideal Answer Section */}
+                                                <div className="mt-4 pt-4 border-t border-white/5">
+                                                    <div className="flex items-center justify-between mb-3">
+                                                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                                                            <Zap className="w-3 h-3 text-neon-green" />
+                                                            Ideal Answer
+                                                        </h4>
+                                                        {!isPro && (
+                                                            <span className="text-[10px] font-bold bg-zinc-800 text-gray-400 px-2 py-0.5 rounded flex items-center gap-1">
+                                                                <Lock className="w-3 h-3" /> PRO ONLY
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    <div className="relative rounded-lg overflow-hidden bg-black/20">
+                                                        {isPro ? (
+                                                            <div className="p-3 text-sm text-gray-300 bg-white/5">
+                                                                {evaluationResult.idealShortAnswer || "No ideal answer available."}
+                                                            </div>
+                                                        ) : (
+                                                            <div onClick={() => navigate('/payment')} className="relative p-3 cursor-pointer group">
+                                                                <div className="blur-sm select-none text-sm text-gray-500">
+                                                                    {evaluationResult.idealShortAnswer || "This is a sample ideal answer that is blurred for free users. Upgrade to see the full expert answer."}
+                                                                </div>
+                                                                <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
+                                                                    <div className="bg-zinc-900 border border-white/10 px-3 py-1.5 rounded-lg shadow-xl flex items-center gap-2 transform group-hover:scale-105 transition-transform">
+                                                                         <Lock className="w-3 h-3 text-neon-green" />
+                                                                         <span className="text-xs font-bold text-white">Unlock Answer</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <button 
+                                                    onClick={() => {
+                                                        setEvaluationResult(null);
+                                                        setAnswer("");
+                                                    }}
+                                                    className="py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-sm tracking-wide transition-all border border-white/10 flex items-center justify-center gap-2"
+                                                >
+                                                    <RefreshCw className="w-4 h-4" />
+                                                    Answer Again
+                                                </button>
+                                                <button 
+                                                    onClick={handleNextQuestion}
+                                                    className="py-3.5 rounded-xl bg-white hover:bg-gray-200 text-black font-bold text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2"
+                                                >
+                                                    Next Question
+                                                    <ChevronRight className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="relative">
+                                                <textarea 
+                                                    value={answer}
+                                                    onChange={(e) => setAnswer(e.target.value)}
+                                                    placeholder="Type your answer here..."
+                                                    disabled={isEvaluating}
+                                                    className="w-full h-32 bg-black/40 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-neon-green/50 resize-none transition-all disabled:opacity-50"
+                                                />
+                                                <button className="absolute bottom-3 right-3 p-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-neon-green transition-colors disabled:opacity-50">
+                                                    <Mic className="w-5 h-5" />
+                                                </button>
+                                            </div>
+                                            <button 
+                                                onClick={handleSubmitAnswer}
+                                                disabled={!answer.trim() || isEvaluating}
+                                                className="w-full py-3.5 rounded-xl bg-neon-green hover:bg-[#5ab33e] text-black font-bold text-sm tracking-wide transition-all shadow-lg shadow-neon-green/20 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                            >
+                                                {isEvaluating ? (
+                                                    <>
+                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                        EVALUATING...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Send className="w-4 h-4" />
+                                                        SUBMIT ANSWER
+                                                    </>
+                                                )}
+                                            </button>
+                                        </>
+                                    )}
                                     </div>
-                                    <button 
-                                        onClick={handleSubmitAnswer}
-                                        disabled={!answer.trim()}
-                                        className="w-full py-3.5 rounded-xl bg-neon-green hover:bg-[#5ab33e] text-black font-bold text-sm tracking-wide transition-all shadow-lg shadow-neon-green/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                    >
-                                        <Send className="w-4 h-4" />
-                                        SUBMIT ANSWER
-                                    </button>
-                                </div>
                              </div>
                            ) : (
                              <div className="text-center text-gray-400 py-10">

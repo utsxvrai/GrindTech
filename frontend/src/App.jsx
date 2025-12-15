@@ -4,6 +4,7 @@ import AuthPage from './pages/AuthPage'
 import NodeJsPage from './pages/NodeJsPage'
 import AdminLayout from './pages/admin/AdminLayout'
 import AdminUsersPage from './pages/admin/AdminUsersPage'
+import PaymentPage from './pages/PaymentPage'
 import AdminTechPage from './pages/admin/AdminTechPage'
 import AdminTopicPage from './pages/admin/AdminTopicPage'
 import AdminQuestionPage from './pages/admin/AdminQuestionPage'
@@ -52,6 +53,7 @@ function App() {
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/auth/sso-callback" element={<AuthenticateWithRedirectCallback />} />
         <Route path="/preparation/nodejs" element={<NodeJsPage />} />
+        <Route path="/payment" element={<PaymentPage />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>
