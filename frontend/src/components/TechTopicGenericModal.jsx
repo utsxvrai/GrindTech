@@ -365,11 +365,22 @@ export default function TechTopicGenericModal({
                                                                         className="w-full h-32 bg-black/40 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-neon-green/50 resize-none transition-all disabled:opacity-50"
                                                                     />
                                                                     <button 
-                                        onClick={isRecording ? stopRecording : startRecording}
+                                        onClick={() => {
+                                            if (!isPro) {
+                                                navigate('/payment');
+                                                return;
+                                            }
+                                            isRecording ? stopRecording() : startRecording();
+                                        }}
                                         className={`absolute bottom-3 right-3 p-2 rounded-lg transition-colors
-                                            ${isRecording ? "bg-red-500/20 text-red-500" : "bg-white/5 text-gray-400 hover:text-neon-green"}`}
+                                            ${!isPro 
+                                                ? "bg-amber-500/20 text-amber-500 hover:bg-amber-500/30" 
+                                                : isRecording 
+                                                    ? "bg-red-500/20 text-red-500" 
+                                                    : "bg-white/5 text-gray-400 hover:text-neon-green"
+                                            }`}
                                     >
-                                        {isRecording ? <X className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                                        {!isPro ? <Lock className="w-5 h-5" /> : (isRecording ? <X className="w-5 h-5" /> : <Mic className="w-5 h-5" />)}
                                     </button>
                                                                 </div>
                                                                 <button 
