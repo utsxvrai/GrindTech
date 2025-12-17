@@ -7,6 +7,8 @@ const elevenLabsClient = new ElevenLabsClient({
 async function createSTTSession(onTranscript) {
   const connection = await elevenLabsClient.speechToText.realtime.connect({
     modelId: "scribe_v2_realtime",
+    audioFormat: "pcm_16000",
+    sampleRate: 16000,
     includeTimestamps: true,
   });
 

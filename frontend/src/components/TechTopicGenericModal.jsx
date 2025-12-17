@@ -1,9 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Hexagon, X, FileText, Zap, Loader2, Lock, RefreshCw, ChevronRight, Mic, Send } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import TechPageLoader from './TechPageLoader';
+import { io } from "socket.io-client";
 
 export default function TechTopicGenericModal({ 
     isOpen, 
@@ -21,6 +22,100 @@ export default function TechTopicGenericModal({
     const [evaluationResult, setEvaluationResult] = useState(null);
     const [isEvaluating, setIsEvaluating] = useState(false);
 
+    // Socket & STT State
+    const [socket, setSocket] = useState(null);
+    const [isRecording, setIsRecording] = useState(false);
+    const [partialTranscript, setPartialTranscript] = useState("");
+    const [audioContext, setAudioContext] = useState(null);
+    const [mediaStream, setMediaStream] = useState(null);
+    const [processor, setProcessor] = useState(null);
+
+    // Initialize Socket
+    useEffect(() => {
+        const s = io( import.meta.env.VITE_BACKEND_URL, {
+            transports: ["websocket"],
+        });
+
+        s.on("stt-transcript", ({ type, data }) => {
+            if (!data?.text) return;
+
+            if (type === "partial") {
+                 setPartialTranscript(data.text);
+            }
+
+            if (type === "final") {
+                setAnswer(prev => {
+                    const separator = prev.trim() ? " " : "";
+                    return prev + separator + data.text;
+                });
+                setPartialTranscript("");
+            }
+        });
+
+        setSocket(s);
+
+        return () => {
+            if (s) s.disconnect();
+        };
+    }, []);
+
+    const startRecording = async () => {
+        if (!socket || isRecording) return;
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const context = new (window.AudioContext || window.webkitAudioContext)({
+                sampleRate: 16000,
+            });
+            const source = context.createMediaStreamSource(stream);
+            const scriptProcessor = context.createScriptProcessor(4096, 1, 1);
+
+            source.connect(scriptProcessor);
+            scriptProcessor.connect(context.destination);
+
+            socket.emit("start-stt");
+            setIsRecording(true);
+
+            scriptProcessor.onaudioprocess = (e) => {
+                const inputData = e.inputBuffer.getChannelData(0);
+                const pcmData = new Int16Array(inputData.length);
+                
+                for (let i = 0; i < inputData.length; i++) {
+                   const s = Math.max(-1, Math.min(1, inputData[i]));
+                   pcmData[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+                }
+                
+                socket.emit("audio-chunk", pcmData.buffer);
+            };
+
+            setAudioContext(context);
+            setMediaStream(stream);
+            setProcessor(scriptProcessor);
+        } catch (error) {
+            console.error("Error accessing microphone:", error);
+        }
+    };
+
+    const stopRecording = () => {
+        if (processor && audioContext) {
+            processor.disconnect();
+            audioContext.close();
+        }
+        
+        if (mediaStream) {
+             mediaStream.getTracks().forEach(track => track.stop());
+        }
+
+        if (socket) {
+            socket.emit("stop-stt");
+        }
+
+        setIsRecording(false);
+        setAudioContext(null);
+        setMediaStream(null);
+        setProcessor(null);
+    };
+
     // Reset state when topic changes or modal opens (handled by key or effect in parent potentially, 
     // but good to have reset logic here if needed. 
     // For now, we rely on the component being unmounted/remounted or 'isOpen' control if we wanted to reset.
@@ -30,19 +125,27 @@ export default function TechTopicGenericModal({
         setDialogStep(1);
         setCurrentQuestionIndex(0);
         setAnswer("");
+        setPartialTranscript("");
         setEvaluationResult(null);
     };
 
     const handleNextQuestion = () => {
         setEvaluationResult(null);
         setAnswer("");
+        setPartialTranscript("");
         if (topic?.questions && currentQuestionIndex < topic.questions.length - 1) {
             setCurrentQuestionIndex(prev => prev + 1);
         }
     };
 
+    const getCombinedAnswer = () => {
+        if (!partialTranscript) return answer;
+        return answer + (answer.trim() ? " " : "") + partialTranscript;
+    };
+
     const handleSubmitAnswer = async () => {
-        if (!answer.trim()) return;
+        const finalAnswer = getCombinedAnswer();
+        if (!finalAnswer.trim()) return;
 
         setIsEvaluating(true);
         setEvaluationResult(null);
@@ -53,7 +156,7 @@ export default function TechTopicGenericModal({
             const response = await api.post('/evaluation/evaluate', {
                 tech: techName,
                 question: currentQuestion.question,
-                answer: answer
+                answer: finalAnswer
             });
 
             if (response.data) {
@@ -252,19 +355,26 @@ export default function TechTopicGenericModal({
                                                             <>
                                                                 <div className="relative">
                                                                     <textarea 
-                                                                        value={answer}
-                                                                        onChange={(e) => setAnswer(e.target.value)}
+                                                                        value={getCombinedAnswer()}
+                                                                        onChange={(e) => {
+                                                                            setAnswer(e.target.value);
+                                                                            setPartialTranscript("");
+                                                                        }}
                                                                         placeholder="Type your answer here..."
                                                                         disabled={isEvaluating}
                                                                         className="w-full h-32 bg-black/40 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-neon-green/50 resize-none transition-all disabled:opacity-50"
                                                                     />
-                                                                    <button className="absolute bottom-3 right-3 p-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-neon-green transition-colors disabled:opacity-50">
-                                                                        <Mic className="w-5 h-5" />
-                                                                    </button>
+                                                                    <button 
+                                        onClick={isRecording ? stopRecording : startRecording}
+                                        className={`absolute bottom-3 right-3 p-2 rounded-lg transition-colors
+                                            ${isRecording ? "bg-red-500/20 text-red-500" : "bg-white/5 text-gray-400 hover:text-neon-green"}`}
+                                    >
+                                        {isRecording ? <X className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                                    </button>
                                                                 </div>
                                                                 <button 
                                                                     onClick={handleSubmitAnswer}
-                                                                    disabled={!answer.trim() || isEvaluating}
+                                                                    disabled={!getCombinedAnswer().trim() || isEvaluating}
                                                                     className="w-full py-3.5 rounded-xl bg-neon-green hover:bg-[#5ab33e] text-black font-bold text-sm tracking-wide transition-all shadow-lg shadow-neon-green/20 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                                                 >
                                                                     {isEvaluating ? (
