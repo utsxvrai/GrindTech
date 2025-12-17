@@ -4,5 +4,6 @@ module.exports = {
     TopicService : require("./topic-service"),
     ResourceService : require("./resource-service"),
     QuestionService : require("./question-service"),
-    EvaluationService : require("./evaluation-service")
+    EvaluationService : require("./evaluation-service"),
+    STTService : require("./stt-service")
 }

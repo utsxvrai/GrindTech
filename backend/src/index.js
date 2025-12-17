@@ -1,12 +1,16 @@
 const dotenv = require("dotenv");
 dotenv.config();
+
 const express = require("express");
 const cors = require("cors");
-const routes = require("./routes");
-const prisma = require("./config/db-config"); 
+const http = require("http");
 
+const routes = require("./routes");
+const prisma = require("./config/db-config");
+const { initSocket } = require("./socket");
 
 const app = express();
+const server = http.createServer(app);
 
 /* ---------- CORS ---------- */
 app.use(
@@ -46,12 +50,13 @@ async function warmDB() {
   }
 }
 
-
+/* ---------- SOCKET.IO ---------- */
+initSocket(server);
 
 /* ---------- START SERVER ---------- */
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 
   if (process.env.NODE_ENV === "production") {
