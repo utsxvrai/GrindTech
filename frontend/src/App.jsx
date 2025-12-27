@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import AuthPage from './pages/AuthPage'
 import NodeJsPage from './pages/NodeJsPage'
+import DbmsPage from './pages/DbmsPage'
 import AdminLayout from './pages/admin/AdminLayout'
 import AdminUsersPage from './pages/admin/AdminUsersPage'
 import PaymentPage from './pages/PaymentPage'
@@ -53,6 +54,7 @@ function App() {
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/auth/sso-callback" element={<AuthenticateWithRedirectCallback />} />
         <Route path="/preparation/nodejs" element={<NodeJsPage />} />
+        <Route path="/preparation/dbms" element={<DbmsPage />} />
         <Route path="/payment" element={<PaymentPage />} />
 
         {/* Admin Routes */}

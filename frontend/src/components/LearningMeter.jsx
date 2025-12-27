@@ -1,7 +1,22 @@
 import { motion } from 'framer-motion';
 import { TrendingUp } from 'lucide-react';
 
-export default function LearningMeter({ progress = 0 }) {
+export default function LearningMeter({ progress = 0, accentColor = 'neon-green' }) {
+  const colorMap = {
+    'neon-green': {
+      text: 'text-neon-green',
+      bar: 'bg-neon-green',
+      shadow: 'shadow-[0_0_20px_rgba(108,194,74,0.6)]'
+    },
+    'blue-500': {
+      text: 'text-blue-500',
+      bar: 'bg-blue-500',
+      shadow: 'shadow-[0_0_20px_rgba(59,130,246,0.6)]'
+    }
+  };
+
+  const colors = colorMap[accentColor] || colorMap['neon-green'];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -11,7 +26,7 @@ export default function LearningMeter({ progress = 0 }) {
     >
       <div className="flex justify-between items-end mb-2">
         <div className="flex flex-col">
-          <div className="flex items-center gap-2 text-neon-green mb-1">
+          <div className={`flex items-center gap-2 ${colors.text} mb-1`}>
             <TrendingUp className="w-4 h-4" />
             <span className="font-mono text-sm tracking-widest uppercase font-bold">
               LEARNING PROGRESS
@@ -31,7 +46,7 @@ export default function LearningMeter({ progress = 0 }) {
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 1.5, delay: 0.5, ease: "circOut" }}
-          className="h-full bg-neon-green shadow-[0_0_20px_rgba(108,194,74,0.6)] relative"
+          className={`h-full ${colors.bar} ${colors.shadow} relative`}
         >
           {/* Shimmer Effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent w-full -translate-x-full animate-[shimmer_2s_infinite]" />

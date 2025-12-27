@@ -37,8 +37,27 @@ const quotes = [
   }
 ];
 
-export default function TechPageLoader() {
+export default function TechPageLoader({ accentColor = 'neon-green' }) {
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+
+  const colorMap = {
+    'neon-green': {
+      bg: 'bg-neon-green/5',
+      border: 'border-neon-green/30',
+      text: 'text-neon-green',
+      bar: 'bg-neon-green',
+      glow: 'bg-neon-green/20'
+    },
+    'blue-500': {
+      bg: 'bg-blue-500/5',
+      border: 'border-blue-500/30',
+      text: 'text-blue-500',
+      bar: 'bg-blue-500',
+      glow: 'bg-blue-500/20'
+    }
+  };
+
+  const colors = colorMap[accentColor] || colorMap['neon-green'];
 
   useEffect(() => {
     // Randomize start quote
@@ -56,7 +75,7 @@ export default function TechPageLoader() {
     <div className="flex flex-col items-center justify-center w-full h-full min-h-[400px] relative overflow-hidden">
         {/* Ambient Background Effects */}
         <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-neon-green/5 rounded-full blur-[100px] animate-pulse" />
+            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 ${colors.bg} rounded-full blur-[100px] animate-pulse`} />
         </div>
 
         <div className="z-10 flex flex-col items-center max-w-2xl px-6 text-center">
@@ -72,10 +91,10 @@ export default function TechPageLoader() {
                 }}
                 className="mb-8 relative"
             >
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-neon-green/20 to-transparent border border-neon-green/30 flex items-center justify-center backdrop-blur-sm">
-                    <Sparkles className="w-8 h-8 text-neon-green" />
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border ${colors.border} flex items-center justify-center backdrop-blur-sm`}>
+                    <Sparkles className={`w-8 h-8 ${colors.text}`} />
                 </div>
-                <div className="absolute -inset-2 bg-neon-green/20 blur-xl rounded-full -z-10" />
+                <div className={`absolute -inset-2 ${colors.glow} blur-xl rounded-full -z-10`} />
             </motion.div>
 
             {/* Quote container with AnimatePresence for smooth transitions */}
@@ -94,11 +113,11 @@ export default function TechPageLoader() {
                             "{quotes[currentQuoteIndex].text}"
                         </p>
                         <div className="flex items-center gap-3 mt-4">
-                            <div className="h-[1px] w-8 bg-neon-green/50" />
-                            <span className="text-sm font-bold text-neon-green uppercase tracking-widest">
+                            <div className="h-[1px] w-8 bg-gray-600" />
+                            <span className={`text-sm font-bold ${colors.text} uppercase tracking-widest`}>
                                 {quotes[currentQuoteIndex].author}
                             </span>
-                            <div className="h-[1px] w-8 bg-neon-green/50" />
+                            <div className="h-[1px] w-8 bg-gray-600" />
                         </div>
                     </motion.div>
                 </AnimatePresence>
@@ -113,7 +132,7 @@ export default function TechPageLoader() {
             >
                 <div className="w-48 h-1 bg-white/5 rounded-full overflow-hidden">
                     <motion.div 
-                        className="h-full bg-neon-green"
+                        className={`h-full ${colors.bar}`}
                         animate={{ x: ["-100%", "100%"] }}
                         transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                     />

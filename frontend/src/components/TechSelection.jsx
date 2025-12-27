@@ -37,15 +37,15 @@ const technologies = [
     hover: 'hover:border-yellow-500/50'
   },
   {
-    id: 'system-design',
-    name: 'System Design',
+    id: 'dbms',
+    name: 'DBMS',
     icon: Database,
-    description: 'Architect scalable distributed systems',
-    available: false,
-    color: 'text-purple-500',
-    bg: 'bg-purple-500/10',
-    border: 'border-purple-500/20',
-    hover: 'hover:border-purple-500/50'
+    description: 'Master core database management system concepts',
+    available: true,
+    color: 'text-blue-500',
+    bg: 'bg-blue-500/10',
+    border: 'border-blue-500/20',
+    hover: 'hover:border-blue-500/50'
   },
   {
     id: 'cpp',
@@ -77,6 +77,8 @@ export default function TechSelection({ onClose }) {
   const handleTechClick = (techId) => {
     if (techId === 'nodejs') {
       navigate('/preparation/nodejs');
+    } else if (techId === 'dbms') {
+      navigate('/preparation/dbms');
     }
   };
 
