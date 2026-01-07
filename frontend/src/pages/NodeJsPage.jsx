@@ -303,6 +303,7 @@ fill="currentColor" viewBox="0 0 24 24" >
         topic={selectedTopic}
         techName="Node.Js"
         isPro={isPro}
+        accentColor="neon-green"
       />
     </div>
   );

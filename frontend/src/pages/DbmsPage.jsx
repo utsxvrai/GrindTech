@@ -267,6 +267,7 @@ export default function DbmsPage() {
         topic={selectedTopic}
         techName="DBMS"
         isPro={isPro}
+        accentColor="blue-500"
       />
     </div>
   );

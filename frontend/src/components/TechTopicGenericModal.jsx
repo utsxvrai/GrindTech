@@ -1,9 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Hexagon, X, FileText, Zap, Loader2, Lock, RefreshCw, ChevronRight, Mic, Send } from 'lucide-react';
+import { Hexagon, X, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import TechPageLoader from './TechPageLoader';
+import ResourceCard from './ResourceCard';
+import QuestionCard from './QuestionCard';
 import { io } from "socket.io-client";
 
 export default function TechTopicGenericModal({ 
@@ -11,7 +13,8 @@ export default function TechTopicGenericModal({
     onClose, 
     topic, 
     techName = 'Node.Js', 
-    isPro = false 
+    isPro = false,
+    accentColor = 'neon-green'
 }) {
     const navigate = useNavigate();
     
@@ -129,6 +132,14 @@ export default function TechTopicGenericModal({
         setEvaluationResult(null);
     };
 
+    const handleBackToResources = () => {
+        setDialogStep(0);
+        setCurrentQuestionIndex(0);
+        setAnswer("");
+        setPartialTranscript("");
+        setEvaluationResult(null);
+    };
+
     const handleNextQuestion = () => {
         setEvaluationResult(null);
         setAnswer("");
@@ -199,7 +210,7 @@ export default function TechTopicGenericModal({
                         {/* Dialog Header */}
                         <div className="p-6 border-b border-white/5 flex justify-between items-center bg-zinc-900/50">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-lg bg-neon-green/10 text-neon-green">
+                                <div className={`p-2 rounded-lg ${accentColor === 'blue-500' ? 'bg-blue-500/10 text-blue-500' : 'bg-neon-green/10 text-neon-green'}`}>
                                     <Hexagon className="w-5 h-5" />
                                 </div>
                                 <div>
@@ -225,191 +236,33 @@ export default function TechTopicGenericModal({
                                 <>
                                     {dialogStep === 0 ? (
                                         /* Step 1: Resources */
-                                        <div className="flex flex-col gap-6">
-                                            <div className="space-y-4">
-                                                <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                                                    <FileText className="w-4 h-4 text-neon-green" />
-                                                    Learning Resources
-                                                </h3>
-                                                <div className="grid gap-3">
-                                                    {topic.resources && topic.resources.length > 0 ? (
-                                                        topic.resources.map((res, i) => (
-                                                            <a 
-                                                                key={i} 
-                                                                href={res.resource} 
-                                                                target="_blank" 
-                                                                rel="noopener noreferrer"
-                                                                className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-neon-green/30 hover:bg-white/10 transition-all group flex items-start gap-4"
-                                                            >
-                                                                <div className="shrink-0 w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center text-gray-400 group-hover:text-neon-green transition-colors">
-                                                                    <span className="text-xs font-bold">{i + 1}</span>
-                                                                </div>
-                                                                <div>
-                                                                    <h4 className="font-semibold text-white group-hover:text-neon-green transition-colors">{res.name}</h4>
-                                                                    <p className="text-xs text-gray-400 mt-1 line-clamp-1">{res.resource}</p>
-                                                                </div>
-                                                            </a>
-                                                        ))
-                                                    ) : (
-                                                        <p className="text-gray-500 text-sm">No resources available yet.</p>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <ResourceCard 
+                                            resources={topic.resources} 
+                                            accentColor={accentColor}
+                                        />
                                     ) : (
                                         /* Step 2: Questions */
-                                        <div className="flex flex-col h-full">
-                                            <div className="flex items-center justify-between mb-6">
-                                                <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider">
-                                                    Question {currentQuestionIndex + 1} of {topic.questions?.length || 0}
-                                                </h3>
-                                                <div className="h-1.5 w-32 bg-gray-800 rounded-full overflow-hidden">
-                                                    <div 
-                                                        className="h-full bg-neon-green transition-all duration-300"
-                                                        style={{ width: `${((currentQuestionIndex + 1) / (topic.questions?.length || 1)) * 100}%` }}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            {topic.questions && topic.questions.length > 0 ? (
-                                                <div className="flex-grow flex flex-col gap-6">
-                                                    <div className="p-5 rounded-2xl bg-zinc-900/50 border border-white/5 shadow-inner min-h-[120px] flex items-center justify-center text-center">
-                                                        <p className="text-lg font-medium text-white/90 leading-relaxed">
-                                                            {topic.questions[currentQuestionIndex].question}
-                                                        </p>
-                                                    </div>
-
-                                                    <div className="mt-auto space-y-4">
-                                                        {evaluationResult ? (
-                                                            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                                                <div className={`p-4 rounded-xl border ${evaluationResult.score >= 7 ? 'bg-green-500/10 border-green-500/30' : 'bg-yellow-500/10 border-yellow-500/30'}`}>
-                                                                    <div className="flex items-center gap-3 mb-2">
-                                                                        <div className={`p-1.5 rounded-full ${evaluationResult.score >= 7 ? 'bg-green-500/20 text-green-500' : 'bg-yellow-500/20 text-yellow-500'}`}>
-                                                                            {evaluationResult.score >= 7 ? <Zap className="w-4 h-4" /> : <Loader2 className="w-4 h-4" />}
-                                                                        </div>
-                                                                        <span className={`font-bold ${evaluationResult.score >= 7 ? 'text-green-500' : 'text-yellow-500'}`}>
-                                                                            Score: {evaluationResult.score}/10
-                                                                        </span>
-                                                                    </div>
-                                                                    <p className="text-sm text-gray-300 leading-relaxed mb-4">
-                                                                        {evaluationResult.feedback}
-                                                                    </p>
-                                                                    
-                                                                    {/* Complete Feedback / Ideal Answer Section */}
-                                                                    <div className="mt-4 pt-4 border-t border-white/5">
-                                                                        <div className="flex items-center justify-between mb-3">
-                                                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                                                                                <Zap className="w-3 h-3 text-neon-green" />
-                                                                                Ideal Answer
-                                                                            </h4>
-                                                                            {!isPro && (
-                                                                                <span className="text-[10px] font-bold bg-zinc-800 text-gray-400 px-2 py-0.5 rounded flex items-center gap-1">
-                                                                                    <Lock className="w-3 h-3" /> PRO ONLY
-                                                                                </span>
-                                                                            )}
-                                                                        </div>
-                                                                        
-                                                                        <div className="relative rounded-lg overflow-hidden bg-black/20">
-                                                                            {isPro ? (
-                                                                                <div className="p-3 text-sm text-gray-300 bg-white/5">
-                                                                                    {evaluationResult.idealShortAnswer || "No ideal answer available."}
-                                                                                </div>
-                                                                            ) : (
-                                                                                <div onClick={() => navigate('/payment')} className="relative p-3 cursor-pointer group">
-                                                                                    <div className="blur-sm select-none text-sm text-gray-500">
-                                                                                        {evaluationResult.idealShortAnswer || "This is a sample ideal answer that is blurred for free users. Upgrade to see the full expert answer."}
-                                                                                    </div>
-                                                                                    <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
-                                                                                        <div className="bg-zinc-900 border border-white/10 px-3 py-1.5 rounded-lg shadow-xl flex items-center gap-2 transform group-hover:scale-105 transition-transform">
-                                                                                            <Lock className="w-3 h-3 text-neon-green" />
-                                                                                            <span className="text-xs font-bold text-white">Unlock Answer</span>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            )}
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                                <div className="grid grid-cols-2 gap-3">
-                                                                    <button 
-                                                                        onClick={() => {
-                                                                            setEvaluationResult(null);
-                                                                            setAnswer("");
-                                                                        }}
-                                                                        className="py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-sm tracking-wide transition-all border border-white/10 flex items-center justify-center gap-2"
-                                                                    >
-                                                                        <RefreshCw className="w-4 h-4" />
-                                                                        Answer Again
-                                                                    </button>
-                                                                    <button 
-                                                                        onClick={handleNextQuestion}
-                                                                        className="py-3.5 rounded-xl bg-white hover:bg-gray-200 text-black font-bold text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2"
-                                                                    >
-                                                                        Next Question
-                                                                        <ChevronRight className="w-4 h-4" />
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        ) : (
-                                                            <>
-                                                                <div className="relative">
-                                                                    <textarea 
-                                                                        value={getCombinedAnswer()}
-                                                                        onChange={(e) => {
-                                                                            setAnswer(e.target.value);
-                                                                            setPartialTranscript("");
-                                                                        }}
-                                                                        placeholder="Type your answer here..."
-                                                                        disabled={isEvaluating}
-                                                                        className="w-full h-32 bg-black/40 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-neon-green/50 resize-none transition-all disabled:opacity-50"
-                                                                    />
-                                                                    <button 
-                                        onClick={() => {
-                                            if (!isPro) {
-                                                navigate('/payment');
-                                                return;
-                                            }
-                                            isRecording ? stopRecording() : startRecording();
-                                        }}
-                                        className={`absolute bottom-3 right-3 p-2 rounded-lg transition-colors
-                                            ${!isPro 
-                                                ? "bg-amber-500/20 text-amber-500 hover:bg-amber-500/30" 
-                                                : isRecording 
-                                                    ? "bg-red-500/20 text-red-500" 
-                                                    : "bg-white/5 text-gray-400 hover:text-neon-green"
-                                            }`}
-                                    >
-                                        {!isPro ? <Lock className="w-5 h-5" /> : (isRecording ? <X className="w-5 h-5" /> : <Mic className="w-5 h-5" />)}
-                                    </button>
-                                                                </div>
-                                                                <button 
-                                                                    onClick={handleSubmitAnswer}
-                                                                    disabled={!getCombinedAnswer().trim() || isEvaluating}
-                                                                    className="w-full py-3.5 rounded-xl bg-neon-green hover:bg-[#5ab33e] text-black font-bold text-sm tracking-wide transition-all shadow-lg shadow-neon-green/20 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                                                >
-                                                                    {isEvaluating ? (
-                                                                        <>
-                                                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                                                            EVALUATING...
-                                                                        </>
-                                                                    ) : (
-                                                                        <>
-                                                                            <Send className="w-4 h-4" />
-                                                                            SUBMIT ANSWER
-                                                                        </>
-                                                                    )}
-                                                                </button>
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="text-center text-gray-400 py-10">
-                                                    No questions available.
-                                                </div>
-                                            )}
-                                        </div>
+                                        <QuestionCard
+                                            questions={topic.questions}
+                                            currentQuestionIndex={currentQuestionIndex}
+                                            evaluationResult={evaluationResult}
+                                            isEvaluating={isEvaluating}
+                                            isRecording={isRecording}
+                                            partialTranscript={partialTranscript}
+                                            isPro={isPro}
+                                            accentColor={accentColor}
+                                            answer={answer}
+                                            onAnswerChange={setAnswer}
+                                            onStartRecording={startRecording}
+                                            onStopRecording={stopRecording}
+                                            onSubmitAnswer={handleSubmitAnswer}
+                                            onAnswerAgain={() => {
+                                                setEvaluationResult(null);
+                                                setAnswer("");
+                                            }}
+                                            onNextQuestion={handleNextQuestion}
+                                            onBackToResources={handleBackToResources}
+                                        />
                                     )}
                                 </>
                             )}
@@ -420,7 +273,7 @@ export default function TechTopicGenericModal({
                             <div className="p-6 border-t border-white/5 bg-zinc-900/50 flex justify-end">
                                 <button 
                                     onClick={handleStartPrepare}
-                                    className="px-6 py-3 rounded-xl bg-neon-green hover:bg-[#5ab33e] text-black font-bold text-sm tracking-wide transition-all shadow-lg shadow-neon-green/20 flex items-center gap-2"
+                                    className={`px-6 py-3 rounded-xl ${accentColor === 'blue-500' ? 'bg-blue-500 hover:bg-blue-600 shadow-blue-500/20' : 'bg-neon-green hover:bg-[#5ab33e] shadow-neon-green/20'} ${accentColor === 'blue-500' ? 'text-white' : 'text-black'} font-bold text-sm tracking-wide transition-all shadow-lg flex items-center gap-2`}
                                 >
                                     Let's Prepare
                                     <ChevronRight className="w-4 h-4" />

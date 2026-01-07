@@ -110,8 +110,17 @@ async function getTopicsByTechId(techId){
                 data: []
             }
         }
-        // Sort by name using numeric comparison to handle "basic 0-1" vs "basic 10-1"
-        topics.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+        
+        // Sort by trailing number for DBMS topics (e.g., "Introduction to DBMS 1" -> 1)
+        topics.sort((a, b) => {
+            const aMatch = a.name.match(/\s(\d+)$/);
+            const bMatch = b.name.match(/\s(\d+)$/);
+            
+            const aNum = aMatch ? parseInt(aMatch[1], 10) : 0;
+            const bNum = bMatch ? parseInt(bMatch[1], 10) : 0;
+            
+            return aNum - bNum;
+        });
         
         return{
             status : StatusCodes.OK,
