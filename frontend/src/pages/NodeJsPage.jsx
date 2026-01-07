@@ -81,9 +81,11 @@ export default function NodeJsPage() {
   }, []);
 
   const handleCardClick = (module, index) => {
-    // Check lock status based on index and user progress
-    const isLocked = index > (user?.publicMetadata?.levelsDone || user?.levelsDone || 0);
-    if (isLocked) return;
+    // Pro users can access all cards, free users have level-based restrictions
+    if (!isPro) {
+      const isLocked = index > (user?.publicMetadata?.levelsDone || user?.levelsDone || 0);
+      if (isLocked) return;
+    }
 
     setSelectedTopic(module);
   };
@@ -255,20 +257,9 @@ fill="currentColor" viewBox="0 0 24 24" >
             <div className="flex flex-wrap justify-center gap-6 w-full">
               {fetchedTopics.map((module, index) => {
                 const title = getCleanTopicName(module.name);
-                const userLevel = user?.publicMetadata?.levelsDone || user?.levelsDone || 0; // Use clerk metadata if available or user obj
-                // Note: user object from useUser() might not have custom fields directly on root. 
-                // Usually it's in publicMetadata. But checking both for safety as per schema earlier.
-                // Assuming standard Clerk integration, custom attributes might be in publicMetadata.
-                // Schema has 'levelsDone' in User model, which syncs to Clerk? Or just local DB?
-                // If local DB, we might need to fetch user status separately. 
-                // For now, assuming user.levelsDone is available or defaulting to 0. 
-                // Wait, useUser gives Clerk user object. It doesn't have levelsDone unless added to publicMetadata.
-                // If it's not there, everything is locked except level 0.
-                
-                // Let's assume for now user starts at 0.
-                const isLocked = index > 0; // For temporary testing, unlock only first.
-                // Actually, let's unlock index 0 always.
-                // If we want real sync, we need to fetch user data from our backend using the Clerk ID.
+                const userLevel = user?.publicMetadata?.levelsDone || user?.levelsDone || 0;
+                // Pro users can access all levels, free users have level-based locking
+                const isLocked = isPro ? false : index > userLevel;
                 
                 return (
                   <motion.div

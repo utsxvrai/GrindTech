@@ -69,8 +69,11 @@ export default function DbmsPage() {
   }, []);
 
   const handleCardClick = (module, index) => {
-    const isLocked = index > (user?.publicMetadata?.levelsDone || user?.levelsDone || 0);
-    if (isLocked) return;
+    // Pro users can access all cards, free users have level-based restrictions
+    if (!isPro) {
+      const isLocked = index > (user?.publicMetadata?.levelsDone || user?.levelsDone || 0);
+      if (isLocked) return;
+    }
 
     setSelectedTopic(module);
   };
@@ -232,7 +235,8 @@ export default function DbmsPage() {
               {fetchedTopics.map((module, index) => {
                 const title = getCleanTopicName(module.name);
                 const userLevel = user?.publicMetadata?.levelsDone || user?.levelsDone || 0;
-                const isLocked = index > 0; // Temporary: only unlock level 0
+                // Pro users can access all levels, free users have level-based locking
+                const isLocked = isPro ? false : index > userLevel;
                 
                 return (
                   <motion.div
