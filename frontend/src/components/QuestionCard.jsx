@@ -65,27 +65,27 @@ export default function QuestionCard({
     }
 
     return (
-        <div className="h-full grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* LEFT SECTION: Question + Input (2/3 width) */}
-            <div className="lg:col-span-2 flex flex-col h-full">
+        <div className="h-full grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            {/* LEFT SECTION: Question + Input (2/3 width on xl+) */}
+            <div className="xl:col-span-2 flex flex-col h-full">
                 {/* Question Header with Progress */}
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 lg:mb-8 gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4">
                         <button
                             onClick={onBackToResources}
-                            className="p-3 rounded-xl hover:bg-white/10 text-gray-400 hover:text-white transition-all hover:scale-105"
+                            className="p-2 sm:p-3 rounded-xl hover:bg-white/10 text-gray-400 hover:text-white transition-all hover:scale-105 flex-shrink-0"
                         >
-                            <ChevronLeft className="w-5 h-5" />
+                            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
-                        <div>
-                            <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider">
+                        <div className="min-w-0 flex-1">
+                            <h3 className="text-xs sm:text-sm font-bold text-gray-300 uppercase tracking-wider truncate">
                                 Question {currentQuestionIndex + 1} of {questions.length}
                             </h3>
-                            <p className="text-xs text-gray-500 mt-1">Technical Assessment</p>
+                            <p className="text-xs text-gray-500 mt-1 hidden sm:block">Technical Assessment</p>
                         </div>
                     </div>
-                    <div className="flex flex-col items-end gap-2">
-                        <div className="h-2 w-32 bg-gray-800 rounded-full overflow-hidden">
+                    <div className="flex flex-col items-start sm:items-end gap-2 flex-shrink-0">
+                        <div className="h-2 w-24 sm:w-32 lg:w-40 bg-gray-800 rounded-full overflow-hidden">
                             <div
                                 className={`h-full ${colors.bar} transition-all duration-500`}
                                 style={{ width: `${((currentQuestionIndex + 1) / (questions.length || 1)) * 100}%` }}
@@ -99,9 +99,9 @@ export default function QuestionCard({
 
                 {/* Question Display */}
                 <div className="mb-2">
-                    <div className="p-8 rounded-3xl bg-gradient-to-br from-zinc-900/80 to-black/60 border border-white/10 shadow-2xl max-w-4xl w-full backdrop-blur-sm">
+                    <div className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-zinc-900/80 to-black/60 border border-white/10 shadow-2xl max-w-4xl w-full backdrop-blur-sm">
                         <div className="text-center">
-                            <p className="text-xl md:text-xl font-medium text-white leading-relaxed">
+                            <p className="text-lg sm:text-xl lg:text-2xl font-medium text-white leading-relaxed">
                                 {questions[currentQuestionIndex].question}
                             </p>
                         </div>
@@ -120,7 +120,7 @@ export default function QuestionCard({
                             onChange={(e) => onAnswerChange(e.target.value)}
                             placeholder="Start typing your answer here... 💭"
                             disabled={isEvaluating}
-                            className={`w-full h-64 bg-gradient-to-br from-zinc-900/80 to-black/60 border-2 ${colors.border} rounded-3xl p-6 text-white placeholder:text-gray-500 focus:outline-none focus:ring-4 ${colors.focus} resize-none transition-all disabled:opacity-50 shadow-2xl backdrop-blur-sm text-base leading-relaxed`}
+                            className={`w-full h-48 sm:h-56 lg:h-64 bg-white/5 border-2 border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 resize-none transition-all disabled:opacity-50 backdrop-blur-sm text-sm sm:text-base leading-relaxed hover:bg-white/10 hover:border-white/30`}
                         />
 
                         {/* Microphone Button Inside Input */}
@@ -132,7 +132,7 @@ export default function QuestionCard({
                                 }
                                 isRecording ? onStopRecording() : onStartRecording();
                             }}
-                            className={`absolute bottom-4 right-4 p-4 rounded-2xl transition-all shadow-xl
+                            className={`absolute bottom-3 right-3 sm:bottom-4 sm:right-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all shadow-xl
                                 ${!isPro
                                     ? "bg-amber-500/20 text-amber-500 hover:bg-amber-500/30 border border-amber-500/30"
                                     : isRecording
@@ -140,15 +140,15 @@ export default function QuestionCard({
                                         : `bg-zinc-800/80 text-gray-400 hover:text-white border border-white/20 hover:bg-zinc-700/80 hover:border-white/30`
                                 }`}
                         >
-                            {!isPro ? <Lock className="w-6 h-6" /> : (isRecording ? <X className="w-6 h-6" /> : <Mic className="w-6 h-6" />)}
+                            {!isPro ? <Lock className="w-4 h-4 sm:w-5 sm:h-5" /> : (isRecording ? <X className="w-4 h-4 sm:w-5 sm:h-5" /> : <Mic className="w-4 h-4 sm:w-5 sm:h-5" />)}
                         </button>
 
                         {/* Partial Transcript Overlay */}
                         {partialTranscript && (
-                            <div className="absolute bottom-20 left-6 right-6 p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 backdrop-blur-sm">
+                            <div className="absolute bottom-16 sm:bottom-20 left-4 sm:left-6 right-4 sm:right-6 p-2 sm:p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 backdrop-blur-sm">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                                    <span className="text-sm text-blue-300 italic">{partialTranscript}</span>
+                                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                    <span className="text-xs sm:text-sm text-blue-300 italic">{partialTranscript}</span>
                                 </div>
                             </div>
                         )}
@@ -159,17 +159,17 @@ export default function QuestionCard({
                         <button
                             onClick={onSubmitAnswer}
                             disabled={!getCombinedAnswer().trim() || isEvaluating}
-                            className={`w-full py-5 rounded-2xl ${colors.primary} font-bold text-base tracking-wider transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-3 mb-6 hover:scale-[1.02] active:scale-[0.98] border-2 border-transparent hover:border-white/20`}
+                            className={`w-full py-4 sm:py-5 rounded-xl sm:rounded-2xl ${colors.primary} font-bold text-sm sm:text-base tracking-wider transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6 hover:scale-[1.02] active:scale-[0.98] border-2 border-transparent hover:border-white/20`}
                         >
                             {isEvaluating ? (
                                 <>
-                                    <Loader2 className="w-6 h-6 animate-spin" />
-                                    ANALYZING YOUR ANSWER...
+                                    <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
+                                    <span className="text-xs sm:text-sm">ANALYZING...</span>
                                 </>
                             ) : (
                                 <>
-                                    <Send className="w-6 h-6" />
-                                    SUBMIT ANSWER
+                                    <Send className="w-5 h-5 sm:w-6 sm:h-6" />
+                                    <span className="text-xs sm:text-sm">SUBMIT ANSWER</span>
                                 </>
                             )}
                         </button>
@@ -177,35 +177,36 @@ export default function QuestionCard({
 
                     {/* Action Buttons (when evaluation is done) */}
                     {evaluationResult && (
-                        <div className="flex gap-4">
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                             {currentQuestionIndex < questions.length - 1 && (
                                 <button
                                     onClick={onNextQuestion}
-                                    className={`flex-1 py-4 rounded-2xl ${colors.primary} font-bold text-sm tracking-wider transition-all shadow-xl flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98]`}
+                                    className={`flex-1 py-3 sm:py-4 rounded-xl sm:rounded-2xl ${colors.primary} font-bold text-sm tracking-wider transition-all shadow-xl flex items-center justify-center gap-2 sm:gap-3 hover:scale-[1.02] active:scale-[0.98]`}
                                 >
-                                    Next Question
-                                    <ChevronRight className="w-5 h-5" />
+                                    <span className="text-xs sm:text-sm">Next Question</span>
+                                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </button>
                             )}
 
                             <button
                                 onClick={onAnswerAgain}
-                                className={`flex-1 py-4 rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-white font-medium text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]`}
+                                className={`flex-1 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-white font-medium text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]`}
                             >
-                                <RefreshCw className="w-4 h-4" />
-                                Answer Again
+                                <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5" />
+                                <span className="text-xs sm:text-sm">Answer Again</span>
                             </button>
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* RIGHT SECTION: Evaluation Results (1/3 width) */}
-            <div className="lg:col-span-1 flex flex-col h-full">
+            {/* RIGHT SECTION: Evaluation Results (1/3 width on xl+) */}
+            <div className="xl:col-span-1 flex flex-col h-full">
                 <div className="sticky top-0">
-                    <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-6 flex items-center gap-2">
-                        <Zap className={`w-4 h-4 ${colors.icon}`} />
-                        Evaluation Results
+                    <h3 className="text-xs sm:text-sm font-bold text-gray-300 uppercase tracking-wider mb-4 sm:mb-6 flex items-center gap-2">
+                        <Zap className={`w-3 h-3 sm:w-4 sm:h-4 ${colors.icon}`} />
+                        <span className="hidden sm:inline">Evaluation Results</span>
+                        <span className="sm:hidden">Results</span>
                     </h3>
 
                     {/* Placeholder when no evaluation yet */}
@@ -224,54 +225,57 @@ export default function QuestionCard({
                     {evaluationResult && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
                             {/* Tab Navigation */}
-                            <div className="flex bg-zinc-900/50 rounded-2xl p-1 border border-white/10 backdrop-blur-sm">
+                            <div className="flex bg-zinc-900/50 rounded-xl sm:rounded-2xl p-1 border border-white/10 backdrop-blur-sm">
                                 <button
                                     onClick={() => setActiveTab('results')}
-                                    className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all ${
+                                    className={`flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${
                                         activeTab === 'results'
                                             ? `${colors.primary} text-black shadow-lg`
                                             : 'text-gray-400 hover:text-white hover:bg-white/5'
                                     }`}
                                 >
-                                    Results
+                                    <span className="hidden sm:inline">Results</span>
+                                    <span className="sm:hidden">Res</span>
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('ideal')}
-                                    className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all ${
+                                    className={`flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${
                                         activeTab === 'ideal'
                                             ? `${colors.primary} text-black shadow-lg`
                                             : 'text-gray-400 hover:text-white hover:bg-white/5'
                                     }`}
                                 >
-                                    Ideal Answer
+                                    <span className="hidden sm:inline">Ideal</span>
+                                    <span className="sm:hidden">Ideal</span>
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('review')}
-                                    className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all ${
+                                    className={`flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${
                                         activeTab === 'review'
                                             ? `${colors.primary} text-black shadow-lg`
                                             : 'text-gray-400 hover:text-white hover:bg-white/5'
                                     }`}
                                 >
-                                 To Review
+                                    <span className="hidden sm:inline">Review</span>
+                                    <span className="sm:hidden">Rev</span>
                                 </button>
                             </div>
 
                             {/* Tab Content */}
-                            <div className="min-h-[400px]">
+                            <div className="min-h-[300px] sm:min-h-[400px]">
                                 {/* Results Tab */}
                                 {activeTab === 'results' && (
-                                    <div className={`p-6 rounded-3xl border-2 ${evaluationResult.score >= 7 ? 'bg-green-500/10 border-green-500/30' : 'bg-yellow-500/10 border-yellow-500/30'} backdrop-blur-sm`}>
-                                        <div className="flex items-center justify-between mb-4">
-                                            <div className="flex items-center gap-4">
-                                                <div className={`p-3 rounded-2xl ${evaluationResult.score >= 7 ? 'bg-green-500/20 text-green-500' : 'bg-yellow-500/20 text-yellow-500'}`}>
-                                                    {evaluationResult.score >= 7 ? <Zap className="w-6 h-6" /> : <Loader2 className="w-6 h-6" />}
+                                    <div className={`p-4 sm:p-6 rounded-2xl sm:rounded-3xl border-2 ${evaluationResult.score >= 7 ? 'bg-green-500/10 border-green-500/30' : 'bg-yellow-500/10 border-yellow-500/30'} backdrop-blur-sm`}>
+                                        <div className="flex items-center justify-between mb-3 sm:mb-4">
+                                            <div className="flex items-center gap-3 sm:gap-4">
+                                                <div className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl ${evaluationResult.score >= 7 ? 'bg-green-500/20 text-green-500' : 'bg-yellow-500/20 text-yellow-500'}`}>
+                                                    {evaluationResult.score >= 7 ? <Zap className="w-5 h-5 sm:w-6 sm:h-6" /> : <Loader2 className="w-5 h-5 sm:w-6 sm:h-6" />}
                                                 </div>
                                                 <div>
-                                                    <div className={`text-2xl font-bold ${evaluationResult.score >= 7 ? 'text-green-500' : 'text-yellow-500'}`}>
+                                                    <div className={`text-xl sm:text-2xl font-bold ${evaluationResult.score >= 7 ? 'text-green-500' : 'text-yellow-500'}`}>
                                                         {evaluationResult.score}/10
                                                     </div>
-                                                    <div className="text-sm text-gray-400">
+                                                    <div className="text-xs sm:text-sm text-gray-400">
                                                         {evaluationResult.score >= 7 ? 'Great job!' : 'Keep practicing'}
                                                     </div>
                                                 </div>

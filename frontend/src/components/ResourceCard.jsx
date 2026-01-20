@@ -16,7 +16,7 @@ export default function ResourceCard({ resources = [], accentColor = 'neon-green
                     <FileText className={`w-4 h-4 ${colors.icon}`} />
                     Learning Resources
                 </h3>
-                <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto scrollbar-hide">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                     {resources && resources.length > 0 ? (
                         resources.map((res, i) => (
                             <a
@@ -24,7 +24,7 @@ export default function ResourceCard({ resources = [], accentColor = 'neon-green
                                 href={res.resource}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`p-6 rounded-2xl bg-zinc-900/50 border border-white/10 ${colors.border} ${colors.bg} hover:bg-zinc-800/50 transition-all group block relative overflow-hidden min-h-[120px] flex flex-col justify-between`}
+                                className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-zinc-900/50 border border-white/10 ${colors.border} ${colors.bg} hover:bg-zinc-800/50 transition-all group block relative overflow-hidden aspect-square flex flex-col justify-between`}
                             >
                                 {/* Background Pattern */}
                                 <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -34,21 +34,21 @@ export default function ResourceCard({ resources = [], accentColor = 'neon-green
 
                                 {/* Content */}
                                 <div className="relative z-10 flex-grow flex flex-col justify-center">
-                                    <div className={`w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center text-gray-400 ${colors.text} transition-colors mb-4 group-hover:scale-110 transform duration-200`}>
-                                        <span className="text-sm font-bold">{i + 1}</span>
+                                    <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-gray-400 ${colors.text} transition-colors mb-2 sm:mb-3 group-hover:scale-110 transform duration-200`}>
+                                        <span className="text-sm sm:text-xl font-bold">{i + 1}</span>
                                     </div>
-                                    <h4 className={`font-bold text-white ${colors.text} transition-colors text-lg leading-tight mb-2`}>
+                                    <h4 className={`font-semibold text-white ${colors.text} transition-colors text-sm sm:text-lg lg:text-xl leading-tight mb-1 sm:mb-2 line-clamp-2`}>
                                         {res.name}
                                     </h4>
-                                    <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
-                                        {res.resource.length > 60 ? res.resource.substring(0, 60) + '...' : res.resource}
+                                    <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed hidden sm:block">
+                                        {res.resource.length > 35 ? res.resource.substring(0, 35) + '...' : res.resource}
                                     </p>
                                 </div>
 
                                 {/* External Link Indicator */}
-                                <div className="relative z-10 flex justify-end mt-4">
-                                    <div className={`p-2 rounded-lg bg-zinc-800/50 ${colors.icon} transition-colors group-hover:bg-zinc-700/50`}>
-                                        <ExternalLink className="w-4 h-4" />
+                                <div className="relative z-10 flex justify-end">
+                                    <div className={`p-1 sm:p-1.5 rounded-lg bg-zinc-800/50 ${colors.icon} transition-colors group-hover:bg-zinc-700/50`}>
+                                        <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
                                     </div>
                                 </div>
                             </a>

@@ -40,7 +40,7 @@ export default function TechCard({ title, description, status, level, isCurrent,
     <motion.div
       whileTap={!isLocked ? { scale: 0.98 } : {}}
       className={`
-        relative h-full w-full rounded-lg p-4 border transition-all duration-300 flex flex-col justify-between overflow-hidden
+        relative h-full w-full min-h-[7rem] sm:min-h-[8rem] rounded-lg p-3 sm:p-4 border transition-all duration-300 flex flex-col justify-between overflow-hidden
         ${isLocked
           ? 'bg-zinc-900 border-white/10 opacity-100 cursor-not-allowed'
           : `bg-black/80 ${colors.border} ${colors.borderHover} ${colors.shadow} cursor-pointer group backdrop-blur-md`}
@@ -89,12 +89,12 @@ export default function TechCard({ title, description, status, level, isCurrent,
         )}
       </div>
 
-      <h3 className={`relative z-10 text-sm font-bold tracking-wide uppercase mt-1 ${isLocked ? 'text-gray-400' : `text-white ${colors.textHover} transition-colors`}`}>
+      <h3 className={`relative z-10 text-xs sm:text-sm font-bold tracking-wide uppercase mt-1 ${isLocked ? 'text-gray-400' : `text-white ${colors.textHover} transition-colors`}`}>
         {title}
       </h3>
 
       {/* Description */}
-      <p className={`relative z-10 text-[10px] leading-relaxed line-clamp-2 ${isLocked ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-300'}`}>
+      <p className={`relative z-10 text-[9px] sm:text-[10px] leading-relaxed line-clamp-2 ${isLocked ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-300'}`}>
         {description}
       </p>
 

@@ -349,7 +349,7 @@ fill="currentColor" viewBox="0 0 24 24" >
           {fetchedTopics.length === 0 ? (
              <TechPageLoader accentColor="neon-green" />
           ) : (
-            <div className="flex flex-wrap justify-center gap-6 w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 w-full place-items-center">
               {fetchedTopics.map((module, index) => {
                 const title = getCleanTopicName(module.name);
                 const userLevelsDone = userData?.levelsDone || user?.publicMetadata?.levelsDone || user?.levelsDone || 0;
@@ -382,7 +382,7 @@ fill="currentColor" viewBox="0 0 24 24" >
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.05 }}
-                    className="h-28 w-64"
+                    className="w-full max-w-xs"
                     onClick={() => handleCardClick(module, index)}
                   >
                     <TechCard 
