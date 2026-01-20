@@ -161,12 +161,17 @@ export default function QuestionCard({
                         <>
                             <div className="relative">
                                 <textarea 
-                                    value={getCombinedAnswer()}
+                                    value={answer}
                                     onChange={(e) => onAnswerChange(e.target.value)}
-                                    placeholder="Type your answer here..."
+                                    placeholder="Type your detailed answer here... 💭"
                                     disabled={isEvaluating}
-                                    className={`w-full h-32 bg-black/40 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:${colors.border} resize-none transition-all disabled:opacity-50`}
+                                    className={`w-full h-40 bg-gradient-to-br from-zinc-900/80 to-black/60 border-2 ${colors.border} rounded-2xl p-5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black ${accentColor === 'blue-500' ? 'focus:ring-blue-500/50' : 'focus:ring-neon-green/50'} resize-none transition-all disabled:opacity-50 shadow-lg backdrop-blur-sm`}
                                 />
+                                {partialTranscript && (
+                                    <div className="absolute bottom-4 right-4 max-w-xs bg-blue-500/20 border border-blue-500/50 rounded-lg px-3 py-2 text-xs text-blue-300 pointer-events-none shadow-lg">
+                                        <span className="italic font-medium">{partialTranscript}</span>
+                                    </div>
+                                )}
                                 <button 
                                     onClick={() => {
                                         if (!isPro) {
@@ -175,12 +180,12 @@ export default function QuestionCard({
                                         }
                                         isRecording ? onStopRecording() : onStartRecording();
                                     }}
-                                    className={`absolute bottom-3 right-3 p-2 rounded-lg transition-colors
+                                    className={`absolute bottom-4 right-4 p-3 rounded-xl transition-all shadow-lg
                                         ${!isPro 
-                                            ? "bg-amber-500/20 text-amber-500 hover:bg-amber-500/30" 
+                                            ? "bg-amber-500/20 text-amber-500 hover:bg-amber-500/30 border border-amber-500/30" 
                                             : isRecording 
-                                                ? "bg-red-500/20 text-red-500" 
-                                                : "bg-white/5 text-gray-400 hover:text-" + accentColor
+                                                ? "bg-red-500/20 text-red-500 border border-red-500/30 hover:bg-red-500/30" 
+                                                : `bg-white/10 text-gray-400 hover:text-white border border-white/20 hover:bg-white/20 hover:${colors.icon}`
                                         }`}
                                 >
                                     {!isPro ? <Lock className="w-5 h-5" /> : (isRecording ? <X className="w-5 h-5" /> : <Mic className="w-5 h-5" />)}
@@ -189,16 +194,16 @@ export default function QuestionCard({
                             <button 
                                 onClick={onSubmitAnswer}
                                 disabled={!getCombinedAnswer().trim() || isEvaluating}
-                                className={`w-full py-3.5 rounded-xl ${colors.primary} font-bold text-sm tracking-wide transition-all shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
+                                className={`w-full py-4 rounded-2xl ${colors.primary} font-bold text-sm tracking-wider transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-3 transform hover:scale-[1.02] active:scale-[0.98] border-2 border-transparent hover:border-white/20`}
                             >
                                 {isEvaluating ? (
                                     <>
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                        EVALUATING...
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                        ANALYZING YOUR ANSWER...
                                     </>
                                 ) : (
                                     <>
-                                        <Send className="w-4 h-4" />
+                                        <Send className="w-5 h-5" />
                                         SUBMIT ANSWER
                                     </>
                                 )}

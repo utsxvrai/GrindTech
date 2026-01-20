@@ -14,6 +14,7 @@ router.post("/signin", UserController.signin); // Legacy/Optional
 // Protected routes
 router.get("/me", requireClerkAuth, UserController.getMe);
 router.put("/me/upgrade", requireClerkAuth, UserController.upgradeToPro);
+router.put("/me/levels", requireClerkAuth, UserController.updateLevelsDone);
 router.get("/all", UserController.getAll);
 router.get("/:id", UserController.get);
 

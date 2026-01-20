@@ -6,4 +6,5 @@ module.exports = {
     QuestionController: require("./question-controller"),
     WebhookController: require("./webhook-controller"),
     EvaluationController : require("./evaluation-controller"),
+    ProgressController: require("./progress-controller"),
 }

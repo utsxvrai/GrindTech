@@ -22,6 +22,8 @@ export default function DbmsPage() {
   // Dialog State
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [fetchedTopics, setFetchedTopics] = useState([]);
+  const [completedTopicIds, setCompletedTopicIds] = useState(new Set());
+  const [techId, setTechId] = useState(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -52,9 +54,29 @@ export default function DbmsPage() {
             const techResponse = await api.get('/tech/name/DBMS');
             if (techResponse && techResponse.data && techResponse.data.data) {
                 const techId = techResponse.data.data.techId;
+                setTechId(techId);
                 const topicsResponse = await api.get(`/topic/tech/${techId}`);
                 if (topicsResponse.data && Array.isArray(topicsResponse.data.data)) {
                     setFetchedTopics(topicsResponse.data.data);
+                }
+                
+                // Fetch completed topics for this tech
+                try {
+                    const token = await getToken();
+                    const progressResponse = await api.get(`/progress/tech/${techId}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    if (progressResponse?.data?.data?.completedTopicIds) {
+                        const completedIds = Array.isArray(progressResponse.data.data.completedTopicIds)
+                            ? progressResponse.data.data.completedTopicIds
+                            : [];
+                        setCompletedTopicIds(new Set(completedIds));
+                        console.log('✅ Completed topics loaded:', completedIds);
+                    }
+                } catch (progressError) {
+                    console.error("Failed to fetch completed topics:", progressError);
                 }
             }
         } catch (error) {
@@ -71,11 +93,85 @@ export default function DbmsPage() {
   const handleCardClick = (module, index) => {
     // Pro users can access all cards, free users have level-based restrictions
     if (!isPro) {
-      const isLocked = index > (user?.publicMetadata?.levelsDone || user?.levelsDone || 0);
+      const userLevelsDone = userData?.levelsDone || user?.publicMetadata?.levelsDone || user?.levelsDone || 0;
+      // If levelsDone is X, unlock levels 0 to X+1
+      const isLocked = index > (userLevelsDone + 1);
       if (isLocked) return;
     }
 
-    setSelectedTopic(module);
+    setSelectedTopic({ ...module, levelIndex: index });
+  };
+
+  const handleLevelComplete = async (completedLevelIndex) => {
+    if (isPro) {
+      console.log('✅ Pro user - no level unlocking needed');
+      return; // Pro users don't need level unlocking
+    }
+    
+    try {
+      console.log('🔓 Completing level:', completedLevelIndex);
+      const token = await getToken();
+      const currentLevelsDone = userData?.levelsDone || 0;
+      
+      // Simple: increment levelsDone by 1
+      const newLevelsDone = currentLevelsDone + 1;
+      console.log(`📊 Incrementing levelsDone: ${currentLevelsDone} → ${newLevelsDone}`);
+      
+      // Update user's levelsDone
+      await api.put('/user/me/levels', 
+        { levelsDone: newLevelsDone },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      console.log('✅ LevelsDone updated to:', newLevelsDone);
+      
+      // Refresh user data
+      const userResponse = await api.get('/user/me', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      if (userResponse.data && userResponse.data.data) {
+        setUserData(userResponse.data.data);
+        console.log('✅ User data refreshed, levelsDone:', userResponse.data.data.levelsDone);
+      }
+      
+      // Refresh topics and completed status
+      const techResponse = await api.get('/tech/name/DBMS');
+      if (techResponse?.data?.data) {
+        const techId = techResponse.data.data.techId;
+        setTechId(techId);
+        const topicsResponse = await api.get(`/topic/tech/${techId}`);
+        if (topicsResponse?.data?.data) {
+          setFetchedTopics(topicsResponse.data.data);
+          console.log('✅ Topics refreshed');
+        }
+        
+        // Refresh completed topics
+        try {
+          const progressResponse = await api.get(`/progress/tech/${techId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          if (progressResponse?.data?.data?.completedTopicIds) {
+            const completedIds = Array.isArray(progressResponse.data.data.completedTopicIds)
+              ? progressResponse.data.data.completedTopicIds
+              : [];
+            setCompletedTopicIds(new Set(completedIds));
+            console.log('✅ Completed topics refreshed:', completedIds);
+          }
+        } catch (progressError) {
+          console.error("Failed to refresh completed topics:", progressError);
+        }
+      }
+    } catch (error) {
+      console.error("❌ Failed to unlock next level:", error);
+    }
   };
 
   const getCleanTopicName = (name) => {
@@ -222,7 +318,7 @@ export default function DbmsPage() {
               Master the concepts of Databases. Level up your knowledge.
             </motion.p>
           ) : (
-            <LearningMeter progress={0} accentColor="blue-500" />
+            <LearningMeter techId={techId} accentColor="blue-500" />
           )}
         </div>
 
@@ -234,9 +330,29 @@ export default function DbmsPage() {
             <div className="flex flex-wrap justify-center gap-6 w-full">
               {fetchedTopics.map((module, index) => {
                 const title = getCleanTopicName(module.name);
-                const userLevel = user?.publicMetadata?.levelsDone || user?.levelsDone || 0;
+                const userLevelsDone = userData?.levelsDone || user?.publicMetadata?.levelsDone || user?.levelsDone || 0;
                 // Pro users can access all levels, free users have level-based locking
-                const isLocked = isPro ? false : index > userLevel;
+                // If levelsDone is X, unlock levels 0 to X+1 (so level X+2 is locked)
+                // Example: levelsDone=0 unlocks levels 0,1; levelsDone=1 unlocks levels 0,1,2
+                const isLocked = isPro ? false : index > (userLevelsDone + 1);
+                const isCompleted = completedTopicIds.has(module.topicId);
+                
+                // Find the next level that should be worked on
+                // For pro users: first uncompleted unlocked level
+                // For free users: the level right after the highest completed level
+                let isCurrent = false;
+                if (!isLocked && !isCompleted) {
+                  if (isPro) {
+                    // For pro users, highlight the first uncompleted level
+                    const previousLevelsCompleted = fetchedTopics.slice(0, index).every((_, i) => 
+                      completedTopicIds.has(fetchedTopics[i].topicId)
+                    );
+                    isCurrent = previousLevelsCompleted;
+                  } else {
+                    // For free users, highlight the next level after completed ones
+                    isCurrent = index === (userLevelsDone + 1);
+                  }
+                }
                 
                 return (
                   <motion.div
@@ -249,10 +365,10 @@ export default function DbmsPage() {
                   >
                     <TechCard 
                       title={title}
-                      description={`Master ${title}`}
+                      description={isCompleted ? `Level ${index} - Completed` : `Master ${title}`}
                       level={index}
-                      status={isLocked ? 'locked' : 'unlocked'}
-                      isCurrent={!isLocked && index === 0}
+                      status={isLocked ? 'locked' : (isCompleted ? 'completed' : 'unlocked')}
+                      isCurrent={isCurrent}
                       accentColor="blue-500"
                     />
                   </motion.div>
@@ -272,6 +388,8 @@ export default function DbmsPage() {
         techName="DBMS"
         isPro={isPro}
         accentColor="blue-500"
+        levelIndex={selectedTopic?.levelIndex ?? 0}
+        onLevelComplete={handleLevelComplete}
       />
     </div>
   );

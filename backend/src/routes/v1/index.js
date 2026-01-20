@@ -5,6 +5,7 @@ const topicRoutes = require("./topic-route");
 const resourceRoutes = require("./resource-route");
 const questionRoutes = require("./question-route");
 const evaluationRoutes = require("./evaluation-route");
+const progressRoutes = require("./progress-route");
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.use("/topic", topicRoutes);
 router.use("/resource", resourceRoutes);
 router.use("/question", questionRoutes);
 router.use("/evaluation", evaluationRoutes);
+router.use("/progress", progressRoutes);
 
 router.get("/health", (req, res) => {
     res.json({ status: "ok", message: "V1 Backend is running" });

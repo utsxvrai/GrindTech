@@ -127,6 +127,25 @@ async function upgradeToPro(req, res) {
     }
 }
 
+async function updateLevelsDone(req, res) {
+    try {
+        const clerkId = req.auth.userId;
+        if (!clerkId) {
+            return res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
+        }
+
+        const { levelsDone } = req.body;
+        if (typeof levelsDone !== 'number' || levelsDone < 0) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ error: "Invalid levelsDone value" });
+        }
+
+        const result = await UserService.updateLevelsDone(clerkId, levelsDone);
+        return res.status(result.status || StatusCodes.INTERNAL_SERVER_ERROR).json(result);
+    } catch (error) {
+        console.log("Cannot update levelsDone", error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+}
 
 module.exports = {
     create,
@@ -135,5 +154,6 @@ module.exports = {
     getMe,
     getAll,
     upgradeToPro,
+    updateLevelsDone,
     // signOut
 }

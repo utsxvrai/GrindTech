@@ -27,9 +27,9 @@ async function create(data) {
 
 async function signin(data) {
     try {
-        console.log("Signin attempt for email:", data.useremail);
+        // console.log("Signin attempt for email:", data.useremail);
         const user = await userRepository.getUserByEmail(data.useremail);
-        console.log("User found:", user ? "Yes" : "No");
+        // console.log("User found:", user ? "Yes" : "No");
 
         if (!user) {
             return {
@@ -39,7 +39,7 @@ async function signin(data) {
         }
 
         const isPasswordValid = await checkPassword(data.password, user.password);
-        console.log("Password matched:", isPasswordValid);
+        // console.log("Password matched:", isPasswordValid);
 
         if (!isPasswordValid) {
             return {
@@ -171,6 +171,29 @@ async function updatePlan(clerkId, plan) {
     }
 }
 
+async function updateLevelsDone(clerkId, levelsDone) {
+    try {
+        if (typeof levelsDone !== 'number' || levelsDone < 0) {
+            return {
+                status: StatusCodes.BAD_REQUEST,
+                message: "Invalid levelsDone value"
+            };
+        }
+
+        const user = await userRepository.updateLevelsDone(clerkId, levelsDone);
+        return {
+            status: StatusCodes.OK,
+            data: user
+        };
+    } catch (error) {
+        console.error("Error updating levelsDone:", error);
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            error
+        };
+    }
+}
+
 module.exports = {
     create,
     signin,
@@ -178,5 +201,6 @@ module.exports = {
     get,
     getByClerkId,
     getAll,
-    updatePlan
+    updatePlan,
+    updateLevelsDone
 }

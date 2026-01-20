@@ -67,8 +67,8 @@ export default function TechCard({ title, description, status, level, isCurrent,
         <div className="flex items-center gap-2">
           {/* Level Badge */}
           {!isLocked && (
-            <span className={`px-1.5 py-0.5 rounded ${colors.badge} text-[10px] font-bold tracking-wider`}>
-              LVL {level}
+            <span className={`px-1.5 py-0.5 rounded ${colors.badge} text-[10px] font-bold tracking-wider ${isCurrent ? '' : ''}`}>
+              {isCompleted ? `LVL ${level}` : `LVL ${level}`}
             </span>
           )}
 
@@ -82,7 +82,11 @@ export default function TechCard({ title, description, status, level, isCurrent,
         </div>
 
         {isLocked && <Lock className="w-3.5 h-3.5 text-gray-500" />}
-        {isCompleted && <CheckCircle2 className={`w-3.5 h-3.5 ${colors.text}`} />}
+        {isCompleted && (
+          <span className={`px-1.5 py-0.5 rounded ${colors.badge} text-[10px] font-bold tracking-wider`}>
+            COMPLETED
+          </span>
+        )}
       </div>
 
       <h3 className={`relative z-10 text-sm font-bold tracking-wide uppercase mt-1 ${isLocked ? 'text-gray-400' : `text-white ${colors.textHover} transition-colors`}`}>

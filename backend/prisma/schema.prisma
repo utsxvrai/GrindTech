@@ -20,6 +20,8 @@ model User {
   clerkId              String     @unique
   questions            Question[]
   topics               Topic[]
+  progress             UserProgress[]
+  levelCompletions     UserLevelCompletion[]
 }
 
 model Topic {
@@ -55,4 +57,33 @@ model Question {
   createdAt DateTime @default(now())
   topic     Topic    @relation(fields: [topicId], references: [topicId])
   user      User     @relation(fields: [userId], references: [uuid])
+  progress  UserProgress[]
+}
+
+model UserProgress {
+  id         String   @id @default(uuid())
+  userId     String
+  questionId String
+  techId     String
+  topicId    String
+  score      Int?
+  answeredAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [uuid], onDelete: Cascade)
+  question   Question @relation(fields: [questionId], references: [qid], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+  @@index([userId, techId, topicId])
+  @@index([userId, techId])
+}
+
+model UserLevelCompletion {
+  id         String   @id @default(uuid())
+  userId     String
+  techId     String
+  topicId    String
+  completedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [uuid], onDelete: Cascade)
+
+  @@unique([userId, techId, topicId])
+  @@index([userId, techId])
 }

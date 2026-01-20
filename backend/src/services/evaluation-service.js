@@ -1,32 +1,77 @@
-const { GoogleGenAI } = require("@google/genai");
+const fetch = global.fetch;
 const aiConfig = require("../config/ai-config");
 const BASE_PROMPTS = require("../utils/base-prompt");
 
-const googleGenAI = new GoogleGenAI({
-  apiKey: aiConfig.apiKey,
-});
+const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+const MODEL = "xiaomi/mimo-v2-flash:free";
 
+/**
+ * Normalize tech name to match BASE_PROMPTS keys
+ */
+function normalizeTechName(techName) {
+  const normalized = techName.toLowerCase().trim();
+
+  const techMap = {
+    "nodejs": "Node.Js",
+    "node.js": "Node.Js",
+    "node": "Node.Js",
+
+    "react": "React",
+    "reactjs": "React",
+    "react.js": "React",
+
+    "dbms": "dbms",
+    "database": "dbms",
+
+    "os": "os",
+    "operating system": "os",
+    "operating systems": "os",
+
+    "system design": "system_design",
+    "systemdesign": "system_design",
+  };
+
+  return techMap[normalized] || techName;
+}
+
+/**
+ * Safely extract JSON from LLM output
+ */
 function extractJSON(text) {
-  const firstBrace = text.indexOf("{");
-  const lastBrace = text.lastIndexOf("}");
+  // Try to find complete JSON objects
+  const jsonMatches = text.match(/\{[\s\S]*\}/g);
 
-  if (firstBrace === -1 || lastBrace === -1) {
+  if (!jsonMatches || jsonMatches.length === 0) {
     throw new Error("No JSON object found in LLM response");
   }
 
-  return text.slice(firstBrace, lastBrace + 1);
+  // Try each potential JSON match
+  for (const jsonStr of jsonMatches) {
+    try {
+      JSON.parse(jsonStr);
+      return jsonStr;
+    } catch (e) {
+      // Try next match
+      continue;
+    }
+  }
+
+  throw new Error("No valid JSON object found in LLM response");
 }
+
 async function evaluateAnswer(question, answer, techName) {
-  const basePrompt = BASE_PROMPTS[techName];
+  if (!techName) {
+    throw new Error("Tech name is required");
+  }
+
+  const normalizedTech = normalizeTechName(techName);
+  const basePrompt = BASE_PROMPTS[normalizedTech];
 
   if (!basePrompt) {
     throw new Error(`Unsupported tech: ${techName}`);
   }
 
-  // 🔹 Final minimal prompt (fast + clean)
-  const prompt = `
-${basePrompt}
-
+  const userPrompt = `
 Question:
 ${question}
 
@@ -36,35 +81,76 @@ ${answer}
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 6000);
+    const timeout = setTimeout(() => controller.abort(), aiConfig.timeout);
 
-    const response = await googleGenAI.models.generateContent({
-      model: "gemini-2.5-flash-lite",
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      config: {
-        responseMimeType: "application/json",
-      },
+    const response = await fetch(OPENROUTER_URL, {
+      method: "POST",
       signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        // ✅ USE THE CORRECT KEY NAME
+        "Authorization": `Bearer ${aiConfig.openRouterApiKey || aiConfig.apiKey}`,
+        "HTTP-Referer": "http://localhost",
+        "X-Title": "GrindTech Evaluation Service",
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          // ✅ Behavioral RAG in SYSTEM
+          { role: "system", content: basePrompt },
+
+          // ✅ Only question + answer in USER
+          { role: "user", content: userPrompt },
+        ],
+        temperature: 0,
+        max_tokens: 300, // Increased to allow complete JSON
+      }),
     });
 
     clearTimeout(timeout);
 
-    const text = response.candidates[0].content.parts[0].text;
+    const data = await response.json();
 
-    const parsed = JSON.parse(text);
-
-    // 🔒 Safety clamps
-    parsed.score = Math.max(0, Math.min(parsed.score, 10));
-
-    return parsed;
-  } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error("AI evaluation timed out");
+    if (!data || data.error) {
+      throw new Error(data?.error?.message || "Invalid OpenRouter response");
     }
 
-    console.error("Gemini evaluation failed:", error.message);
+    if (!data.choices?.length) {
+      throw new Error("No choices returned from OpenRouter");
+    }
 
-    // 🔁 Graceful fallback (NEVER crash UX)
+    const content = data.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error("Empty completion content");
+    }
+
+    // ✅ SAFE JSON PARSING
+    let jsonText;
+    try {
+      jsonText = extractJSON(content);
+    } catch (extractError) {
+      throw new Error(`JSON extraction failed: ${extractError.message}`);
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonText);
+    } catch (parseError) {
+      throw new Error(`JSON parsing failed: ${parseError.message}`);
+    }
+
+    // 🔒 Safety clamps
+    return {
+      isCorrect: Boolean(parsed.isCorrect),
+      score: Math.max(0, Math.min(parsed.score ?? 0, 10)),
+      missingConcepts: parsed.missingConcepts || [],
+      incorrectStatements: parsed.incorrectStatements || [],
+      feedback: parsed.feedback || "",
+      idealShortAnswer: parsed.idealShortAnswer || "",
+    };
+
+  } catch (error) {
+    // Return default evaluation result on any error
     return {
       isCorrect: false,
       score: 0,
@@ -74,6 +160,6 @@ ${answer}
       idealShortAnswer: "",
     };
   }
-};
+}
 
 module.exports = { evaluateAnswer };
