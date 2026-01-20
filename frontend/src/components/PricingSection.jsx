@@ -1,10 +1,14 @@
-import { motion } from 'framer-motion'
-import { Check, Sparkles } from 'lucide-react'
+import { Check, Sparkles, Loader2 } from 'lucide-react'
+import { useState } from 'react'
+import { useUser, useAuth } from '@clerk/clerk-react'
+import { createOrder, verifyPayment } from '../api/payment'
+import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion' // Fixed: Added missing import
 
 const plans = [
   {
     name: 'Free',
-    price: '$0',
+    price: '0',
     description: 'Start your interview prep journey',
     features: [
       'Unlimited text answering',
@@ -17,7 +21,7 @@ const plans = [
   },
   {
     name: 'Pro',
-    price: '$9.99',
+    price: '199',
     period: '/month',
     description: 'Unlock your full potential',
     features: [
@@ -34,9 +38,75 @@ const plans = [
 ]
 
 export default function PricingSection() {
+  const { user, isLoaded: isUserLoaded } = useUser()
+  const { isSignedIn } = useAuth()
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
+
+  const handlePayment = async (plan) => {
+    if (!isSignedIn) {
+      navigate('/auth')
+      return
+    }
+
+    if (!plan.isPro) {
+      navigate('/preparation/nodejs')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const orderAmount = 199; 
+      const orderResponse = await createOrder(orderAmount)
+      
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: orderResponse.data.amount,
+        currency: orderResponse.data.currency,
+        name: "GrindTech",
+        description: "Upgrade to Pro Plan",
+        order_id: orderResponse.data.id,
+        handler: async function (response) {
+          try {
+            const verificationData = {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              clerkId: user.id
+            }
+            
+            const verifyRes = await verifyPayment(verificationData)
+            
+            if (verifyRes.success) {
+              alert("Payment Successful! You are now a Pro user.")
+              window.location.reload()
+            }
+          } catch (err) {
+            console.error("Verification failed", err)
+            alert("Payment verification failed. Please contact support.")
+          }
+        },
+        prefill: {
+          name: user?.fullName || "",
+          email: user?.primaryEmailAddress?.emailAddress || "",
+        },
+        theme: {
+          color: "#6366f1",
+        },
+      }
+
+      const rzp = new window.Razorpay(options)
+      rzp.open()
+    } catch (error) {
+      console.error("Payment initiation failed", error)
+      alert("Failed to initiate payment. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <section className="relative py-20 px-4 sm:px-6 lg:px-8">
-      {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-deep-dark via-indigo-glow/3 to-deep-dark" />
 
       <div className="relative z-10 max-w-6xl mx-auto">
@@ -58,7 +128,6 @@ export default function PricingSection() {
           </p>
         </motion.div>
 
-        {/* Pricing cards */}
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {plans.map((plan, index) => (
             <motion.div
@@ -67,10 +136,9 @@ export default function PricingSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.15, ease: "easeOut" }}
-              whileHover={{ y: -8, transition: { duration: 0.3, ease: "easeInOut" } }}
+              whileHover={{ y: -8 }}
               className="relative group"
             >
-              {/* Pro glow effect */}
               {plan.isPro && (
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-glow/40 via-neon-purple/40 to-neon-pink/40 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500" />
               )}
@@ -78,11 +146,10 @@ export default function PricingSection() {
               <div className={`relative h-full glass-strong p-8 rounded-3xl transition-all duration-300 ${
                 plan.isPro ? 'border-2 border-indigo-glow/30' : 'border border-white/10'
               }`}>
-                {/* Pro badge */}
                 {plan.isPro && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <div className="flex items-center gap-1 px-4 py-1.5 bg-gradient-to-r from-indigo-glow to-neon-purple rounded-full text-sm font-bold shadow-lg">
-                      <Sparkles className="w-4 h-4" color="black" />
+                      <Sparkles className="w-4 h-4 text-black" />
                       <span className="text-black">Most Popular</span>
                     </div>
                   </div>
@@ -103,15 +170,11 @@ export default function PricingSection() {
                   {plan.features.map((feature, i) => (
                     <motion.li
                       key={i}
-                      initial={{ opacity: 0, x: -10 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.15 + i * 0.05, duration: 0.4 }}
                       className="flex items-start gap-3"
                     >
                       <div className={`w-6 h-6 rounded-full ${
                         plan.isPro ? 'bg-gradient-to-r from-indigo-glow to-neon-purple' : 'bg-white/20'
-                      } flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110 duration-300`}>
+                      } flex items-center justify-center flex-shrink-0`}>
                         <Check className="w-4 h-4 text-black" />
                       </div>
                       <span className="text-gray-300 text-sm leading-relaxed">{feature}</span>
@@ -122,14 +185,19 @@ export default function PricingSection() {
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  transition={{ duration: 0.2 }}
                   className={`w-full py-3.5 rounded-xl font-bold text-base transition-all duration-300 ${
                     plan.isPro
-                      ? 'bg-gradient-to-r from-indigo-glow to-neon-purple text-black hover:shadow-[0_0_25px_rgba(255,255,255,0.5)]'
+                      ? 'bg-gradient-to-r from-indigo-glow to-neon-purple text-black'
                       : 'glass border-2 border-white/20 hover:border-indigo-glow/40'
                   }`}
+                  onClick={() => handlePayment(plan)}
+                  disabled={loading}
                 >
-                  {plan.isPro ? 'Upgrade to Pro' : 'Get Started Free'}
+                  {loading ? (
+                    <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                  ) : (
+                    plan.isPro ? 'Upgrade to Pro' : 'Get Started Free'
+                  )}
                 </motion.button>
               </div>
             </motion.div>
