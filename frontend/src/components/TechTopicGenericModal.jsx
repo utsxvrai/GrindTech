@@ -32,6 +32,7 @@ export default function TechTopicGenericModal({
     const [showCongratulations, setShowCongratulations] = useState(false);
     const [nextTopicInfo, setNextTopicInfo] = useState(null);
     const [isLastTopic, setIsLastTopic] = useState(false);
+    const [answeredQuestionIds, setAnsweredQuestionIds] = useState(new Set());
 
     // Socket & STT State
     const [socket, setSocket] = useState(null);
@@ -283,9 +284,10 @@ export default function TechTopicGenericModal({
     if (!isOpen || !topic) return null;
 
     return (
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
             {isOpen && (
                 <motion.div
+                    key="modal"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -411,9 +413,10 @@ export default function TechTopicGenericModal({
             )}
 
             {/* Congratulations Overlay */}
-            <AnimatePresence>
+            <AnimatePresence mode="wait">
                 {showCongratulations && (
                     <motion.div
+                        key="congratulations"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
