@@ -1,7 +1,7 @@
-import { useUser, useAuth } from '@clerk/clerk-react';
+import { useUser, useAuth, useClerk } from '@clerk/clerk-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Zap } from 'lucide-react'; 
+import { ArrowLeft, User, Zap, LogOut } from 'lucide-react'; 
 import { useState, useEffect } from 'react';
 import TechCard from '../components/TechCard';
 import LearningMeter from '../components/LearningMeter';
@@ -11,6 +11,7 @@ import TechTopicGenericModal from '../components/TechTopicGenericModal';
 
 
 export default function NodeJsPage() {
+  const { signOut } = useClerk();
   const { user } = useUser();
   const { getToken } = useAuth();
   const navigate = useNavigate();
@@ -271,14 +272,14 @@ fill="currentColor" viewBox="0 0 24 24" >
               {showProfileMenu && (
                 <>
                   <div 
-                    className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+                    className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
                     onClick={() => setShowProfileMenu(false)}
                   />
                   <motion.div 
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 top-14 w-64 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl p-4 z-50 md:hidden"
+                    className="absolute right-0 top-14 w-64 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl p-4 z-50"
                   >
                     {/* Mobile Profile Info */}
                     <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/5">
@@ -312,9 +313,12 @@ fill="currentColor" viewBox="0 0 24 24" >
                         <Zap className="w-4 h-4 text-neon-green" />
                         Contribute
                       </button>
-                      <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 text-sm font-medium text-gray-400 hover:text-white transition-colors">
-                        <User className="w-4 h-4" />
-                        Profile Settings
+                      <button 
+                        onClick={() => signOut()}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-500/10 text-sm font-medium text-gray-400 hover:text-red-400 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Log Out
                       </button>
                     </div>
                   </motion.div>

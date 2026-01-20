@@ -73,7 +73,8 @@ export default function HeroSection({ onGetStarted }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
             >
-              <span className="block text-4xl sm:text-5xl md:text-6xl mb-2  font-black leading-tight">
+              <span className="flex items-center gap-4 text-4xl sm:text-5xl md:text-6xl mb-2 font-black leading-tight">
+                <Target className="w-12 h-12 md:w-16 md:h-16 text-indigo-glow animate-pulse" />
                 Ace Technical
               </span>
               <span className="text-white text-4xl sm:text-5xl md:text-6xl font-black">Interviews</span>
@@ -103,6 +104,15 @@ export default function HeroSection({ onGetStarted }) {
                 className="px-8 py-4 bg-white rounded-full font-bold text-lg text-black shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] transition-shadow"
               >
                 Get Started
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+                className="px-8 py-4 glass-strong rounded-full font-bold text-lg text-white border border-white/20 hover:border-white/40 transition-all"
+              >
+                View Pricing
               </motion.button>
             </motion.div>
           </motion.div>

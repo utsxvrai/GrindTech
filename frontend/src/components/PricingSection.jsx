@@ -106,7 +106,7 @@ export default function PricingSection() {
   }
 
   return (
-    <section className="relative py-20 px-4 sm:px-6 lg:px-8">
+    <section id="pricing" className="relative py-20 px-4 sm:px-6 lg:px-8">
       <div className="absolute inset-0 bg-gradient-to-b from-deep-dark via-indigo-glow/3 to-deep-dark" />
 
       <div className="relative z-10 max-w-6xl mx-auto">

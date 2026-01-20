@@ -3,7 +3,6 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import HeroSection from '../components/HeroSection'
 import FeaturesSection from '../components/FeaturesSection'
-import VoiceDemo from '../components/VoiceDemo'
 import PricingSection from '../components/PricingSection'
 import SocialProof from '../components/SocialProof'
 import Footer from '../components/Footer'
@@ -41,7 +40,6 @@ export default function LandingPage() {
       <ScrollIndicator />
       <HeroSection onGetStarted={handleGetStarted} />
       <FeaturesSection />
-      <VoiceDemo />
       <PricingSection />
       <SocialProof />
       <Footer />
