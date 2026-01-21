@@ -226,6 +226,15 @@ export default function TechTopicGenericModal({
         }
     };
 
+    const handlePreviousQuestion = () => {
+        setEvaluationResult(null);
+        setAnswer("");
+        setPartialTranscript("");
+        if (currentQuestionIndex > 0) {
+            setCurrentQuestionIndex(prev => prev - 1);
+        }
+    };
+
     const getCombinedAnswer = () => {
         if (!partialTranscript) return answer;
         return answer + (answer.trim() ? " " : "") + partialTranscript;
@@ -346,6 +355,7 @@ export default function TechTopicGenericModal({
                                                 questions={topic.questions}
                                                 currentQuestionIndex={currentQuestionIndex}
                                                 evaluationResult={evaluationResult}
+                                                answeredQuestionIds={answeredQuestionIds}
                                                 isEvaluating={isEvaluating}
                                                 isRecording={isRecording}
                                                 partialTranscript={partialTranscript}
@@ -360,6 +370,7 @@ export default function TechTopicGenericModal({
                                                     setEvaluationResult(null);
                                                     setAnswer("");
                                                 }}
+                                                onPreviousQuestion={handlePreviousQuestion}
                                                 onNextQuestion={handleNextQuestion}
                                                 onBackToResources={handleBackToResources}
                                                 onNextLevel={async () => {

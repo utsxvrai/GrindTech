@@ -24,11 +24,11 @@ export default function PaymentPage() {
       
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: orderResponse.amount, // backend returns object from createOrder
-        currency: orderResponse.currency,
+        amount: orderResponse.data.amount,
+        currency: orderResponse.data.currency,
         name: "GrindTech",
         description: "Upgrade to Pro Plan",
-        order_id: orderResponse.id,
+        order_id: orderResponse.data.id,
         handler: async function (response) {
           try {
             const verificationData = {

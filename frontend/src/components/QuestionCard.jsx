@@ -22,13 +22,17 @@ export default function QuestionCard({
     onBackToResources = () => {},
     isLastQuestion = false,
     isLevelComplete = false,
-    onNextLevel = () => {}
+    onNextLevel = () => {},
+    answeredQuestionIds = new Set(),
+    onPreviousQuestion = () => {}
 }) {
     const navigate = useNavigate();
     const [showIdealAnswer, setShowIdealAnswer] = useState(false);
     const [activeTab, setActiveTab] = useState('results');
     const [showMicroTooltip, setShowMicroTooltip] = useState(false);
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+
+    const isAlreadyAnswered = questions[currentQuestionIndex] && answeredQuestionIds.has(questions[currentQuestionIndex].qid);
 
     // Map accent color to Tailwind classes
     const colorMap = {
@@ -127,15 +131,47 @@ export default function QuestionCard({
                     <div className="flex items-center gap-3 sm:gap-4">
                         <button
                             onClick={onBackToResources}
-                            className="p-2 sm:p-3 rounded-xl hover:bg-white/10 text-gray-400 hover:text-white transition-all hover:scale-105 flex-shrink-0"
+                            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all text-xs font-bold uppercase tracking-wider"
                         >
-                            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <ChevronLeft className="w-4 h-4" />
+                            <span>Resources</span>
                         </button>
-                        <div className="min-w-0 flex-1">
-                            <h3 className="text-xs sm:text-sm font-bold text-gray-300 uppercase tracking-wider truncate">
-                                Question {currentQuestionIndex + 1} of {questions.length}
-                            </h3>
-                            <p className="text-xs text-gray-500 mt-1 hidden sm:block">Technical Assessment</p>
+
+                        <div className="h-8 w-px bg-white/10 mx-1" />
+
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={onPreviousQuestion}
+                                disabled={currentQuestionIndex === 0}
+                                className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                            >
+                                <ChevronLeft className="w-5 h-5" />
+                            </button>
+
+                            <div className="min-w-[100px] text-center">
+                                <h3 className="text-xs sm:text-sm font-bold text-gray-300 uppercase tracking-wider truncate">
+                                    Q {currentQuestionIndex + 1} / {questions.length}
+                                </h3>
+                            </div>
+
+                            <button
+                                onClick={onNextQuestion}
+                                disabled={currentQuestionIndex === questions.length - 1}
+                                className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                            >
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+
+                            {isAlreadyAnswered && (
+                                <motion.div
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="hidden lg:flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/10 border border-green-500/20 ml-2 shadow-[0_0_15px_rgba(34,197,94,0.1)]"
+                                >
+                                    <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
+                                    <span className="text-[9px] font-black text-green-500 uppercase tracking-widest whitespace-nowrap">Answered Already</span>
+                                </motion.div>
+                            )}
                         </div>
                     </div>
                     <div className="flex flex-col items-start sm:items-end gap-2 flex-shrink-0">
