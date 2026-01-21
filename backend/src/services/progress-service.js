@@ -2,54 +2,69 @@ const { ProgressRepository, LevelCompletionRepository } = require("../repositori
 const { TopicRepository, QuestionRepository } = require("../repositories");
 const { UserService } = require("./user-service");
 const { StatusCodes } = require("http-status-codes");
+const redis = require("../config/redis-config");
 
 const progressRepository = new ProgressRepository();
 const levelCompletionRepository = new LevelCompletionRepository();
 const topicRepository = new TopicRepository();
 const questionRepository = new QuestionRepository();
 
-// Simple in-memory cache
-const cache = new Map();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 300; // 5 minutes in seconds for Redis EX
 
 /**
- * Cache utility functions
+ * Cache utility functions using Redis
  */
 function getCacheKey(userId, type, id) {
-    return `${userId}:${type}:${id}`;
+    return `progress:${userId}:${type}:${id}`;
 }
 
-function setCache(key, data) {
-    cache.set(key, {
-        data,
-        timestamp: Date.now()
-    });
+async function setCache(key, data) {
+    try {
+        await redis.set(key, data, { ex: CACHE_TTL });
+    } catch (err) {
+        console.error("Redis Cache Error (Set):", err);
+    }
 }
 
-function getCache(key) {
-    const cached = cache.get(key);
-    if (!cached) return null;
-
-    // Check if cache is expired
-    if (Date.now() - cached.timestamp > CACHE_TTL) {
-        cache.delete(key);
+async function getCache(key) {
+    try {
+        return await redis.get(key);
+    } catch (err) {
+        console.error("Redis Cache Error (Get):", err);
         return null;
     }
-
-    return cached.data;
 }
 
-function invalidateCache(userId, type, id) {
-    const key = getCacheKey(userId, type, id);
-    cache.delete(key);
+async function invalidateCache(userId, type, id) {
+    try {
+        const key = getCacheKey(userId, type, id);
+        await redis.del(key);
+    } catch (err) {
+        console.error("Redis Cache Error (Del):", err);
+    }
 }
 
-function invalidateUserCache(userId) {
-    // Remove all cache entries for this user
-    for (const key of cache.keys()) {
-        if (key.startsWith(`${userId}:`)) {
-            cache.delete(key);
+async function invalidateUserCache(userId) {
+    try {
+        // Since Upstash supports keys() or we can use a set to track user keys
+        // For simplicity and performance, we'll use a prefix scan if needed, 
+        // but often it's better to version user cache or just delete known keys.
+        // Upstash/Redis doesn't have a native "delete by prefix" without Lua or scan.
+        // We'll target the specific progress patterns.
+        const patterns = [
+            `progress:${userId}:tech:*`,
+            `progress:${userId}:topic:*`,
+            `progress:${userId}:level:*`
+        ];
+        
+        for (const pattern of patterns) {
+            const keys = await redis.keys(pattern);
+            if (keys && keys.length > 0) {
+                await redis.del(...keys);
+            }
         }
+    } catch (err) {
+        console.error("Redis Cache Error (InvalidateUser):", err);
     }
 }
 
@@ -58,19 +73,14 @@ function invalidateUserCache(userId) {
  */
 async function recordAnswer(userId, questionId, techId, topicId, score = null) {
     try {
-        // console.log('📝 Recording answer:', { userId, questionId, techId, topicId, score });
         await progressRepository.recordAnswer(userId, questionId, techId, topicId, score);
-        // console.log('✅ Answer recorded successfully');
         
-        // Check if all questions in the topic are answered
-        // Fetch topic with questions included
         const topicWithQuestions = await topicRepository.model.findUnique({
             where: { topicId },
             include: { questions: true }
         });
         
         if (!topicWithQuestions) {
-            // console.error('❌ Topic not found:', topicId);
             return {
                 status: StatusCodes.NOT_FOUND,
                 error: { message: "Topic not found" }
@@ -80,29 +90,17 @@ async function recordAnswer(userId, questionId, techId, topicId, score = null) {
         const totalQuestions = topicWithQuestions?.questions?.length || 0;
         const answeredCount = await progressRepository.getAnsweredCount(userId, topicId);
 
-        // // console.log('📊 Progress check:', {
-        //     totalQuestions,
-        //     answeredCount,
-        //     topicId,
-        //     questionIds: topicWithQuestions?.questions?.map(q => q.qid)
-        // // });
-
         const isLevelComplete = totalQuestions > 0 && answeredCount >= totalQuestions;
+        const isLastQuestion = answeredCount === totalQuestions - 1 && !isLevelComplete;
 
-        // console.log('🎯 Level complete?', isLevelComplete);
-        const isLastQuestion = answeredCount === totalQuestions - 1 && !isLevelComplete; // Before this answer, it was the last unanswered question
-
-        // If level is complete, mark it as completed
         if (isLevelComplete) {
             await levelCompletionRepository.markLevelComplete(userId, techId, topicId);
         }
 
-        // Get next topic information
         let nextTopic = null;
         let isLastTopic = false;
 
         if (isLevelComplete) {
-            // Find the next topic in sequence
             const allTopics = await topicRepository.findAllByTechId(techId);
             const currentTopicIndex = allTopics.findIndex(t => t.topicId === topicId);
 
@@ -117,7 +115,7 @@ async function recordAnswer(userId, questionId, techId, topicId, score = null) {
         }
 
         // Invalidate cache for this user
-        invalidateUserCache(userId);
+        await invalidateUserCache(userId);
 
         return {
             status: StatusCodes.OK,
@@ -125,7 +123,7 @@ async function recordAnswer(userId, questionId, techId, topicId, score = null) {
                 answeredCount,
                 totalQuestions,
                 isLevelComplete,
-                isLastQuestion: isLastQuestion && answeredCount + 1 === totalQuestions, // This answer completes the topic
+                isLastQuestion: isLastQuestion && answeredCount + 1 === totalQuestions,
                 nextTopic,
                 isLastTopic,
                 congratulations: isLevelComplete ? "Congratulations! You've completed this topic!" : null
@@ -133,7 +131,6 @@ async function recordAnswer(userId, questionId, techId, topicId, score = null) {
         };
     } catch (error) {
         console.error('❌ Error in recordAnswer:', error);
-        console.error('Stack:', error.stack);
         return {
             status: StatusCodes.INTERNAL_SERVER_ERROR,
             error: error.message
@@ -147,10 +144,9 @@ async function recordAnswer(userId, questionId, techId, topicId, score = null) {
 async function getTopicProgress(userId, topicId) {
     try {
         const cacheKey = getCacheKey(userId, 'topic', topicId);
-        const cachedResult = getCache(cacheKey);
+        const cachedResult = await getCache(cacheKey);
 
         if (cachedResult) {
-
             return cachedResult;
         }
 
@@ -178,10 +174,7 @@ async function getTopicProgress(userId, topicId) {
             }
         };
 
-        // Cache the result
-        setCache(cacheKey, result);
-
-
+        await setCache(cacheKey, result);
         return result;
     } catch (error) {
         return {
@@ -197,10 +190,9 @@ async function getTopicProgress(userId, topicId) {
 async function getTechProgress(userId, techId) {
     try {
         const cacheKey = getCacheKey(userId, 'tech', techId);
-        const cachedResult = getCache(cacheKey);
+        const cachedResult = await getCache(cacheKey);
 
         if (cachedResult) {
-
             return cachedResult;
         }
 
@@ -211,13 +203,11 @@ async function getTechProgress(userId, techId) {
             status: StatusCodes.OK,
             data: {
                 progress,
-                completedTopicIds: completedTopicIds // Return as array (Sets don't serialize to JSON)
+                completedTopicIds: completedTopicIds
             }
         };
 
-        // Cache the result
-        setCache(cacheKey, result);
-
+        await setCache(cacheKey, result);
         return result;
     } catch (error) {
         return {
@@ -233,10 +223,9 @@ async function getTechProgress(userId, techId) {
 async function checkLevelComplete(userId, techId, topicId) {
     try {
         const cacheKey = getCacheKey(userId, 'level', `${techId}:${topicId}`);
-        const cachedResult = getCache(cacheKey);
+        const cachedResult = await getCache(cacheKey);
 
         if (cachedResult) {
-
             return cachedResult;
         }
 
@@ -247,9 +236,7 @@ async function checkLevelComplete(userId, techId, topicId) {
             data: { isComplete }
         };
 
-        // Cache the result
-        setCache(cacheKey, result);
-
+        await setCache(cacheKey, result);
         return result;
     } catch (error) {
         return {

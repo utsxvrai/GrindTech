@@ -1,6 +1,8 @@
 const fetch = global.fetch;
 const aiConfig = require("../config/ai-config");
 const BASE_PROMPTS = require("../utils/base-prompt");
+const redis = require("../config/redis-config");
+const crypto = require("crypto");
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const MODEL = "xiaomi/mimo-v2-flash:free";
@@ -59,9 +61,32 @@ function extractJSON(text) {
   throw new Error("No valid JSON object found in LLM response");
 }
 
+/**
+ * Generate a cache key for evaluation
+ */
+function getEvaluationCacheKey(question, answer, techName) {
+  const hash = crypto.createHash("md5")
+    .update(`${question.trim().toLowerCase()}|${answer.trim().toLowerCase()}|${techName.toLowerCase()}`)
+    .digest("hex");
+  return `eval:${hash}`;
+}
+
 async function evaluateAnswer(question, answer, techName) {
   if (!techName) {
     throw new Error("Tech name is required");
+  }
+
+  const cacheKey = getEvaluationCacheKey(question, answer, techName);
+
+  try {
+    // Try to get from cache first
+    const cachedResult = await redis.get(cacheKey);
+    if (cachedResult) {
+      // console.log("🚀 Cache Hit: Evaluation result found in Redis");
+      return cachedResult;
+    }
+  } catch (err) {
+    console.error("Redis Cache Error (Get):", err);
   }
 
   const normalizedTech = normalizeTechName(techName);
@@ -140,7 +165,7 @@ ${answer}
     }
 
     // 🔒 Safety clamps
-    return {
+    const result = {
       isCorrect: Boolean(parsed.isCorrect),
       score: Math.max(0, Math.min(parsed.score ?? 0, 10)),
       missingConcepts: parsed.missingConcepts || [],
@@ -148,6 +173,16 @@ ${answer}
       feedback: parsed.feedback || "",
       idealShortAnswer: parsed.idealShortAnswer || "",
     };
+
+    // Cache the result for 24 hours
+    try {
+      await redis.set(cacheKey, result, { ex: 24 * 60 * 60 });
+      // console.log("✅ Cache Set: Evaluation result saved to Redis");
+    } catch (err) {
+      console.error("Redis Cache Error (Set):", err);
+    }
+
+    return result;
 
   } catch (error) {
     // Return default evaluation result on any error

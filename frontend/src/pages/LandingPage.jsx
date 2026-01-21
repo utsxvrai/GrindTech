@@ -3,7 +3,6 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import HeroSection from '../components/HeroSection'
 import FeaturesSection from '../components/FeaturesSection'
-import PricingSection from '../components/PricingSection'
 import SocialProof from '../components/SocialProof'
 import Footer from '../components/Footer'
 import ScrollIndicator from '../components/ScrollIndicator'
@@ -30,17 +29,16 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-deep-dark text-white relative">
+    <div className="min-h-screen bg-black text-white relative">
       <SignedIn>
         {showTechSelection && (
           <TechSelection onClose={() => setShowTechSelection(false)} />
         )}
       </SignedIn>
-      
+
       <ScrollIndicator />
       <HeroSection onGetStarted={handleGetStarted} />
       <FeaturesSection />
-      <PricingSection />
       <SocialProof />
       <Footer />
     </div>

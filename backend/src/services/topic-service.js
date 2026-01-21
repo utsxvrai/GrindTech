@@ -1,11 +1,15 @@
 const {TopicRepository} = require("../repositories");
 const {StatusCodes} = require("http-status-codes");
+const redis = require("../config/redis-config");
 
 const topicRepository = new TopicRepository();
+const CACHE_TTL = 3600; // 1 hour
 
 async function create(data){
     try{
         const topic = await topicRepository.create(data);
+        await redis.del("topic:all");
+        if (data.techId) await redis.del(`topic:tech:${data.techId}`);
         return{
             status : StatusCodes.CREATED,
             data : topic
@@ -20,7 +24,11 @@ async function create(data){
 
 async function getAll(){
     try{
+        const cached = await redis.get("topic:all");
+        if (cached) return { status: StatusCodes.OK, data: cached };
+
         const topic = await topicRepository.findAll();
+        await redis.set("topic:all", topic, { ex: CACHE_TTL });
         return{
             status : StatusCodes.OK,
             data : topic
@@ -35,7 +43,12 @@ async function getAll(){
 
 async function get(id){
     try{
+        const cacheKey = `topic:id:${id}`;
+        const cached = await redis.get(cacheKey);
+        if (cached) return { status: StatusCodes.OK, data: cached };
+
         const topic = await topicRepository.findById(id);
+        await redis.set(cacheKey, topic, { ex: CACHE_TTL });
         return{
             status : StatusCodes.OK,
             data : topic
@@ -52,6 +65,12 @@ async function get(id){
 async function update(id,data){
     try{
         const topic = await topicRepository.update(id,data);
+        await redis.del("topic:all", `topic:id:${id}`);
+        // Invalidate tech-specific topic list if we have the topic
+        const updatedTopic = await topicRepository.findById(id);
+        if (updatedTopic && updatedTopic.techId) {
+            await redis.del(`topic:tech:${updatedTopic.techId}`);
+        }
         return{
             status : StatusCodes.OK,
             data : topic
@@ -66,10 +85,15 @@ async function update(id,data){
 
 async function remove(id){
     try{
-        const topic = await topicRepository.delete(id);
+        const topic = await topicRepository.findById(id);
+        const res = await topicRepository.delete(id);
+        await redis.del("topic:all", `topic:id:${id}`);
+        if (topic && topic.techId) {
+            await redis.del(`topic:tech:${topic.techId}`);
+        }
         return{
             status : StatusCodes.OK,
-            data : topic
+            data : res
         }
     }catch(error){
         return{
@@ -82,6 +106,10 @@ async function remove(id){
 
 async function getByName(name){
     try{
+        const cacheKey = `topic:name:${name}`;
+        const cached = await redis.get(cacheKey);
+        if (cached) return { status: StatusCodes.OK, data: cached };
+
         const topic = await topicRepository.findByName(name);
         if(!topic) {
             return {
@@ -89,6 +117,7 @@ async function getByName(name){
                 error: { message: "Topic not found" }
             }
         }
+        await redis.set(cacheKey, topic, { ex: CACHE_TTL });
         return{
             status : StatusCodes.OK,
             data : topic
@@ -103,6 +132,10 @@ async function getByName(name){
 
 async function getTopicsByTechId(techId){
     try{
+        const cacheKey = `topic:tech:${techId}`;
+        const cached = await redis.get(cacheKey);
+        if (cached) return { status: StatusCodes.OK, data: cached };
+
         const topics = await topicRepository.findAllByTechId(techId);
         if(!topics) {
             return {
@@ -122,6 +155,7 @@ async function getTopicsByTechId(techId){
             return aNum - bNum;
         });
         
+        await redis.set(cacheKey, topics, { ex: CACHE_TTL });
         return{
             status : StatusCodes.OK,
             data : topics
