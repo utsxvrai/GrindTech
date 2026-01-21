@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Hexagon, X, ChevronRight, CheckCircle2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
 import api from '../api/axios';
@@ -41,6 +41,7 @@ export default function TechTopicGenericModal({
     const [audioContext, setAudioContext] = useState(null);
     const [mediaStream, setMediaStream] = useState(null);
     const [processor, setProcessor] = useState(null);
+    const lastAbsorbedTranscript = useRef(""); // Track manual-absorbed text to ignore late final packets
 
     // Fetch progress when topic changes
     useEffect(() => {
@@ -91,15 +92,32 @@ export default function TechTopicGenericModal({
             if (!data?.text) return;
 
             if (type === "partial") {
-                 setPartialTranscript(data.text);
+                setPartialTranscript(data.text);
             }
 
             if (type === "final") {
+                const finalStr = data.text.trim().toLowerCase();
+                
                 setAnswer(prev => {
-                    const separator = prev.trim() ? " " : "";
-                    return prev + separator + data.text;
+                    const trimmedPrev = prev.trim();
+                    
+                    // 1. Check if we already manual-absorbed this specific text
+                    const absorbed = lastAbsorbedTranscript.current.trim().toLowerCase();
+                    if (absorbed && finalStr === absorbed) {
+                        // Reset absorbed state once matched
+                        lastAbsorbedTranscript.current = "";
+                        return prev;
+                    }
+
+                    // 2. Simple duplicate check to prevent double-appending final packets
+                    if (trimmedPrev.toLowerCase().endsWith(finalStr)) {
+                        return prev;
+                    }
+                    
+                    const needsSpace = prev && !prev.endsWith(" ");
+                    return prev + (needsSpace ? " " : "") + data.text;
                 });
-                setPartialTranscript("");
+                setPartialTranscript(""); 
             }
         });
 
@@ -171,6 +189,17 @@ export default function TechTopicGenericModal({
     // but good to have reset logic here if needed. 
     // For now, we rely on the component being unmounted/remounted or 'isOpen' control if we wanted to reset.
     // Since AnimatePresence removes it, state resets on close/open.)
+
+    const handleAnswerChange = (newVal) => {
+        // If there's a partial transcript, mark it as "absorbed" 
+        // because newVal (from displayValue) already includes it.
+        // This stops the 'final' packet from re-appending it later.
+        if (partialTranscript.trim()) {
+            lastAbsorbedTranscript.current = partialTranscript;
+        }
+        setAnswer(newVal);
+        setPartialTranscript("");
+    };
 
     const handleStartPrepare = () => {
         setDialogStep(1);
@@ -345,7 +374,7 @@ export default function TechTopicGenericModal({
                                                 isPro={isPro}
                                                 accentColor={accentColor}
                                                 answer={answer}
-                                                onAnswerChange={setAnswer}
+                                                onAnswerChange={handleAnswerChange}
                                                 onStartRecording={startRecording}
                                                 onStopRecording={stopRecording}
                                                 onSubmitAnswer={handleSubmitAnswer}

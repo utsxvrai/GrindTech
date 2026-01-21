@@ -49,8 +49,9 @@ export default function QuestionCard({
     const colors = colorMap[accentColor] || colorMap['neon-green'];
 
     const getCombinedAnswer = () => {
-        const combined = answer + (partialTranscript ? " " + partialTranscript : "");
-        return combined.trim();
+        if (!partialTranscript) return answer;
+        const separator = answer && !answer.endsWith(" ") ? " " : "";
+        return answer + separator + partialTranscript;
     };
 
     if (!questions || questions.length === 0) {
@@ -116,12 +117,21 @@ export default function QuestionCard({
                     {/* Answer Input */}
                     <div className="relative mb-6">
                         <textarea
-                            value={answer}
+                            value={getCombinedAnswer()}
                             onChange={(e) => onAnswerChange(e.target.value)}
+                            onFocus={() => isRecording && onStopRecording()}
                             placeholder="Start typing your answer here... 💭"
                             disabled={isEvaluating}
                             className={`w-full h-48 sm:h-56 lg:h-64 bg-white/5 border-2 border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 resize-none transition-all disabled:opacity-50 backdrop-blur-sm text-sm sm:text-base leading-relaxed hover:bg-white/10 hover:border-white/30`}
                         />
+
+                        {/* Recording Indicator Overlay */}
+                        {isRecording && (
+                            <div className="absolute top-4 right-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 backdrop-blur-md animate-pulse pointer-events-none">
+                                <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                                <span className="text-[10px] font-bold text-red-500 uppercase tracking-tighter">Listening...</span>
+                            </div>
+                        )}
 
                         {/* Microphone Button Inside Input */}
                         <button
@@ -143,15 +153,6 @@ export default function QuestionCard({
                             {!isPro ? <Lock className="w-4 h-4 sm:w-5 sm:h-5" /> : (isRecording ? <X className="w-4 h-4 sm:w-5 sm:h-5" /> : <Mic className="w-4 h-4 sm:w-5 sm:h-5" />)}
                         </button>
 
-                        {/* Partial Transcript Overlay */}
-                        {partialTranscript && (
-                            <div className="absolute bottom-16 sm:bottom-20 left-4 sm:left-6 right-4 sm:right-6 p-2 sm:p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 backdrop-blur-sm">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                                    <span className="text-xs sm:text-sm text-blue-300 italic">{partialTranscript}</span>
-                                </div>
-                            </div>
-                        )}
                     </div>
 
                     {/* Submit Button */}
