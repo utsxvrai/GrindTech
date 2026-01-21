@@ -20,7 +20,8 @@ export default function QuestionCard({
     onNextQuestion = () => {},
     onBackToResources = () => {},
     isLastQuestion = false,
-    isLevelComplete = false
+    isLevelComplete = false,
+    onNextLevel = () => {}
 }) {
     const navigate = useNavigate();
     const [showIdealAnswer, setShowIdealAnswer] = useState(false);
@@ -179,7 +180,7 @@ export default function QuestionCard({
                     {/* Action Buttons (when evaluation is done) */}
                     {evaluationResult && (
                         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                            {currentQuestionIndex < questions.length - 1 && (
+                            {currentQuestionIndex < questions.length - 1 ? (
                                 <button
                                     onClick={onNextQuestion}
                                     className={`flex-1 py-3 sm:py-4 rounded-xl sm:rounded-2xl ${colors.primary} font-bold text-sm tracking-wider transition-all shadow-xl flex items-center justify-center gap-2 sm:gap-3 hover:scale-[1.02] active:scale-[0.98]`}
@@ -187,11 +188,20 @@ export default function QuestionCard({
                                     <span className="text-xs sm:text-sm">Next Question</span>
                                     <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </button>
+                            ) : (
+                                <button
+                                    onClick={onNextLevel}
+                                    className={`flex-[2] py-4 sm:py-5 rounded-xl sm:rounded-2xl ${colors.primary} font-black text-sm sm:text-base lg:text-lg uppercase tracking-[0.2em] transition-all shadow-[0_0_30px_rgba(0,0,0,0.4)] flex items-center justify-center gap-3 hover:scale-[1.05] active:scale-[0.95] border-2 border-white/10`}
+                                >
+                                    <Zap className="w-5 h-5 sm:w-6 sm:h-6 fill-current" />
+                                    <span>Go to Next Level</span>
+                                    <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                                </button>
                             )}
 
                             <button
                                 onClick={onAnswerAgain}
-                                className={`flex-1 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-white font-medium text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]`}
+                                className={`${isLastQuestion ? 'flex-none px-6 sm:px-10' : 'flex-1'} py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-white font-medium text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]`}
                             >
                                 <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5" />
                                 <span className="text-xs sm:text-sm">Answer Again</span>

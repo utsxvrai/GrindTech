@@ -106,8 +106,9 @@ export default function NodeJsPage() {
     // Pro users can access all cards, free users have level-based restrictions
     if (!isPro) {
       const userLevelsDone = userData?.levelsDone || user?.publicMetadata?.levelsDone || user?.levelsDone || 0;
-      // If levelsDone is X, unlock levels 0 to X+1
-      const isLocked = index > (userLevelsDone + 1);
+      // If levelsDone is X, level X is the next one to complete
+      // Robust check: Is the previous level completed?
+      const isLocked = index > 0 && !completedTopicIds.has(fetchedTopics[index - 1]?.topicId);
       if (isLocked) return;
     }
 
@@ -360,24 +361,17 @@ fill="currentColor" viewBox="0 0 24 24" >
                 // Pro users can access all levels, free users have level-based locking
                 // If levelsDone is X, unlock levels 0 to X+1 (so level X+2 is locked)
                 // Example: levelsDone=0 unlocks levels 0,1; levelsDone=1 unlocks levels 0,1,2
-                const isLocked = isPro ? false : index > (userLevelsDone + 1);
+                // A level is locked if it's not the first one AND the previous one isn't finished
+                const isLocked = isPro ? false : (index > 0 && !completedTopicIds.has(fetchedTopics[index - 1].topicId));
                 const isCompleted = completedTopicIds.has(module.topicId);
                 
-                // Find the next level that should be worked on
-                // For pro users: first uncompleted unlocked level
-                // For free users: the level right after the highest completed level
-                let isCurrent = false;
-                if (!isLocked && !isCompleted) {
-                  if (isPro) {
-                    // For pro users, highlight the first uncompleted level
-                    const previousLevelsCompleted = fetchedTopics.slice(0, index).every((_, i) => 
-                      completedTopicIds.has(fetchedTopics[i].topicId)
-                    );
-                    isCurrent = previousLevelsCompleted;
-                  } else {
-                    // For free users, highlight the next level after completed ones
-                    isCurrent = index === (userLevelsDone + 1);
-                  }
+                // Highlight the first uncompleted level that is also unlocked
+                let isCurrent = !isLocked && !isCompleted;
+                // If there are multiple unlocked/uncompleted (shouldn't happen with strict locking but good for safety), 
+                // only highlight the first one
+                if (isCurrent && index > 0) {
+                  const previousUncompleted = fetchedTopics.slice(0, index).some(t => !completedTopicIds.has(t.topicId));
+                  if (previousUncompleted) isCurrent = false;
                 }
                 
                 return (

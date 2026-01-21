@@ -265,33 +265,11 @@ export default function TechTopicGenericModal({
                 // 🚀 Mark question as answered locally
                 setAnsweredQuestionIds(prev => {
                     const newSet = new Set([...prev, currentQuestion.qid]);
-                    console.log('✅ Question marked as answered:', currentQuestion.qid);
-                    console.log('📊 Answered questions:', Array.from(newSet));
                     return newSet;
                 });
                 
-                // 🔄 Refetch progress from database to get latest completion status
-                setTimeout(async () => {
-                    const progressResponse = await fetchProgress();
-                    
-                    // Check if this was the last question and level is now complete
-                    if (response.data?.data?.isLevelComplete && currentQuestionIndex === topic.questions.length - 1) {
-                        console.log('🎉 Level completed! Showing congratulations...');
-                        setShowCongratulations(true);
-                        setNextTopicInfo(response.data.data.nextTopic);
-                        setIsLastTopic(response.data.data.isLastTopic);
-                        
-                        // Auto-close congratulations after 5 seconds and navigate
-                        setTimeout(() => {
-                            setShowCongratulations(false);
-                            if (response.data.data.nextTopic) {
-                                // Navigate to next topic - you could emit an event here
-                                console.log('➡️ Ready to navigate to next topic:', response.data.data.nextTopic);
-                            }
-                            onClose(); // Close modal
-                        }, 5000);
-                    }
-                }, 500);
+                // 🔄 Trigger a background fetch to keep everything in sync
+                fetchProgress();
             }
         } catch (error) {
             console.error("❌ Evaluation failed:", error);
@@ -384,41 +362,17 @@ export default function TechTopicGenericModal({
                                                 }}
                                                 onNextQuestion={handleNextQuestion}
                                                 onBackToResources={handleBackToResources}
+                                                onNextLevel={async () => {
+                                                    console.log('🎯 Next Level Navigation triggered');
+                                                    if (onLevelComplete) {
+                                                        await onLevelComplete(levelIndex);
+                                                    }
+                                                    window.location.reload();
+                                                }}
                                                 isLastQuestion={currentQuestionIndex === topic.questions.length - 1}
                                                 isLevelComplete={isLevelComplete}
                                             />
                                             
-                                            {/* 🚀 Next Level Button - Show when level is complete */}
-                                            {isLevelComplete && currentQuestionIndex === topic.questions.length - 1 && evaluationResult && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, y: 20 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    className="mt-4 p-4 rounded-xl bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30"
-                                                >
-                                                    <div className="flex items-center gap-3 mb-3">
-                                                        <CheckCircle2 className="w-6 h-6 text-green-500" />
-                                                        <h3 className="text-lg font-bold text-white">Level Complete! 🎉</h3>
-                                                    </div>
-                                                    <p className="text-sm text-gray-300 mb-4">
-                                                        Congratulations! You've answered all questions in this level. Ready to move to the next level?
-                                                    </p>
-                                                    <button
-                                                        onClick={async () => {
-                                                            console.log('🎯 Unlock Next Level clicked for level:', levelIndex);
-                                                            // Trigger level unlock in parent (increment levelsDone)
-                                                            if (onLevelComplete) {
-                                                                await onLevelComplete(levelIndex);
-                                                            }
-                                                            // Close modal
-                                                            onClose();
-                                                        }}
-                                                        className={`w-full py-3 rounded-xl ${accentColor === 'blue-500' ? 'bg-blue-500 hover:bg-blue-600 shadow-blue-500/20' : 'bg-neon-green hover:bg-[#5ab33e] shadow-neon-green/20'} ${accentColor === 'blue-500' ? 'text-white' : 'text-black'} font-bold text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2`}
-                                                    >
-                                                        Unlock Next Level
-                                                        <ChevronRight className="w-4 h-4" />
-                                                    </button>
-                                                </motion.div>
-                                            )}
                                         </>
                                     )}
                                 </>
