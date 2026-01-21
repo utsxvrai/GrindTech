@@ -191,7 +191,7 @@ export default function QuestionCard({
                 <div className="mb-2">
                     <div className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-zinc-900/80 to-black/60 border border-white/10 shadow-2xl max-w-4xl w-full backdrop-blur-sm">
                         <div className="text-center">
-                            <p className="text-lg sm:text-xl lg:text-2xl font-medium text-white leading-relaxed">
+                            <p className="text-lg sm:text-xl lg:text-xl font-medium text-white leading-relaxed">
                                 {questions[currentQuestionIndex].question}
                             </p>
                         </div>
@@ -209,7 +209,7 @@ export default function QuestionCard({
                             value={getCombinedAnswer()}
                             onChange={(e) => onAnswerChange(e.target.value)}
                             onFocus={() => isRecording && onStopRecording()}
-                            placeholder="Start typing your answer here... 💭"
+                            placeholder="Start typing your answer here... "
                             disabled={isEvaluating}
                             className={`w-full h-48 sm:h-56 lg:h-64 bg-white/5 border-2 border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 resize-none transition-all disabled:opacity-50 backdrop-blur-sm text-sm sm:text-base leading-relaxed hover:bg-white/10 hover:border-white/30`}
                         />
