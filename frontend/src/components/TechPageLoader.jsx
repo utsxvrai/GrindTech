@@ -80,22 +80,7 @@ export default function TechPageLoader({ accentColor = 'neon-green' }) {
 
         <div className="z-10 flex flex-col items-center max-w-2xl px-6 text-center">
             {/* Animated Icon */}
-            <motion.div
-                animate={{ 
-                    rotate: [0, 360],
-                    scale: [1, 1.1, 1]
-                }}
-                transition={{ 
-                    rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-                    scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-                }}
-                className="mb-8 relative"
-            >
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border ${colors.border} flex items-center justify-center backdrop-blur-sm`}>
-                    <Sparkles className={`w-8 h-8 ${colors.text}`} />
-                </div>
-                <div className={`absolute -inset-2 ${colors.glow} blur-xl rounded-full -z-10`} />
-            </motion.div>
+            
 
             {/* Quote container with AnimatePresence for smooth transitions */}
             <div className="h-40 flex items-center justify-center">

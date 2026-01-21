@@ -1,6 +1,7 @@
-import { Zap, Loader2, Lock, RefreshCw, ChevronRight, ChevronLeft, Mic, Send, X, Eye, EyeOff } from 'lucide-react';
+import { Zap, Loader2, Lock, RefreshCw, ChevronRight, ChevronLeft, Mic, Send, X, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function QuestionCard({
     questions = [],
@@ -26,6 +27,8 @@ export default function QuestionCard({
     const navigate = useNavigate();
     const [showIdealAnswer, setShowIdealAnswer] = useState(false);
     const [activeTab, setActiveTab] = useState('results');
+    const [showMicroTooltip, setShowMicroTooltip] = useState(false);
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
     // Map accent color to Tailwind classes
     const colorMap = {
@@ -68,6 +71,55 @@ export default function QuestionCard({
 
     return (
         <div className="h-full grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            {/* Upgrade Dialog Overlay */}
+            <AnimatePresence>
+                {isUpgradeModalOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="max-w-md w-full bg-zinc-900 border border-white/10 rounded-3xl p-8 shadow-2xl text-center relative overflow-hidden"
+                        >
+                            {/* Decorative logic */}
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500" />
+                            
+                            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shadow-lg shadow-amber-500/10">
+                                <Sparkles className="w-10 h-10 text-amber-500" />
+                            </div>
+
+                            <h2 className="text-2xl font-bold text-white mb-4">Pro Feature Required</h2>
+                            
+                            <p className="text-gray-400 mb-8 leading-relaxed">
+                                To use the <span className="text-white font-semibold">microphone feature</span> you have to subscribe / upgrade to our Pro plan.
+                            </p>
+
+                            <div className="flex flex-col gap-3">
+                                <button
+                                    onClick={() => navigate('/payment')}
+                                    className="w-full py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-black uppercase tracking-wider transition-all shadow-xl shadow-amber-500/20 flex items-center justify-center gap-2 group"
+                                >
+                                    <Zap className="w-5 h-5 group-hover:scale-110 transition-transform fill-current" />
+                                    <span>Upgrade to Pro Now</span>
+                                </button>
+                                
+                                <button
+                                    onClick={() => setIsUpgradeModalOpen(false)}
+                                    className="w-full py-4 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white font-bold transition-colors"
+                                >
+                                    Maybe Later
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* LEFT SECTION: Question + Input (2/3 width on xl+) */}
             <div className="xl:col-span-2 flex flex-col h-full">
                 {/* Question Header with Progress */}
@@ -134,25 +186,48 @@ export default function QuestionCard({
                             </div>
                         )}
 
-                        {/* Microphone Button Inside Input */}
-                        <button
-                            onClick={() => {
-                                if (!isPro) {
-                                    navigate('/payment');
-                                    return;
-                                }
-                                isRecording ? onStopRecording() : onStartRecording();
-                            }}
-                            className={`absolute bottom-3 right-3 sm:bottom-4 sm:right-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all shadow-xl
-                                ${!isPro
-                                    ? "bg-amber-500/20 text-amber-500 hover:bg-amber-500/30 border border-amber-500/30"
-                                    : isRecording
-                                        ? "bg-red-500/20 text-red-500 border border-red-500/30 hover:bg-red-500/30"
-                                        : `bg-zinc-800/80 text-gray-400 hover:text-white border border-white/20 hover:bg-zinc-700/80 hover:border-white/30`
-                                }`}
+                        {/* Microphone/Lock Button Inside Input */}
+                        <div 
+                            className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 group/mic"
+                            onMouseEnter={() => !isPro && setShowMicroTooltip(true)}
+                            onMouseLeave={() => setShowMicroTooltip(false)}
                         >
-                            {!isPro ? <Lock className="w-4 h-4 sm:w-5 sm:h-5" /> : (isRecording ? <X className="w-4 h-4 sm:w-5 sm:h-5" /> : <Mic className="w-4 h-4 sm:w-5 sm:h-5" />)}
-                        </button>
+                            <AnimatePresence>
+                                {showMicroTooltip && !isPro && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        className="absolute bottom-full right-0 mb-4 px-4 py-2 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl whitespace-nowrap z-20"
+                                    >
+                                        <p className="text-xs font-bold text-white flex items-center gap-2">
+                                            <span className="text-amber-500">✨</span>
+                                            Go pro to use the microphone stt service
+                                        </p>
+                                        <div className="absolute top-full right-6 w-3 h-3 bg-zinc-900 border-r border-b border-white/10 rotate-45 -translate-y-1.5" />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
+                            <button
+                                onClick={() => {
+                                    if (!isPro) {
+                                        setIsUpgradeModalOpen(true);
+                                        return;
+                                    }
+                                    isRecording ? onStopRecording() : onStartRecording();
+                                }}
+                                className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all shadow-xl
+                                    ${!isPro
+                                        ? "bg-amber-500/10 text-amber-500 border border-amber-500/20 hover:bg-amber-500/20 hover:border-amber-500/30 scale-100 hover:scale-110"
+                                        : isRecording
+                                            ? "bg-red-500/20 text-red-500 border border-red-500/30 hover:bg-red-500/30"
+                                            : `bg-zinc-800/80 text-gray-400 hover:text-white border border-white/20 hover:bg-zinc-700/80 hover:border-white/30`
+                                    }`}
+                            >
+                                {isRecording ? <X className="w-4 h-4 sm:w-5 sm:h-5" /> : <Mic className="w-4 h-4 sm:w-5 sm:h-5" />}
+                            </button>
+                        </div>
 
                     </div>
 
