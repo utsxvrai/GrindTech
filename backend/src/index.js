@@ -18,6 +18,8 @@ app.use(
     origin: [
       "https://grindtech.vercel.app",
       "http://localhost:5173",
+      "https://grindtech.work.gd",
+      "http://grindtech.work.gd",
     ],
     credentials: true,
   })
@@ -44,9 +46,10 @@ app.get("/health", (req, res) => {
 async function warmDB() {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    console.log("Neon DB warmed");
+    console.log("Neon DB warmed successfully");
   } catch (e) {
-    console.error("DB warm failed", e);
+    console.log("⚠️ DB warmup failed. This is common if the Neon endpoint is suspended or if you're offline.");
+    console.log("   The app will still try to connect when you make an actual request.");
   }
 }
 
