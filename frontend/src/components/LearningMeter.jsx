@@ -105,9 +105,7 @@ export default function LearningMeter({ techId, accentColor = 'neon-green' }) {
               LEARNING PROGRESS
             </span>
           </div>
-          <span className="text-[10px] text-gray-400 font-medium tracking-wide">
-            Consistency is the key to mastery.
-          </span>
+      
         </div>
         <span className="text-white font-mono text-xl font-bold">
           {progress}%

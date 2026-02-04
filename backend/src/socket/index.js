@@ -1,5 +1,5 @@
 const { Server } = require("socket.io");
-const { STTService } = require("../services");
+const { STTService, MessageService } = require("../services");
 
 function initSocket(server){
     const io = new Server(server,{
@@ -15,6 +15,28 @@ function initSocket(server){
         console.log("🎤 Client connected:", socket.id);
 
         let sttConnection = null;
+
+        // Room-based Interview Channel
+        socket.on("join-tech-feed", async (techId) => {
+            if (!techId) return;
+            socket.join(`feed-${techId}`);
+            try {
+                const messages = await MessageService.getRecentMessages(techId);
+                socket.emit("recent-messages", messages);
+            } catch (error) {
+                console.error("Error fetching messages:", error);
+            }
+        });
+
+        socket.on("share-interview-experience", async (data) => {
+            try {
+                if (!data.techId) return;
+                const newMessage = await MessageService.createMessage(data);
+                io.to(`feed-${data.techId}`).emit("new-global-message", newMessage);
+            } catch (error) {
+                console.error("Error sharing experience:", error);
+            }
+        });
 
         socket.on("start-stt", async () => {
             if (sttConnection) return; // Already started

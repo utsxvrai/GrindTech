@@ -24,6 +24,7 @@ model User {
   topics               Topic[]
   progress             UserProgress[]
   levelCompletions     UserLevelCompletion[]
+  interviewMessages    InterviewMessage[]
 }
 
 model Topic {
@@ -41,6 +42,8 @@ model Tech {
   techId   String  @id @default(uuid())
   techName String
   topics   Topic[]
+
+  interviewMessages InterviewMessage[]
 }
 
 model Resource {
@@ -88,4 +91,15 @@ model UserLevelCompletion {
 
   @@unique([userId, techId, topicId])
   @@index([userId, techId])
+}
+
+model InterviewMessage {
+  id        String   @id @default(uuid())
+  content   String   // The interview question or tip
+  company   String?  // Optional: which company was it for?
+  createdAt DateTime @default(now())
+  userId    String
+  techId    String   // Technology identifier
+  user      User     @relation(fields: [userId], references: [uuid])
+  tech      Tech     @relation(fields: [techId], references: [techId])
 }

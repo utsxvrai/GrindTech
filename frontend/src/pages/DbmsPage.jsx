@@ -1,13 +1,14 @@
 import { useUser, useAuth, useClerk } from '@clerk/clerk-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Zap, Database, LogOut, X } from 'lucide-react'; 
+import { ArrowLeft, User, Zap, Database, LogOut, X, MessageSquare } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import TechCard from '../components/TechCard';
 import LearningMeter from '../components/LearningMeter';
 import api from '../api/axios';
 import TechPageLoader from '../components/TechPageLoader';
 import TechTopicGenericModal from '../components/TechTopicGenericModal';
+import InterviewExperienceChannel from '../components/InterviewExperienceChannel';
 
 const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || "").split(",").map(e => e.trim());
 
@@ -33,6 +34,7 @@ export default function DbmsPage() {
   const [isPro, setIsPro] = useState(false);
   const [userData, setUserData] = useState(null);
   const [showToast, setShowToast] = useState(false);
+  const [showMobileFeed, setShowMobileFeed] = useState(false);
 
   // Dialog State
   const [selectedTopic, setSelectedTopic] = useState(null);
@@ -46,57 +48,57 @@ export default function DbmsPage() {
     }, 3000);
 
     const fetchUserData = async () => {
-        try {
-            const token = await getToken();
-            const userResponse = await api.get('/user/me',
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`
-                }
-              }
-            );
-            if (userResponse.data && userResponse.data.data) {
-                setUserData(userResponse.data.data);
-                setIsPro(userResponse.data.data.plan === 'pro');
+      try {
+        const token = await getToken();
+        const userResponse = await api.get('/user/me',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
             }
-        } catch (error) {
-            console.error("Failed to fetch user data:", error);
+          }
+        );
+        if (userResponse.data && userResponse.data.data) {
+          setUserData(userResponse.data.data);
+          setIsPro(userResponse.data.data.plan === 'pro');
         }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
     };
 
     const fetchTopics = async () => {
-        try {
-            const techResponse = await api.get('/tech/name/DBMS');
-            if (techResponse && techResponse.data && techResponse.data.data) {
-                const techId = techResponse.data.data.techId;
-                setTechId(techId);
-                const topicsResponse = await api.get(`/topic/tech/${techId}`);
-                if (topicsResponse.data && Array.isArray(topicsResponse.data.data)) {
-                    setFetchedTopics(topicsResponse.data.data);
-                }
-                
-                // Fetch completed topics for this tech
-                try {
-                    const token = await getToken();
-                    const progressResponse = await api.get(`/progress/tech/${techId}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    });
-                    if (progressResponse?.data?.data?.completedTopicIds) {
-                        const completedIds = Array.isArray(progressResponse.data.data.completedTopicIds)
-                            ? progressResponse.data.data.completedTopicIds
-                            : [];
-                        setCompletedTopicIds(new Set(completedIds));
-                        console.log('✅ Completed topics loaded:', completedIds);
-                    }
-                } catch (progressError) {
-                    console.error("Failed to fetch completed topics:", progressError);
-                }
+      try {
+        const techResponse = await api.get('/tech/name/DBMS');
+        if (techResponse && techResponse.data && techResponse.data.data) {
+          const techId = techResponse.data.data.techId;
+          setTechId(techId);
+          const topicsResponse = await api.get(`/topic/tech/${techId}`);
+          if (topicsResponse.data && Array.isArray(topicsResponse.data.data)) {
+            setFetchedTopics(topicsResponse.data.data);
+          }
+
+          // Fetch completed topics for this tech
+          try {
+            const token = await getToken();
+            const progressResponse = await api.get(`/progress/tech/${techId}`, {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            });
+            if (progressResponse?.data?.data?.completedTopicIds) {
+              const completedIds = Array.isArray(progressResponse.data.data.completedTopicIds)
+                ? progressResponse.data.data.completedTopicIds
+                : [];
+              setCompletedTopicIds(new Set(completedIds));
+              console.log('✅ Completed topics loaded:', completedIds);
             }
-        } catch (error) {
-            console.error("Failed to initialize topics:", error);
+          } catch (progressError) {
+            console.error("Failed to fetch completed topics:", progressError);
+          }
         }
+      } catch (error) {
+        console.error("Failed to initialize topics:", error);
+      }
     };
 
     fetchUserData();
@@ -123,18 +125,18 @@ export default function DbmsPage() {
       console.log('✅ Pro user - no level unlocking needed');
       return; // Pro users don't need level unlocking
     }
-    
+
     try {
       console.log('🔓 Completing level:', completedLevelIndex);
       const token = await getToken();
       const currentLevelsDone = userData?.levelsDone || 0;
-      
+
       // Simple: increment levelsDone by 1
       const newLevelsDone = currentLevelsDone + 1;
       console.log(`📊 Incrementing levelsDone: ${currentLevelsDone} → ${newLevelsDone}`);
-      
+
       // Update user's levelsDone
-      await api.put('/user/me/levels', 
+      await api.put('/user/me/levels',
         { levelsDone: newLevelsDone },
         {
           headers: {
@@ -143,19 +145,19 @@ export default function DbmsPage() {
         }
       );
       console.log('✅ LevelsDone updated to:', newLevelsDone);
-      
+
       // Refresh user data
       const userResponse = await api.get('/user/me', {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      
+
       if (userResponse.data && userResponse.data.data) {
         setUserData(userResponse.data.data);
         console.log('✅ User data refreshed, levelsDone:', userResponse.data.data.levelsDone);
       }
-      
+
       // Refresh topics and completed status
       const techResponse = await api.get('/tech/name/DBMS');
       if (techResponse?.data?.data) {
@@ -166,7 +168,7 @@ export default function DbmsPage() {
           setFetchedTopics(topicsResponse.data.data);
           console.log('✅ Topics refreshed');
         }
-        
+
         // Refresh completed topics
         try {
           const progressResponse = await api.get(`/progress/tech/${techId}`, {
@@ -191,7 +193,7 @@ export default function DbmsPage() {
   };
 
   const getCleanTopicName = (name) => {
-      return name.replace(/[- ]\d+(?:-\d+)?$/, '');
+    return name.replace(/[- ]\d+(?:-\d+)?$/, '');
   };
 
   return (
@@ -205,7 +207,7 @@ export default function DbmsPage() {
         <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }} />
       </div>
-      
+
       {/* Header */}
       <header className="relative z-50 bg-transparent shrink-0">
         <div className="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
@@ -215,7 +217,7 @@ export default function DbmsPage() {
                 <ArrowLeft className="w-5 h-5 text-gray-400 group-hover:text-white" />
               </div>
             </Link>
-            
+
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-900 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.4)]">
                 <Database className="w-6 h-6 text-white" />
@@ -230,7 +232,7 @@ export default function DbmsPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={handleContributeClick}
               className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-sm font-medium text-gray-300 hover:text-white"
             >
@@ -239,7 +241,7 @@ export default function DbmsPage() {
             </button>
 
             <div className="relative">
-              <div 
+              <div
                 className="flex items-center gap-3 pl-4 border-l border-white/10 cursor-pointer"
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
               >
@@ -252,7 +254,7 @@ export default function DbmsPage() {
                       {isPro ? 'PRO' : 'FREE'}
                     </span>
                     {!isPro && (
-                      <button 
+                      <button
                         onClick={() => navigate('/payment')}
                         className="text-[10px] font-bold text-blue-500 hover:underline"
                       >
@@ -262,21 +264,21 @@ export default function DbmsPage() {
                   </div>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-800 to-black border border-white/10 flex items-center justify-center overflow-hidden relative z-50">
-                   {user?.imageUrl ? (
-                     <img src={user.imageUrl} alt="Profile" className="w-full h-full object-cover" />
-                   ) : (
-                     <User className="w-5 h-5 text-gray-400" />
-                   )}
+                  {user?.imageUrl ? (
+                    <img src={user.imageUrl} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-5 h-5 text-gray-400" />
+                  )}
                 </div>
               </div>
 
               {showProfileMenu && (
                 <>
-                  <div 
+                  <div
                     className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
                     onClick={() => setShowProfileMenu(false)}
                   />
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -299,7 +301,7 @@ export default function DbmsPage() {
                             {isPro ? 'PRO' : 'FREE'}
                           </span>
                           {!isPro && (
-                            <button 
+                            <button
                               onClick={() => navigate('/payment')}
                               className="text-[10px] font-bold text-blue-500 hover:underline"
                             >
@@ -311,14 +313,14 @@ export default function DbmsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <button 
+                      <button
                         onClick={handleContributeClick}
                         className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm font-medium text-gray-300 hover:text-white transition-colors"
                       >
                         <Zap className="w-4 h-4 text-blue-500" />
                         Contribute
                       </button>
-                      <button 
+                      <button
                         onClick={() => signOut()}
                         className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-500/10 text-sm font-medium text-gray-400 hover:text-red-400 transition-colors"
                       >
@@ -336,74 +338,131 @@ export default function DbmsPage() {
 
       {/* Main Content */}
       <main className="relative z-10 flex-grow flex flex-col px-6 py-8 max-w-[1600px] mx-auto w-full overflow-hidden">
-        
-        {/* Learning Meter Area */}
-        <div className="h-24 flex flex-col items-center justify-center mb-8 shrink-0">
-          {!showMeter ? (
-            <motion.p 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="text-gray-400 text-lg font-semibold text-capitalize tracking-wider uppercase"
-            >
-              Master the concepts of Databases. Level up your knowledge.
-            </motion.p>
-          ) : (
-            <LearningMeter techId={techId} accentColor="blue-500" />
-          )}
-        </div>
 
-
-        <div className="flex-grow overflow-y-auto w-full pr-2 pb-20 scrollbar-hide">
-          {fetchedTopics.length === 0 ? (
-             <TechPageLoader accentColor="blue-500" />
-          ) : (
-            <div className="flex flex-wrap justify-center gap-6 w-full">
-              {fetchedTopics.map((module, index) => {
-                const title = getCleanTopicName(module.name);
-                const userLevelsDone = userData?.levelsDone || user?.publicMetadata?.levelsDone || user?.levelsDone || 0;
-                // Pro users can access all levels, free users have level-based locking
-                // If levelsDone is X, unlock levels 0 to X+1 (so level X+2 is locked)
-                // Example: levelsDone=0 unlocks levels 0,1; levelsDone=1 unlocks levels 0,1,2
-                // A level is locked if it's not the first one AND the previous one isn't finished
-                const isLocked = isPro ? false : (index > 0 && !completedTopicIds.has(fetchedTopics[index - 1].topicId));
-                const isCompleted = completedTopicIds.has(module.topicId);
-                
-                // Highlight the first uncompleted level that is also unlocked
-                let isCurrent = !isLocked && !isCompleted;
-                if (isCurrent && index > 0) {
-                  const previousUncompleted = fetchedTopics.slice(0, index).some(t => !completedTopicIds.has(t.topicId));
-                  if (previousUncompleted) isCurrent = false;
-                }
-                
-                return (
-                  <motion.div
-                    key={module.topicId}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="h-28 w-64"
-                    onClick={() => handleCardClick(module, index)}
-                  >
-                    <TechCard 
-                      title={title}
-                      description={isCompleted ? `Level ${index} - Completed` : `Master ${title}`}
-                      level={index}
-                      status={isLocked ? 'locked' : (isCompleted ? 'completed' : 'unlocked')}
-                      isCurrent={isCurrent}
-                      accentColor="blue-500"
-                    />
-                  </motion.div>
-                );
-              })}
+        <div className="flex-grow flex gap-8 min-h-0 overflow-hidden">
+          {/* Left Column: Tech Cards Grid (65%) */}
+          <div className="flex-grow w-[60%] flex flex-col min-h-0 overflow-hidden">
+            {/* Top Area: Meter or Welcome Message */}
+            <div className="shrink-0 mb-6">
+              {!showMeter ? (
+                 <div className="h-24 flex items-center justify-center">
+                   <motion.p
+                     initial={{ opacity: 0, y: 10 }}
+                     animate={{ opacity: 1, y: 0 }}
+                     className="text-gray-400 text-lg font-semibold tracking-wider text-center"
+                   >
+                     MASTER DBMS LEVEL BY LEVEL.
+                   </motion.p>
+                 </div>
+              ) : (
+                <div className="px-2">
+                  <LearningMeter techId={techId} accentColor="blue-500" />
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Cards Grid */}
+            <div className="flex-grow overflow-y-auto pr-2 pb-32 scrollbar-hide">
+              {fetchedTopics.length === 0 ? (
+                <TechPageLoader accentColor="blue-500" />
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 w-full mb-12">
+                  {fetchedTopics.map((module, index) => {
+                    const title = getCleanTopicName(module.name);
+                    const isLocked = isPro ? false : (index > 0 && !completedTopicIds.has(fetchedTopics[index - 1].topicId));
+                    const isCompleted = completedTopicIds.has(module.topicId);
+
+                    let isCurrent = !isLocked && !isCompleted;
+                    if (isCurrent && index > 0) {
+                      const previousUncompleted = fetchedTopics.slice(0, index).some(t => !completedTopicIds.has(t.topicId));
+                      if (previousUncompleted) isCurrent = false;
+                    }
+
+                    return (
+                      <motion.div
+                        key={module.topicId}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="w-full h-full"
+                        onClick={() => handleCardClick(module, index)}
+                      >
+            <TechCard
+              title={title}
+              description={isCompleted ? `Level ${index} - Completed` : `Master ${title}`}
+              level={index}
+              status={isLocked ? 'locked' : (isCompleted ? 'completed' : 'unlocked')}
+              isCurrent={isCurrent}
+              accentColor="blue-500"
+            />
+          </motion.div>
+        );
+      })}
+    </div>
+  )}
+</div>
+          </div>
+
+          {/* Right Column: Global Feed (35%) */}
+          <div className="hidden lg:flex flex-col w-[35%] min-h-0">
+            <InterviewExperienceChannel 
+              accentColor="blue-500" 
+              userId={userData?.uuid} 
+              username={userData?.username}
+              techId={techId}
+              techName="DBMS"
+            />
+          </div>
         </div>
+
+        {/* Floating Action Button for Mobile Feed */}
+        <button
+          onClick={() => setShowMobileFeed(true)}
+          className="lg:hidden fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full bg-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
+        >
+          <MessageSquare className="w-6 h-6" />
+        </button>
       </main>
+
+      {/* Mobile Feed Overlay */}
+      <AnimatePresence>
+        {showMobileFeed && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-[9999] bg-zinc-950 lg:hidden flex flex-col"
+          >
+            <div className="flex items-center justify-between p-4 border-b border-white/10 bg-zinc-900/50 backdrop-blur-md">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                <span className="font-bold text-sm tracking-widest text-white uppercase">DBMS Feed</span>
+              </div>
+              <button
+                onClick={() => setShowMobileFeed(false)}
+                className="p-2 rounded-xl bg-white/5 text-gray-400 hover:text-white border border-white/10 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex-grow min-h-0">
+              <InterviewExperienceChannel 
+                accentColor="blue-500" 
+                userId={userData?.uuid} 
+                username={userData?.username}
+                techId={techId}
+                techName="DBMS"
+                hideHeader={true}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
 
       {/* Dialog Overlay */}
-      <TechTopicGenericModal 
+      <TechTopicGenericModal
         isOpen={!!selectedTopic}
         onClose={() => setSelectedTopic(null)}
         topic={selectedTopic}
@@ -431,7 +490,7 @@ export default function DbmsPage() {
                 You are not authorized to do it, thanks for the interest. You can put your question in the Recently asked section.
               </p>
             </div>
-            <button 
+            <button
               onClick={() => setShowToast(false)}
               className="ml-auto text-gray-500 hover:text-white transition-colors"
             >

@@ -1,5 +1,6 @@
 const { UserService } = require("../services");
 const { StatusCodes } = require("http-status-codes");
+const { clerkClient } = require("@clerk/express");
 
 
 async function create(req, res) {
@@ -50,30 +51,50 @@ async function get(req, res) {
 async function getMe(req, res) {
     try {
         const start = Date.now();
-        // req.auth is populated by Clerk middleware
         const clerkId = req.auth.userId;
         if (!clerkId) {
             return res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
         }
         
-        console.log(`[getMe] Fetching/Creating user for clerkId: ${clerkId}`);
+        console.log(`[getMe] processing for clerkId: ${clerkId}`);
         
-        // Use upsert to handle get-or-create atomically
-        const clerkUser = req.auth;
+        // 1. Fetch current record from our DB
+        const existingUserResult = await UserService.getByClerkId(clerkId);
+        let user = existingUserResult.data;
+        
+        // 2. Fetch latest identity from Clerk API
+        // We do this to ensure we have the real name if the DB has "User" or if name changed in Clerk
+        let latestClerkUser;
+        try {
+            latestClerkUser = await clerkClient.users.getUser(clerkId);
+        } catch (clerkError) {
+            console.error("[getMe] Clerk API call failed:", clerkError);
+        }
+
+        const firstName = latestClerkUser?.firstName || '';
+        const lastName = latestClerkUser?.lastName || '';
+        const fullName = `${firstName} ${lastName}`.trim() || latestClerkUser?.username || latestClerkUser?.emailAddresses?.[0]?.emailAddress?.split('@')[0] || 'User';
+        const useremail = latestClerkUser?.emailAddresses?.[0]?.emailAddress || user?.useremail || `${clerkId}@temp.com`;
+
+        // 3. Update DB if name has changed or if user doesn't exist
         const userData = {
-            username: clerkUser.sessionClaims?.username || clerkUser.sessionClaims?.email?.split('@')[0] || 'User',
-            useremail: clerkUser.sessionClaims?.email || `${clerkId}@temp.com`,
-            plan: 'free'
+            username: fullName,
+            useremail: useremail,
+            plan: user?.plan || 'free' // Preserve existing plan
         };
 
         const result = await UserService.upsertByClerkId(clerkId, userData);
-        
+        user = result.data;
+
         const duration = Date.now() - start;
-        console.log(`[getMe] Completed in ${duration}ms for ${clerkId}`);
+        console.log(`[getMe] Synced user: ${clerkId} → ${user.username} (UUID: ${user.uuid})`);
         
-        return res.status(result.status || StatusCodes.INTERNAL_SERVER_ERROR).json(result);
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            data: user
+        });
     } catch (error) {
-        console.log("Cannot get current user", error);
+        console.error("[getMe] Fatal error:", error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 }

@@ -1,13 +1,14 @@
 import { useUser, useAuth, useClerk } from '@clerk/clerk-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Zap, LogOut, X } from 'lucide-react'; 
+import { ArrowLeft, User, Zap, LogOut, X, MessageSquare } from 'lucide-react'; 
 import { useState, useEffect } from 'react';
 import TechCard from '../components/TechCard';
 import LearningMeter from '../components/LearningMeter';
 import api from '../api/axios';
 import TechPageLoader from '../components/TechPageLoader';
 import TechTopicGenericModal from '../components/TechTopicGenericModal';
+import InterviewExperienceChannel from '../components/InterviewExperienceChannel';
 
 const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || "").split(",").map(e => e.trim());
 
@@ -33,6 +34,7 @@ export default function NodeJsPage() {
   const [isPro, setIsPro] = useState(false); // Will be loaded from backend
   const [userData, setUserData] = useState(null);
   const [showToast, setShowToast] = useState(false);
+  const [showMobileFeed, setShowMobileFeed] = useState(false);
 
   // Dialog State
   const [selectedTopic, setSelectedTopic] = useState(null);
@@ -359,71 +361,126 @@ fill="currentColor" viewBox="0 0 24 24" >
       {/* Main Content */}
       <main className="relative z-10 flex-grow flex flex-col px-6 py-8 max-w-[1600px] mx-auto w-full overflow-hidden">
         
-        {/* Learning Meter Area */}
-        <div className="h-24 flex flex-col items-center justify-center mb-8 shrink-0">
-          {!showMeter ? (
-            <motion.p 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="text-gray-400 text-lg font-semibold text-capitalize tracking-wider"
-            >
-              A COMPREHENSIVE PATH TO NODEJS MASTERY. UNLOCK MODULES LEVEL BY LEVEL.
-            </motion.p>
-          ) : (
-            <LearningMeter techId={techId} accentColor="neon-green" />
-          )}
-        </div>
-
-
-        <div className="flex-grow overflow-y-auto w-full pr-2 pb-20 scrollbar-hide">
-          {fetchedTopics.length === 0 ? (
-             <TechPageLoader accentColor="neon-green" />
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 w-full place-items-center">
-              {fetchedTopics.map((module, index) => {
-                const title = getCleanTopicName(module.name);
-                const userLevelsDone = userData?.levelsDone || user?.publicMetadata?.levelsDone || user?.levelsDone || 0;
-                // Pro users can access all levels, free users have level-based locking
-                // If levelsDone is X, unlock levels 0 to X+1 (so level X+2 is locked)
-                // Example: levelsDone=0 unlocks levels 0,1; levelsDone=1 unlocks levels 0,1,2
-                // A level is locked if it's not the first one AND the previous one isn't finished
-                const isLocked = isPro ? false : (index > 0 && !completedTopicIds.has(fetchedTopics[index - 1].topicId));
-                const isCompleted = completedTopicIds.has(module.topicId);
-                
-                // Highlight the first uncompleted level that is also unlocked
-                let isCurrent = !isLocked && !isCompleted;
-                // If there are multiple unlocked/uncompleted (shouldn't happen with strict locking but good for safety), 
-                // only highlight the first one
-                if (isCurrent && index > 0) {
-                  const previousUncompleted = fetchedTopics.slice(0, index).some(t => !completedTopicIds.has(t.topicId));
-                  if (previousUncompleted) isCurrent = false;
-                }
-                
-                return (
-                  <motion.div
-                    key={module.topicId}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="w-full max-w-xs"
-                    onClick={() => handleCardClick(module, index)}
-                  >
-                    <TechCard 
-                      title={title}
-                      description={isCompleted ? `Level ${index} - Completed` : `Master ${title}`}
-                      level={index}
-                      status={isLocked ? 'locked' : (isCompleted ? 'completed' : 'unlocked')}
-                      isCurrent={isCurrent}
-                      accentColor="neon-green"
-                    />
-                  </motion.div>
-                );
-              })}
+        <div className="flex-grow flex gap-8 min-h-0 overflow-hidden">
+          {/* Left Column: Tech Cards Grid (65%) */}
+          <div className="flex-grow flex w-[60%] flex-col min-h-0 overflow-hidden">
+            {/* Top Area: Meter or Welcome Message */}
+            <div className="shrink-0 mb-6">
+              {!showMeter ? (
+                 <div className="h-24 flex items-center justify-center">
+                   <motion.p 
+                     initial={{ opacity: 0, y: 10 }}
+                     animate={{ opacity: 1, y: 0 }}
+                     className="text-gray-400 text-lg font-semibold tracking-wider text-center"
+                   >
+                     MASTER NODEJS LEVEL BY LEVEL.
+                   </motion.p>
+                 </div>
+              ) : (
+                <div className="px-2">
+                  <LearningMeter techId={techId} accentColor="neon-green" />
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Cards Grid */}
+            <div className="flex-grow overflow-y-auto pr-2 pb-32 scrollbar-hide">
+              {fetchedTopics.length === 0 ? (
+                <TechPageLoader accentColor="neon-green" />
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 w-full mb-12">
+      {fetchedTopics.map((module, index) => {
+        const title = getCleanTopicName(module.name);
+        const isLocked = isPro ? false : (index > 0 && !completedTopicIds.has(fetchedTopics[index - 1].topicId));
+        const isCompleted = completedTopicIds.has(module.topicId);
+
+        let isCurrent = !isLocked && !isCompleted;
+        if (isCurrent && index > 0) {
+          const previousUncompleted = fetchedTopics.slice(0, index).some(t => !completedTopicIds.has(t.topicId));
+          if (previousUncompleted) isCurrent = false;
+        }
+
+        return (
+          <motion.div
+            key={module.topicId}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.05 }}
+            className="w-full h-full"
+            onClick={() => handleCardClick(module, index)}
+          >
+            <TechCard
+              title={title}
+              description={isCompleted ? `Level ${index} - Completed` : `Master ${title}`}
+              level={index}
+              status={isLocked ? 'locked' : (isCompleted ? 'completed' : 'unlocked')}
+              isCurrent={isCurrent}
+              accentColor="neon-green"
+            />
+          </motion.div>
+        );
+      })}
+    </div>
+  )}
+</div>
+          </div>
+
+          {/* Right Column: Global Feed (35%) */}
+          <div className="hidden lg:flex flex-col w-[35%] min-h-0">
+            <InterviewExperienceChannel 
+              accentColor="neon-green" 
+              userId={userData?.uuid} 
+              username={userData?.username}
+              techId={techId}
+              techName="Node.Js"
+            />
+          </div>
         </div>
+
+        {/* Floating Action Button for Mobile Feed */}
+        <button
+          onClick={() => setShowMobileFeed(true)}
+          className="lg:hidden fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full bg-neon-green text-black shadow-[0_0_20px_rgba(108,194,74,0.4)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
+        >
+          <MessageSquare className="w-6 h-6" />
+        </button>
       </main>
+
+      {/* Mobile Feed Overlay */}
+      <AnimatePresence>
+        {showMobileFeed && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-[9999] bg-zinc-950 lg:hidden flex flex-col"
+          >
+            <div className="flex items-center justify-between p-4 border-b border-white/10 bg-zinc-900/50 backdrop-blur-md">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse" />
+                <span className="font-bold text-sm tracking-widest text-white uppercase">Node.Js Feed</span>
+              </div>
+              <button
+                onClick={() => setShowMobileFeed(false)}
+                className="p-2 rounded-xl bg-white/5 text-gray-400 hover:text-white border border-white/10 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex-grow min-h-0">
+              <InterviewExperienceChannel 
+                accentColor="neon-green" 
+                userId={userData?.uuid} 
+                username={userData?.username}
+                techId={techId}
+                techName="Node.Js"
+                hideHeader={true}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
 
       {/* Dialog Overlay */}
