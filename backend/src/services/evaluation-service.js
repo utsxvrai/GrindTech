@@ -5,7 +5,7 @@ const redis = require("../config/redis-config");
 const crypto = require("crypto");
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "xiaomi/mimo-v2-flash:free";
+const MODEL = "meta-llama/llama-3.3-70b-instruct:free";
 
 /**
  * Normalize tech name to match BASE_PROMPTS keys
@@ -136,8 +136,9 @@ ${answer}
 
     const data = await response.json();
 
-    if (!data || data.error) {
-      throw new Error(data?.error?.message || "Invalid OpenRouter response");
+    if (!response.ok || !data || data.error) {
+      console.error(`OpenRouter Error [${response.status}]:`, data?.error || data);
+      throw new Error(data?.error?.message || `OpenRouter returned status ${response.status}`);
     }
 
     if (!data.choices?.length) {
@@ -185,6 +186,7 @@ ${answer}
     return result;
 
   } catch (error) {
+    console.error("Evaluation Error Details:", error);
     // Return default evaluation result on any error
     return {
       isCorrect: false,

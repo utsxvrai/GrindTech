@@ -1,7 +1,7 @@
 import { useUser, useAuth, useClerk } from '@clerk/clerk-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Zap, LogOut } from 'lucide-react'; 
+import { ArrowLeft, User, Zap, LogOut, X } from 'lucide-react'; 
 import { useState, useEffect } from 'react';
 import TechCard from '../components/TechCard';
 import LearningMeter from '../components/LearningMeter';
@@ -9,16 +9,30 @@ import api from '../api/axios';
 import TechPageLoader from '../components/TechPageLoader';
 import TechTopicGenericModal from '../components/TechTopicGenericModal';
 
+const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || "").split(",").map(e => e.trim());
+
 
 export default function NodeJsPage() {
   const { signOut } = useClerk();
   const { user } = useUser();
   const { getToken } = useAuth();
   const navigate = useNavigate();
+  
+  const isAdmin = user?.primaryEmailAddress?.emailAddress && ADMIN_EMAILS.includes(user.primaryEmailAddress.emailAddress);
+
+  const handleContributeClick = () => {
+    if (isAdmin) {
+      navigate('/admin');
+    } else {
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 5000);
+    }
+  };
   const [showMeter, setShowMeter] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isPro, setIsPro] = useState(false); // Will be loaded from backend
   const [userData, setUserData] = useState(null);
+  const [showToast, setShowToast] = useState(false);
 
   // Dialog State
   const [selectedTopic, setSelectedTopic] = useState(null);
@@ -59,8 +73,8 @@ export default function NodeJsPage() {
             try {
                  techResponse = await api.get('/tech/name/Node.Js');
             } catch (e) {
-                 // Fallback to Node.js if NodeJS not found
-                 techResponse = await api.get('/tech/name/Node.Js');
+                 // Fallback to lowercase 'js' if 'Js' fails
+                 techResponse = await api.get('/tech/name/Node.js');
             }
 
             if (techResponse && techResponse.data && techResponse.data.data) {
@@ -234,7 +248,10 @@ fill="currentColor" viewBox="0 0 24 24" >
 
           <div className="flex items-center gap-4">
             {/* Contribute Button */}
-            <button className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-sm font-medium text-gray-300 hover:text-white">
+            <button 
+              onClick={handleContributeClick}
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-sm font-medium text-gray-300 hover:text-white"
+            >
               <Zap className="w-4 h-4 text-neon-green" />
               Contribute
             </button>
@@ -254,7 +271,10 @@ fill="currentColor" viewBox="0 0 24 24" >
                       {isPro ? 'PRO' : 'FREE'}
                     </span>
                     {!isPro && (
-                      <button className="text-[10px] font-bold text-neon-green hover:underline">
+                      <button 
+                        onClick={() => navigate('/payment')}
+                        className="text-[10px] font-bold text-neon-green hover:underline"
+                      >
                         UPGRADE
                       </button>
                     )}
@@ -300,7 +320,10 @@ fill="currentColor" viewBox="0 0 24 24" >
                             {isPro ? 'PRO' : 'FREE'}
                           </span>
                           {!isPro && (
-                            <button className="text-[10px] font-bold text-neon-green hover:underline">
+                            <button 
+                              onClick={() => navigate('/payment')}
+                              className="text-[10px] font-bold text-neon-green hover:underline"
+                            >
                               UPGRADE
                             </button>
                           )}
@@ -310,7 +333,10 @@ fill="currentColor" viewBox="0 0 24 24" >
 
                     {/* Mobile Menu Items */}
                     <div className="space-y-2">
-                      <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                      <button 
+                        onClick={handleContributeClick}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                      >
                         <Zap className="w-4 h-4 text-neon-green" />
                         Contribute
                       </button>
@@ -411,6 +437,33 @@ fill="currentColor" viewBox="0 0 24 24" >
         levelIndex={selectedTopic?.levelIndex ?? 0}
         onLevelComplete={handleLevelComplete}
       />
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: 20, x: '-50%' }}
+            className="fixed bottom-10 left-1/2 z-[100] px-6 py-4 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl flex items-center gap-4 min-w-[320px] max-w-[450px]"
+          >
+            <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+              <Zap className="w-5 h-5 text-red-500" />
+            </div>
+            <div className="flex flex-col">
+              <p className="text-white font-bold text-sm">Not Authorized</p>
+              <p className="text-gray-400 text-xs leading-relaxed">
+                You are not authorized to do it, thanks for the interest. You can put your question in the Recently asked section.
+              </p>
+            </div>
+            <button 
+              onClick={() => setShowToast(false)}
+              className="ml-auto text-gray-500 hover:text-white transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

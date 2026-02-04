@@ -51,15 +51,20 @@ const handleClerkWebhook = async (req, res) => {
       // Build full name from firstName and lastName, or fall back to username
       const fullName = `${first_name || ''} ${last_name || ''}`.trim() || username || email?.split('@')[0] || 'User';
 
-      await prisma.user.create({
-        data: {
+      await prisma.user.upsert({
+        where: { clerkId: id },
+        update: {
+          useremail: email,
+          username: fullName,
+        },
+        create: {
           clerkId: id,
           useremail: email,
           username: fullName,
-          plan: 'free', // Default plan
+          plan: 'free',
         },
       });
-      console.log(`User created: ${id} with name: ${fullName}`);
+      console.log(`User created/synced: ${id} with name: ${fullName}`);
     } else if (eventType === 'user.updated') {
       const email = email_addresses[0]?.email_address;
       const fullName = `${first_name || ''} ${last_name || ''}`.trim() || username || undefined;

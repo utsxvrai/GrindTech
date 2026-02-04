@@ -49,35 +49,27 @@ async function get(req, res) {
 
 async function getMe(req, res) {
     try {
+        const start = Date.now();
         // req.auth is populated by Clerk middleware
         const clerkId = req.auth.userId;
         if (!clerkId) {
             return res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
         }
         
-        let result = await UserService.getByClerkId(clerkId);
+        console.log(`[getMe] Fetching/Creating user for clerkId: ${clerkId}`);
         
-        // If user not found, create them automatically
-        if (result.status === StatusCodes.NOT_FOUND) {
-            console.log(`User not found for clerkId: ${clerkId}, creating...`);
-            
-            // Get user info from Clerk (req.auth contains basic info)
-            const clerkUser = req.auth;
-            
-            // Create user with default values
-            const createResult = await UserService.create({
-                clerkId: clerkId,
-                username: clerkUser.sessionClaims?.username || clerkUser.sessionClaims?.email?.split('@')[0] || 'User',
-                useremail: clerkUser.sessionClaims?.email || `${clerkId}@temp.com`,
-                plan: 'free'
-            });
-            
-            if (createResult.status === StatusCodes.CREATED) {
-                result = createResult;
-            } else {
-                return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to create user" });
-            }
-        }
+        // Use upsert to handle get-or-create atomically
+        const clerkUser = req.auth;
+        const userData = {
+            username: clerkUser.sessionClaims?.username || clerkUser.sessionClaims?.email?.split('@')[0] || 'User',
+            useremail: clerkUser.sessionClaims?.email || `${clerkId}@temp.com`,
+            plan: 'free'
+        };
+
+        const result = await UserService.upsertByClerkId(clerkId, userData);
+        
+        const duration = Date.now() - start;
+        console.log(`[getMe] Completed in ${duration}ms for ${clerkId}`);
         
         return res.status(result.status || StatusCodes.INTERNAL_SERVER_ERROR).json(result);
     } catch (error) {

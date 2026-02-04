@@ -194,6 +194,22 @@ async function updateLevelsDone(clerkId, levelsDone) {
     }
 }
 
+async function upsertByClerkId(clerkId, data) {
+    try {
+        const user = await userRepository.upsertUserByClerkId(clerkId, data);
+        return {
+            status: StatusCodes.OK,
+            data: user
+        };
+    } catch (error) {
+        console.error("Error in upsertByClerkId service:", error);
+        return {
+            status: StatusCodes.INTERNAL_SERVER_ERROR,
+            error
+        };
+    }
+}
+
 module.exports = {
     create,
     signin,
@@ -202,5 +218,6 @@ module.exports = {
     getByClerkId,
     getAll,
     updatePlan,
-    updateLevelsDone
+    updateLevelsDone,
+    upsertByClerkId
 }

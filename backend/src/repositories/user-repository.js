@@ -43,6 +43,19 @@ class UserRepository extends CrudRepository {
             }
         })
     }
+
+    async upsertUserByClerkId(clerkId, data) {
+        return await this.model.upsert({
+            where: {
+                clerkId: clerkId
+            },
+            update: data, // Update with same data or just keep existing
+            create: {
+                ...data,
+                clerkId: clerkId
+            }
+        });
+    }
 }
 
 

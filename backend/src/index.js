@@ -18,8 +18,6 @@ app.use(
     origin: [
       "https://grindtech.vercel.app",
       "http://localhost:5173",
-      "https://grindtech.work.gd",
-      "http://grindtech.work.gd",
     ],
     credentials: true,
   })
@@ -42,16 +40,7 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "Backend is running" });
 });
 
-/* ---------- DB WARMUP ---------- */
-async function warmDB() {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    console.log("Neon DB warmed successfully");
-  } catch (e) {
-    console.log("⚠️ DB warmup failed. This is common if the Neon endpoint is suspended or if you're offline.");
-    console.log("   The app will still try to connect when you make an actual request.");
-  }
-}
+
 
 /* ---------- SOCKET.IO ---------- */
 initSocket(server);
@@ -62,7 +51,4 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 
-  if (process.env.NODE_ENV === "production") {
-    warmDB();
-  }
 });
