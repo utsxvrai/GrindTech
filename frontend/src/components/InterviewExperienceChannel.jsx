@@ -31,6 +31,34 @@ const InterviewExperienceChannel = ({ accentColor = 'neon-green', userId, userna
 
     const style = accentClasses[accentColor] || accentClasses['neon-green'];
 
+    const getUserColor = (name) => {
+        const colors = [
+            '#ff4444ff', // Red
+            '#4ECDC4', // Teal
+            '#45B7D1', // Sky
+            '#FFA07A', // Salmon
+            '#98D8C8', // Mint
+            '#F7D794', // Yellow
+            '#778BEB', // Blue
+            '#786FA6', // Purple
+            '#FDA7DF', // Pink
+            '#12CBC4', // Cyan
+            '#ED4C67', // Strawberry
+            '#F79F1F', // Orange
+            '#A3CB38', // Lime
+        ];
+        
+        // Simple hash function to get a consistent color for the same name
+        let hash = 0;
+        const stringToHash = name || 'Anonymous';
+        for (let i = 0; i < stringToHash.length; i++) {
+            hash = stringToHash.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        
+        const index = Math.abs(hash) % colors.length;
+        return colors[index];
+    };
+
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
@@ -110,21 +138,31 @@ const InterviewExperienceChannel = ({ accentColor = 'neon-green', userId, userna
                 <div className="mt-auto" /> {/* Pushes messages to the bottom */}
                 
                 <AnimatePresence initial={false}>
-                    {messages.map((msg) => (
-                        <motion.div 
-                            key={msg.id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex items-start gap-3 group/msg"
-                        >
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-800 to-black flex items-center justify-center border border-white/10 shrink-0 mt-0.5">
-                                <User className="w-4 h-4 text-gray-400" />
-                            </div>
-                            <div className="flex-grow min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-xs font-bold text-white hover:underline cursor-pointer truncate max-w-[120px]">
-                                        {msg.user?.username || 'Hunter'}
-                                    </span>
+                    {messages.map((msg) => {
+                        const userName = msg.user?.username || 'Hunter';
+                        const userColor = getUserColor(userName);
+                        
+                        return (
+                            <motion.div 
+                                key={msg.id}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex items-start gap-3 group/msg"
+                            >
+                                <div 
+                                    className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-800 to-black flex items-center justify-center border shrink-0 mt-0.5"
+                                    style={{ borderColor: `${userColor}44` }} // Semi-transparent border
+                                >
+                                    <User className="w-4 h-4" style={{ color: userColor }} />
+                                </div>
+                                <div className="flex-grow min-w-0">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span 
+                                            className="text-xs font-bold hover:underline cursor-pointer truncate max-w-[120px]"
+                                            style={{ color: userColor }}
+                                        >
+                                            {userName}
+                                        </span>
                                     {msg.company && (
                                         <span className={`text-[9px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 ${style.text} font-bold truncate max-w-[100px]`}>
                                             @{msg.company}
@@ -138,8 +176,9 @@ const InterviewExperienceChannel = ({ accentColor = 'neon-green', userId, userna
                                     {msg.content}
                                 </p>
                             </div>
-                        </motion.div>
-                    ))}
+                            </motion.div>
+                        );
+                    })}
                 </AnimatePresence>
                 <div ref={messagesEndRef} />
 
