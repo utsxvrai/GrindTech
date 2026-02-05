@@ -127,71 +127,76 @@ export default function QuestionCard({
             {/* LEFT SECTION: Question + Input (2/3 width on xl+) */}
             <div className="xl:col-span-2 flex flex-col h-full">
                 {/* Question Header with Progress */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 lg:mb-8 gap-4">
-                    <div className="flex items-center gap-3 sm:gap-4">
-                        <button
-                            onClick={onBackToResources}
-                            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all text-xs font-bold uppercase tracking-wider"
-                        >
-                            <ChevronLeft className="w-4 h-4" />
-                            <span>Resources</span>
-                        </button>
-
-                        <div className="h-8 w-px bg-white/10 mx-1" />
-
+                <div className="flex flex-col gap-4 mb-4 sm:mb-6 lg:mb-8">
+                    <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <button
-                                onClick={onPreviousQuestion}
-                                disabled={currentQuestionIndex === 0}
-                                className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                                onClick={onBackToResources}
+                                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all text-[10px] sm:text-xs font-bold uppercase tracking-wider"
                             >
-                                <ChevronLeft className="w-5 h-5" />
+                                <ChevronLeft className="w-3.5 h-3.5" />
+                                <span className="hidden xs:inline">Resources</span>
+                                <span className="xs:hidden">Back</span>
                             </button>
 
-                            <div className="min-w-[100px] text-center">
-                                <h3 className="text-xs sm:text-sm font-bold text-gray-300 uppercase tracking-wider truncate">
-                                    Q {currentQuestionIndex + 1} / {questions.length}
-                                </h3>
-                            </div>
+                            <div className="h-6 w-px bg-white/10 mx-1" />
 
-                            <button
-                                onClick={onNextQuestion}
-                                disabled={currentQuestionIndex === questions.length - 1}
-                                className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-transparent"
-                            >
-                                <ChevronRight className="w-5 h-5" />
-                            </button>
-
-                            {isAlreadyAnswered && (
-                                <motion.div
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    className="hidden lg:flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/10 border border-green-500/20 ml-2 shadow-[0_0_15px_rgba(34,197,94,0.1)]"
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={onPreviousQuestion}
+                                    disabled={currentQuestionIndex === 0}
+                                    className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all disabled:opacity-30"
                                 >
-                                    <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
-                                    <span className="text-[9px] font-black text-green-500 uppercase tracking-widest whitespace-nowrap">Answered Already</span>
-                                </motion.div>
-                            )}
+                                    <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                                </button>
+
+                                <div className="px-2 text-center">
+                                    <h3 className="text-[10px] sm:text-xs font-bold text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                                        Q {currentQuestionIndex + 1} / {questions.length}
+                                    </h3>
+                                </div>
+
+                                <button
+                                    onClick={onNextQuestion}
+                                    disabled={currentQuestionIndex === questions.length - 1}
+                                    className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all disabled:opacity-30"
+                                >
+                                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                                </button>
+                            </div>
                         </div>
+
+                        {isAlreadyAnswered && (
+                            <motion.div
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/10 border border-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.1)]"
+                            >
+                                <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
+                                <span className="text-[8px] sm:text-[9px] font-black text-green-500 uppercase tracking-widest whitespace-nowrap">Answered</span>
+                            </motion.div>
+                        )}
                     </div>
-                    <div className="flex flex-col items-start sm:items-end gap-2 flex-shrink-0">
-                        <div className="h-2 w-24 sm:w-32 lg:w-40 bg-gray-800 rounded-full overflow-hidden">
+
+                    <div className="flex items-center gap-3">
+                        <div className="h-1.5 flex-grow bg-gray-800 rounded-full overflow-hidden">
                             <div
                                 className={`h-full ${colors.bar} transition-all duration-500`}
                                 style={{ width: `${((currentQuestionIndex + 1) / (questions.length || 1)) * 100}%` }}
                             />
                         </div>
-                        <span className="text-xs text-gray-500">
-                            {currentQuestionIndex + 1}/{questions.length}
+                        <span className="text-[10px] font-bold text-gray-500 whitespace-nowrap">
+                            {Math.round(((currentQuestionIndex + 1) / (questions.length || 1)) * 100)}%
                         </span>
                     </div>
                 </div>
 
                 {/* Question Display */}
-                <div className="mb-2">
-                    <div className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-zinc-900/80 to-black/60 border border-white/10 shadow-2xl max-w-4xl w-full backdrop-blur-sm">
-                        <div className="text-center">
-                            <p className="text-lg sm:text-xl lg:text-xl font-medium text-white leading-relaxed">
+                <div className="mb-4">
+                    <div className="p-5 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-zinc-900/80 to-black/60 border border-white/10 shadow-2xl w-full backdrop-blur-sm relative overflow-hidden group">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+                        <div className="relative text-center sm:text-left">
+                            <p className="text-base sm:text-lg lg:text-xl font-medium text-white leading-relaxed">
                                 {questions[currentQuestionIndex].question}
                             </p>
                         </div>
@@ -211,7 +216,7 @@ export default function QuestionCard({
                             onFocus={() => isRecording && onStopRecording()}
                             placeholder="Start typing your answer here... "
                             disabled={isEvaluating}
-                            className={`w-full h-48 sm:h-56 lg:h-64 bg-white/5 border-2 border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 resize-none transition-all disabled:opacity-50 backdrop-blur-sm text-sm sm:text-base leading-relaxed hover:bg-white/10 hover:border-white/30`}
+                            className={`w-full h-40 sm:h-56 lg:h-64 bg-white/5 border-2 border-white/20 rounded-2xl p-4 sm:p-5 lg:p-6 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 resize-none transition-all disabled:opacity-50 backdrop-blur-sm text-sm sm:text-base leading-relaxed hover:bg-white/10 hover:border-white/30`}
                         />
 
                         {/* Recording Indicator Overlay */}
@@ -253,7 +258,7 @@ export default function QuestionCard({
                                     }
                                     isRecording ? onStopRecording() : onStartRecording();
                                 }}
-                                className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all shadow-xl
+                                className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl transition-all shadow-xl
                                     ${!isPro
                                         ? "bg-amber-500/10 text-amber-500 border border-amber-500/20 hover:bg-amber-500/20 hover:border-amber-500/30 scale-100 hover:scale-110"
                                         : isRecording
@@ -261,7 +266,7 @@ export default function QuestionCard({
                                             : `bg-zinc-800/80 text-gray-400 hover:text-white border border-white/20 hover:bg-zinc-700/80 hover:border-white/30`
                                     }`}
                             >
-                                {isRecording ? <X className="w-4 h-4 sm:w-5 sm:h-5" /> : <Mic className="w-4 h-4 sm:w-5 sm:h-5" />}
+                                {isRecording ? <X className="w-3.5 h-3.5 sm:w-5 sm:h-5" /> : <Mic className="w-3.5 h-3.5 sm:w-5 sm:h-5" />}
                             </button>
                         </div>
 
@@ -272,17 +277,17 @@ export default function QuestionCard({
                         <button
                             onClick={onSubmitAnswer}
                             disabled={!getCombinedAnswer().trim() || isEvaluating}
-                            className={`w-full py-4 sm:py-5 rounded-xl sm:rounded-2xl ${colors.primary} font-bold text-sm sm:text-base tracking-wider transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6 hover:scale-[1.02] active:scale-[0.98] border-2 border-transparent hover:border-white/20`}
+                            className={`w-full py-4 rounded-2xl ${colors.primary} font-bold text-sm tracking-wider transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2 mb-6 hover:scale-[1.01] active:scale-[0.99] border-2 border-transparent hover:border-white/20`}
                         >
                             {isEvaluating ? (
                                 <>
-                                    <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
-                                    <span className="text-xs sm:text-sm">ANALYZING...</span>
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    <span>ANALYZING...</span>
                                 </>
                             ) : (
                                 <>
-                                    <Send className="w-5 h-5 sm:w-6 sm:h-6" />
-                                    <span className="text-xs sm:text-sm">SUBMIT ANSWER</span>
+                                    <Send className="w-5 h-5" />
+                                    <span>SUBMIT ANSWER</span>
                                 </>
                             )}
                         </button>
@@ -290,55 +295,56 @@ export default function QuestionCard({
 
                     {/* Action Buttons (when evaluation is done) */}
                     {evaluationResult && (
-                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                            {currentQuestionIndex < questions.length - 1 ? (
-                                <button
-                                    onClick={onNextQuestion}
-                                    className={`flex-1 py-3 sm:py-4 rounded-xl sm:rounded-2xl ${colors.primary} font-bold text-sm tracking-wider transition-all shadow-xl flex items-center justify-center gap-2 sm:gap-3 hover:scale-[1.02] active:scale-[0.98]`}
-                                >
-                                    <span className="text-xs sm:text-sm">Next Question</span>
-                                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={onNextLevel}
-                                    className={`flex-[2] py-4 sm:py-5 rounded-xl sm:rounded-2xl ${colors.primary} font-black text-sm sm:text-base lg:text-lg uppercase tracking-[0.2em] transition-all shadow-[0_0_30px_rgba(0,0,0,0.4)] flex items-center justify-center gap-3 hover:scale-[1.05] active:scale-[0.95] border-2 border-white/10`}
-                                >
-                                    <Zap className="w-5 h-5 sm:w-6 sm:h-6 fill-current" />
-                                    <span>Go to Next Level</span>
-                                    <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                                </button>
-                            )}
+                        <div className="flex flex-col gap-3">
+                            <div className="flex flex-col xs:flex-row gap-3">
+                                {currentQuestionIndex < questions.length - 1 ? (
+                                    <button
+                                        onClick={onNextQuestion}
+                                        className={`flex-1 py-3.5 rounded-xl ${colors.primary} font-bold text-xs sm:text-sm tracking-wider transition-all shadow-xl flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99]`}
+                                    >
+                                        <span>Next Question</span>
+                                        <ChevronRight className="w-4 h-4" />
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={onNextLevel}
+                                        className={`flex-1 py-4 rounded-xl ${colors.primary} font-black text-sm uppercase tracking-[0.15em] transition-all shadow-xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] border border-white/10`}
+                                    >
+                                        <Zap className="w-4 h-4 fill-current" />
+                                        <span>Next Level</span>
+                                        <ChevronRight className="w-4 h-4" />
+                                    </button>
+                                )}
 
-                            <button
-                                onClick={onAnswerAgain}
-                                className={`${isLastQuestion ? 'flex-none px-6 sm:px-10' : 'flex-1'} py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-white font-medium text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]`}
-                            >
-                                <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5" />
-                                <span className="text-xs sm:text-sm">Answer Again</span>
-                            </button>
+                                <button
+                                    onClick={onAnswerAgain}
+                                    className={`flex-1 py-3.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-medium text-xs sm:text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99]`}
+                                >
+                                    <RefreshCw className="w-4 h-4" />
+                                    <span>Answer Again</span>
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
             </div>
 
             {/* RIGHT SECTION: Evaluation Results (1/3 width on xl+) */}
-            <div className="xl:col-span-1 flex flex-col h-full">
-                <div className="sticky top-0">
+            <div className="xl:col-span-1 flex flex-col h-full mt-8 xl:mt-0">
+                <div className="xl:sticky xl:top-0">
                     <h3 className="text-xs sm:text-sm font-bold text-gray-300 uppercase tracking-wider mb-4 sm:mb-6 flex items-center gap-2">
                         <Zap className={`w-3 h-3 sm:w-4 sm:h-4 ${colors.icon}`} />
-                        <span className="hidden sm:inline">Evaluation Results</span>
-                        <span className="sm:hidden">Results</span>
+                        <span>Evaluation Results</span>
                     </h3>
 
                     {/* Placeholder when no evaluation yet */}
                     {!evaluationResult && (
-                        <div className="p-8 rounded-3xl bg-zinc-900/30 border border-white/5 backdrop-blur-sm text-center">
-                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-zinc-800 flex items-center justify-center">
-                                <Zap className="w-8 h-8 text-gray-500" />
+                        <div className="p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-zinc-900/30 border border-white/5 backdrop-blur-sm text-center">
+                            <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-zinc-800 flex items-center justify-center">
+                                <Zap className="w-6 h-6 sm:w-8 sm:h-8 text-gray-500" />
                             </div>
-                            <p className="text-sm text-gray-400">
-                                Submit your answer to see evaluation results here
+                            <p className="text-xs sm:text-sm text-gray-400">
+                                Submit your answer to see results here
                             </p>
                         </div>
                     )}
@@ -347,39 +353,36 @@ export default function QuestionCard({
                     {evaluationResult && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
                             {/* Tab Navigation */}
-                            <div className="flex bg-zinc-900/50 rounded-xl sm:rounded-2xl p-1 border border-white/10 backdrop-blur-sm">
+                            <div className="flex bg-zinc-900/50 rounded-xl p-1 border border-white/10 backdrop-blur-sm overflow-x-auto scrollbar-hide">
                                 <button
                                     onClick={() => setActiveTab('results')}
-                                    className={`flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${
+                                    className={`flex-1 min-w-[70px] py-2 px-2 rounded-lg text-[10px] sm:text-xs font-bold transition-all uppercase tracking-wider ${
                                         activeTab === 'results'
-                                            ? `${colors.primary} text-black shadow-lg`
+                                            ? `${colors.primary} text-black`
                                             : 'text-gray-400 hover:text-white hover:bg-white/5'
                                     }`}
                                 >
-                                    <span className="hidden sm:inline">Results</span>
-                                    <span className="sm:hidden">Res</span>
+                                    Score
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('ideal')}
-                                    className={`flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${
+                                    className={`flex-1 min-w-[70px] py-2 px-2 rounded-lg text-[10px] sm:text-xs font-bold transition-all uppercase tracking-wider ${
                                         activeTab === 'ideal'
-                                            ? `${colors.primary} text-black shadow-lg`
+                                            ? `${colors.primary} text-black`
                                             : 'text-gray-400 hover:text-white hover:bg-white/5'
                                     }`}
                                 >
-                                    <span className="hidden sm:inline">Ideal</span>
-                                    <span className="sm:hidden">Ideal</span>
+                                    Ideal
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('review')}
-                                    className={`flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${
+                                    className={`flex-1 min-w-[70px] py-2 px-2 rounded-lg text-[10px] sm:text-xs font-bold transition-all uppercase tracking-wider ${
                                         activeTab === 'review'
-                                            ? `${colors.primary} text-black shadow-lg`
+                                            ? `${colors.primary} text-black`
                                             : 'text-gray-400 hover:text-white hover:bg-white/5'
                                     }`}
                                 >
-                                    <span className="hidden sm:inline">Review</span>
-                                    <span className="sm:hidden">Rev</span>
+                                    Tips
                                 </button>
                             </div>
 

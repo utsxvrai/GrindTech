@@ -307,23 +307,23 @@ export default function TechTopicGenericModal({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-2 sm:p-4"
                 >
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
-                        className="w-full max-w-[80vw] max-h-[90vh] bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+                        className="w-[95vw] md:w-full md:max-w-5xl lg:max-w-6xl max-h-[95vh] md:max-h-[90vh] bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col"
                     >
                         {/* Dialog Header */}
-                        <div className="p-6 border-b border-white/5 flex justify-between items-center bg-zinc-900/50">
-                            <div className="flex items-center gap-3">
-                                <div className={`p-2 rounded-lg ${accentColor === 'blue-500' ? 'bg-blue-500/10 text-blue-500' : 'bg-neon-green/10 text-neon-green'}`}>
-                                    <Hexagon className="w-5 h-5" />
+                        <div className="p-4 sm:p-6 border-b border-white/5 flex justify-between items-center bg-zinc-900/50">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <div className={`p-1.5 sm:p-2 rounded-lg ${accentColor === 'blue-500' ? 'bg-blue-500/10 text-blue-500' : 'bg-neon-green/10 text-neon-green'}`}>
+                                    <Hexagon className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </div>
-                                <div>
-                                    <h2 className="text-xl font-bold text-white tracking-tight">{getCleanTopicName(topic.name)}</h2>
-                                    <p className="text-xs text-gray-400 font-medium tracking-wide uppercase">Topic Module</p>
+                                <div className="min-w-0">
+                                    <h2 className="text-base sm:text-xl font-bold text-white tracking-tight truncate">{getCleanTopicName(topic.name)}</h2>
+                                    <p className="text-[10px] sm:text-xs text-gray-400 font-medium tracking-wide uppercase">Topic Module</p>
                                 </div>
                             </div>
                             <button 
@@ -335,7 +335,7 @@ export default function TechTopicGenericModal({
                         </div>
 
                         {/* Dialog Content */}
-                        <div className="flex-grow overflow-y-auto p-6 scrollbar-hide">
+                        <div className="flex-grow overflow-y-auto p-4 sm:p-6 scrollbar-hide">
                             {!topic ? (
                                 <div className="flex flex-col items-center justify-center h-64 gap-3 text-gray-400">
                                     <p>Content not found for this module.</p>
@@ -392,10 +392,10 @@ export default function TechTopicGenericModal({
 
                         {/* Dialog Footer */}
                         {topic && dialogStep === 0 && (
-                            <div className="p-6 border-t border-white/5 bg-zinc-900/50 flex justify-end">
+                            <div className="p-4 sm:p-6 border-t border-white/5 bg-zinc-900/50 flex justify-end">
                                 <button 
                                     onClick={handleStartPrepare}
-                                    className={`px-6 py-3 rounded-xl ${accentColor === 'blue-500' ? 'bg-blue-500 hover:bg-blue-600 shadow-blue-500/20' : 'bg-neon-green hover:bg-[#5ab33e] shadow-neon-green/20'} ${accentColor === 'blue-500' ? 'text-white' : 'text-black'} font-bold text-sm tracking-wide transition-all shadow-lg flex items-center gap-2`}
+                                    className={`w-full sm:w-auto px-6 py-3 rounded-xl ${accentColor === 'blue-500' ? 'bg-blue-500 hover:bg-blue-600 shadow-blue-500/20' : 'bg-neon-green hover:bg-[#5ab33e] shadow-neon-green/20'} ${accentColor === 'blue-500' ? 'text-white' : 'text-black'} font-bold text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2`}
                                 >
                                     Let's Prepare
                                     <ChevronRight className="w-4 h-4" />
@@ -420,22 +420,22 @@ export default function TechTopicGenericModal({
                             initial={{ scale: 0.8, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.8, opacity: 0, y: 20 }}
-                            className="max-w-md mx-4 p-8 rounded-3xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-2 border-green-500/30 shadow-2xl text-center"
+                            className="max-w-md mx-4 p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-2 border-green-500/30 shadow-2xl text-center"
                         >
                             <motion.div
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                                className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20 border-2 border-green-500 flex items-center justify-center"
+                                className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-6 rounded-full bg-green-500/20 border-2 border-green-500 flex items-center justify-center"
                             >
-                                <CheckCircle2 className="w-10 h-10 text-green-500" />
+                                <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 text-green-500" />
                             </motion.div>
                             
                             <motion.h2
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.4 }}
-                                className="text-2xl font-bold text-white mb-3"
+                                className="text-xl sm:text-2xl font-bold text-white mb-3"
                             >
                                 🎉 Level Complete!
                             </motion.h2>
