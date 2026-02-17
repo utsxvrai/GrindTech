@@ -5,7 +5,7 @@ const redis = require("../config/redis-config");
 const crypto = require("crypto");
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "meta-llama/llama-3.3-70b-instruct:free";
+// const MODEL = "arcee-ai/trinity-large-preview:free"; // Moved to aiConfig
 
 /**
  * Normalize tech name to match BASE_PROMPTS keys
@@ -119,7 +119,7 @@ ${answer}
         "X-Title": "GrindTech Evaluation Service",
       },
       body: JSON.stringify({
-        model: MODEL,
+        model: aiConfig.model,
         messages: [
           // ✅ Behavioral RAG in SYSTEM
           { role: "system", content: basePrompt },
