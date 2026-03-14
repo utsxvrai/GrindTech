@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
-import { Zap, ChevronRight, ArrowRight } from 'lucide-react'
+import { Zap, ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useMemo } from 'react'
 
 const techs = [
   { name: 'Node.js', color: '#6cc24a', shadow: 'rgba(108,194,74,0.4)' },
@@ -28,6 +29,87 @@ const wordVariants = {
   }
 }
 
+function MeteorShower() {
+  const meteors = useMemo(() => (
+    Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      top: Math.random() * 60 + '%',
+      left: Math.random() * 40 + '%',
+      delay: Math.random() * 8,
+      duration: Math.random() * 3 + 5,
+      size: Math.random() * 1.5 + 0.5,
+    }))
+  ), [])
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {meteors.map(m => (
+        <div
+          key={m.id}
+          className="absolute animate-meteor"
+          style={{
+            top: m.top,
+            left: m.left,
+            animationDelay: `${m.delay}s`,
+            animationDuration: `${m.duration}s`,
+          }}
+        >
+          <div
+            className="rounded-full bg-gradient-to-r from-white/80 to-transparent"
+            style={{
+              width: `${m.size * 80}px`,
+              height: `${m.size}px`,
+              boxShadow: `0 0 ${m.size * 4}px rgba(255,255,255,0.3)`,
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function FloatingParticles() {
+  const particles = useMemo(() => (
+    Array.from({ length: 40 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 3 + 1,
+      duration: Math.random() * 4 + 4,
+      delay: Math.random() * 5,
+      opacity: Math.random() * 0.3 + 0.1,
+    }))
+  ), [])
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map(p => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-full bg-white"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: p.size,
+            height: p.size,
+            opacity: p.opacity,
+          }}
+          animate={{
+            y: [0, -30, 0],
+            opacity: [p.opacity, p.opacity * 2, p.opacity],
+          }}
+          transition={{
+            duration: p.duration,
+            delay: p.delay,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
 export default function HeroSection({ onGetStarted }) {
   const navigate = useNavigate()
 
@@ -42,25 +124,30 @@ export default function HeroSection({ onGetStarted }) {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-black px-4 sm:px-6">
 
-      {/* === Background layers === */}
-      {/* Top radial glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-[radial-gradient(ellipse_at_center,_rgba(99,102,241,0.12)_0%,_transparent_70%)]" />
-      {/* Bottom accent */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-[radial-gradient(ellipse_at_center,_rgba(0,255,255,0.06)_0%,_transparent_70%)]" />
-      {/* Subtle grid */}
-      <div className="absolute inset-0 opacity-[0.025]" style={{
-        backgroundImage: 'linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)',
-        backgroundSize: '80px 80px'
-      }} />
-      {/* Noise texture overlay */}
-      <div className="absolute inset-0 opacity-[0.015]" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`
+      {/* === Animated background layers === */}
+
+      {/* Aurora blobs - slow morphing gradients */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[700px] h-[700px] bg-indigo-600/[0.07] rounded-full blur-[150px] animate-aurora" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-cyan-500/[0.05] rounded-full blur-[150px] animate-aurora" style={{ animationDelay: '4s' }} />
+        <div className="absolute top-[30%] right-[-5%] w-[500px] h-[500px] bg-purple-600/[0.04] rounded-full blur-[130px] animate-aurora" style={{ animationDelay: '8s' }} />
+        <div className="absolute bottom-[20%] left-[-5%] w-[400px] h-[400px] bg-green-500/[0.03] rounded-full blur-[120px] animate-aurora" style={{ animationDelay: '6s' }} />
+      </div>
+
+      {/* Animated grid */}
+      <div className="absolute inset-0 animate-grid-fade" style={{
+        backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
+        backgroundSize: '80px 80px',
       }} />
 
-      {/* Floating orbs */}
-      <div className="absolute top-[15%] left-[8%] w-80 h-80 bg-indigo-500/10 rounded-full blur-[130px] animate-float" />
-      <div className="absolute bottom-[10%] right-[8%] w-96 h-96 bg-cyan-500/8 rounded-full blur-[130px] animate-float" style={{ animationDelay: '3s' }} />
-      <div className="absolute top-[40%] right-[20%] w-64 h-64 bg-green-500/5 rounded-full blur-[100px] animate-float" style={{ animationDelay: '5s' }} />
+      {/* Meteor shower */}
+      <MeteorShower />
+
+      {/* Floating particles */}
+      <FloatingParticles />
+
+      {/* Radial spotlight from top center */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[800px] bg-[radial-gradient(ellipse_at_top,_rgba(99,102,241,0.1)_0%,_transparent_60%)]" />
 
       {/* === Content === */}
       <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center">
@@ -81,14 +168,13 @@ export default function HeroSection({ onGetStarted }) {
           </div>
         </motion.div>
 
-        {/* Main headline - word-by-word reveal */}
+        {/* Main headline */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
           className="mb-8"
         >
-          {/* Line 1: Grind Top 100 */}
           <div className="flex items-center justify-center gap-3 sm:gap-4 flex-wrap">
             <motion.span variants={wordVariants} className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white tracking-tight">
               Grind
@@ -107,7 +193,6 @@ export default function HeroSection({ onGetStarted }) {
             </motion.span>
           </div>
 
-          {/* Line 2: Interview Questions */}
           <div className="flex items-center justify-center gap-3 sm:gap-4 mt-2 flex-wrap">
             <motion.span variants={wordVariants} className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white tracking-tight">
               Interview
@@ -117,7 +202,6 @@ export default function HeroSection({ onGetStarted }) {
             </motion.span>
           </div>
 
-          {/* Line 3: of Different Techs */}
           <div className="flex items-center justify-center gap-3 sm:gap-4 mt-2 flex-wrap">
             <motion.span variants={wordVariants} className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-500 tracking-tight">
               of
@@ -138,7 +222,7 @@ export default function HeroSection({ onGetStarted }) {
           Real interview questions. Instant AI evaluation. Level up across every technology that matters.
         </motion.p>
 
-        {/* Tech pills - horizontal scroll on mobile */}
+        {/* Tech pills */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -159,40 +243,55 @@ export default function HeroSection({ onGetStarted }) {
               className="px-4 py-2 rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm flex items-center gap-2.5 cursor-default transition-all duration-300"
             >
               <div
-                className="w-2.5 h-2.5 rounded-full ring-2 ring-offset-1 ring-offset-black"
-                style={{ backgroundColor: tech.color, ringColor: tech.color + '40' }}
+                className="w-2.5 h-2.5 rounded-full"
+                style={{ backgroundColor: tech.color, boxShadow: `0 0 6px ${tech.shadow}` }}
               />
               <span className="text-sm font-medium text-gray-300">{tech.name}</span>
             </motion.div>
           ))}
         </motion.div>
 
-        {/* CTA Buttons */}
+        {/* CTA Buttons - polished */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.4, duration: 0.6 }}
-          className="flex flex-col sm:flex-row items-center gap-4 mb-16"
+          className="flex flex-col sm:flex-row items-center gap-5 mb-16"
         >
+          {/* Primary CTA */}
           <motion.button
-            whileHover={{ scale: 1.04, boxShadow: "0 0 50px rgba(255,255,255,0.15)" }}
+            whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={handleGetStarted}
-            className="group relative w-full sm:w-auto px-10 py-4.5 bg-white rounded-2xl font-bold text-base text-black shadow-[0_0_30px_rgba(255,255,255,0.15)] transition-all overflow-hidden flex items-center justify-center gap-3"
+            className="group relative w-full sm:w-auto overflow-hidden rounded-2xl"
           >
-            <Zap className="w-5 h-5" />
-            <span>Start Grinding</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+            {/* Animated gradient border */}
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 p-[2px]">
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 blur-lg opacity-40 group-hover:opacity-70 transition-opacity duration-300" />
+            </div>
+            <div className="relative bg-white rounded-[14px] px-10 py-4 flex items-center justify-center gap-3">
+              <Zap className="w-5 h-5 text-indigo-600" />
+              <span className="font-bold text-base text-black">Start Grinding</span>
+              <ArrowRight className="w-4 h-4 text-gray-600 group-hover:translate-x-1.5 group-hover:text-indigo-600 transition-all duration-300" />
+            </div>
+            {/* Shimmer sweep */}
+            <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer" />
+            </div>
           </motion.button>
 
+          {/* Secondary CTA */}
           <motion.button
-            whileHover={{ scale: 1.04, borderColor: "rgba(255,255,255,0.25)" }}
+            whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate('/payment')}
-            className="w-full sm:w-auto px-10 py-4.5 bg-white/[0.03] backdrop-blur-sm rounded-2xl font-bold text-base text-white border border-white/[0.1] hover:bg-white/[0.06] transition-all flex items-center justify-center gap-2"
+            className="group relative w-full sm:w-auto overflow-hidden rounded-2xl"
           >
-            View Pricing
+            {/* Subtle border */}
+            <div className="absolute inset-0 rounded-2xl border border-white/[0.12] group-hover:border-white/[0.25] transition-colors duration-300" />
+            <div className="relative px-10 py-4 flex items-center justify-center gap-2 bg-white/[0.03] group-hover:bg-white/[0.06] rounded-2xl backdrop-blur-sm transition-all duration-300">
+              <span className="font-bold text-base text-gray-300 group-hover:text-white transition-colors duration-300">View Pricing</span>
+            </div>
           </motion.button>
         </motion.div>
 
@@ -201,16 +300,21 @@ export default function HeroSection({ onGetStarted }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.6, duration: 0.6 }}
-          className="flex items-center justify-center gap-8 sm:gap-12 flex-wrap"
+          className="flex items-center justify-center gap-0 flex-wrap"
         >
           {[
             { value: '500+', label: 'Developers' },
             { value: '8', label: 'Technologies' },
-            { value: '100+', label: 'Questions per tech' },
-          ].map((stat, i) => (
-            <div key={i} className="text-center">
-              <div className="text-2xl sm:text-3xl font-black text-white">{stat.value}</div>
-              <div className="text-xs sm:text-sm text-gray-500 font-medium uppercase tracking-wider mt-1">{stat.label}</div>
+            { value: '100+', label: 'Questions / tech' },
+          ].map((stat, i, arr) => (
+            <div key={i} className="flex items-center">
+              <div className="text-center px-6 sm:px-10">
+                <div className="text-2xl sm:text-3xl font-black text-white">{stat.value}</div>
+                <div className="text-[10px] sm:text-xs text-gray-500 font-semibold uppercase tracking-[0.15em] mt-1.5">{stat.label}</div>
+              </div>
+              {i < arr.length - 1 && (
+                <div className="w-px h-10 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+              )}
             </div>
           ))}
         </motion.div>
@@ -230,7 +334,7 @@ export default function HeroSection({ onGetStarted }) {
         >
           <motion.div
             className="w-1 h-2 bg-white/40 rounded-full"
-            animate={{ opacity: [0.4, 1, 0.4] }}
+            animate={{ opacity: [0.3, 1, 0.3] }}
             transition={{ repeat: Infinity, duration: 2 }}
           />
         </motion.div>

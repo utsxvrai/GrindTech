@@ -1,16 +1,18 @@
 const { TechRepository, TopicRepository, ResourceRepository, UserRepository, QuestionRepository } = require('./src/repositories');
 const prisma = require('./src/config/db-config');
 
-async function seedDbms() {
+
+
+async function seedReact() {
     const techRepo = new TechRepository();
     const topicRepo = new TopicRepository();
     const resourceRepo = new ResourceRepository();
     const questionRepo = new QuestionRepository();
     const userRepo = new UserRepository();
 
-    let dbms = await techRepo.findByName('DBMS');
-    if (!dbms) {
-        dbms = await techRepo.create({ techName: 'DBMS' });
+    let react = await techRepo.findByName('React');
+    if (!react) {
+        react = await techRepo.create({ techName: 'React' });
     }
 
     const adminUser = await userRepo.model.findFirst();
@@ -21,350 +23,355 @@ async function seedDbms() {
 
     const topicsWithResources = [
         {
-            name: 'DBMS Architecture & Abstraction 2',
+            name: 'React Basics 1',
             resources: [
-                { name: 'DBMS Architecture – Tutorialspoint', resource: 'https://www.tutorialspoint.com/dbms/dbms_architecture.htm' },
-                { name: 'Data Independence – GeeksforGeeks', resource: 'https://www.geeksforgeeks.org/dbms/what-is-data-independence-in-dbms/' },
-                { name: 'Video: Data Independence & 3-Level', resource: 'https://www.youtube.com/watch?v=QK1l_wtBRIw' }
+                { name: 'React Official Documentation - Quick Start', resource: 'https://react.dev/learn' },
+                { name: 'W3Schools React Tutorial', resource: 'https://www.w3schools.com/react/' },
+                { name: 'React in 100 Seconds', resource: 'https://www.youtube.com/watch?v=Tn6-PIqc4UM' }
             ],
             questions: [
-                'What are the main components of a DBMS architecture?',
-                'Explain the three levels of data abstraction in DBMS.',
-                'What is data independence? Differentiate between logical and physical data independence?',
-                'What is a database schema? How is it different from a database instance (state)?',
-                'What is a data dictionary (system catalog) and what is it used for?'
+                'What is React and why is it used?',
+                'How is React different from Angular or Vue?',
+                'What is a React component?',
+                'How do you create a component in React?',
+                'What is JSX and why do we use it in React?'
             ]
         },
         {
-            name: 'Data Models 3',
+            name: 'React Basics 2',
             resources: [
-                { name: 'Data Models in DBMS – GfG', resource: 'https://www.geeksforgeeks.org/dbms-data-model/' },
-                { name: 'DBMS Data Models – Tutorialspoint', resource: 'https://www.tutorialspoint.com/dbms/dbms_data_models.htm' },
-                { name: 'Video: Types of Data Models', resource: 'https://www.youtube.com/watch?v=Le8efR0xTdg' }
+                { name: 'Getting Started with React (MDN)', resource: 'https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks/React_getting_started' },
+                { name: 'Writing Markup with JSX', resource: 'https://react.dev/learn/writing-markup-with-jsx' },
+                { name: 'JSX Explained Simply', resource: 'https://www.youtube.com/watch?v=7fPXI_MnBOY' }
             ],
             questions: [
-                'What are data models?',
-                'Name and briefly describe different types of data models.'
+                'Can you explain the virtual DOM in React?',
+                'What are the differences between a class component and a functional component?',
+                'How do you handle events in React?',
+                'What are state and props in React?',
+                'How do you pass data between components in React?'
             ]
         },
         {
-            name: 'ER Model Basics 4',
+            name: 'React State Management 3',
             resources: [
-                { name: 'ER Model – GeeksforGeeks', resource: 'https://www.geeksforgeeks.org/dbms-entity-relationship-model/' },
-                { name: 'ERD in DBMS – Simplilearn', resource: 'https://www.simplilearn.com/tutorials/sql-tutorial/er-diagram-in-dbms' },
-                { name: 'Video: ER Model Basics', resource: 'https://www.youtube.com/watch?v=5OviOmzEvCs' }
+                { name: 'State: A Component\'s Memory', resource: 'https://react.dev/learn/state-a-components-memory' },
+                { name: 'Sharing State Between Components', resource: 'https://react.dev/learn/sharing-state-between-components' },
+                { name: 'useState Hook Deep Dive', resource: 'https://www.youtube.com/watch?v=4pO-HcG2igk' }
             ],
             questions: [
-                'What is an Entity-Relationship (ER) model? Why is it used?',
-                'Define entity, entity set, and entity type with examples.',
-                'What is an attribute? Explain different types of attributes (simple, composite, multivalued, derived).',
-                'What is a key attribute in an ER model?'
+                'What is a stateful component?',
+                'Can you explain how useState works?',
+                'How do you update the state of a parent component from a child component?',
+                'What is lifting state up in React?',
+                'When do you use Redux or Context API for state management?'
             ]
         },
         {
-            name: 'ER Model Advanced Concepts 5',
+            name: 'React Lifecycle & Hooks 4',
             resources: [
-                { name: 'Generalization & Aggregation – GfG', resource: 'https://www.geeksforgeeks.org/generalization-specialization-and-aggregation-in-er-model/' },
-                { name: 'ER Model Notes – Waterloo', resource: 'https://cs.uwaterloo.ca/~tozsu/courses/CS338/lectures/10%20ER%20Model.pdf' },
-                { name: 'Video: Advanced ER Modeling', resource: 'https://www.youtube.com/watch?v=W3lrOpODfjQ' }
+                { name: 'Synchronizing with Effects', resource: 'https://react.dev/learn/synchronizing-with-effects' },
+                { name: 'Built-in React Hooks Reference', resource: 'https://react.dev/reference/react' },
+                { name: 'useEffect Hook Tutorial', resource: 'https://www.youtube.com/watch?v=gv9ugDJ1ynU' }
             ],
             questions: [
-                'What is the difference between strong entity set and weak entity set?',
-                'What is cardinality in ER modeling (1:1, 1:N, M:N)? Give examples.',
-                'What is participation constraint (total vs partial participation)?',
-                'What is aggregation in ER modeling?',
-                'What is generalization and specialization in DBMS?',
-                'Draw and explain an ER diagram for a simple student–course–enrollment system.'
+                'Explain the lifecycle methods of a React class component.',
+                'What are React Hooks and why were they introduced?',
+                'Can you explain the useEffect hook and its dependencies?',
+                'How do you perform cleanup in useEffect?',
+                'What is the useMemo hook and when should it be used?'
             ]
         },
         {
-            name: 'Relational Model Basics 6',
+            name: 'Component Communication 5',
             resources: [
-                { name: 'Relational Model Intro – GfG', resource: 'https://www.geeksforgeeks.org/introduction-of-relational-model-and-codd-rules-in-dbms/' },
-                { name: 'Relational Data Model – Tutorialspoint', resource: 'https://www.tutorialspoint.com/dbms/relational_data_model.htm' },
-                { name: 'Video: Relational Model', resource: 'https://www.youtube.com/watch?v=3EJlovevfcA&t=600s' }
+                { name: 'Passing Props to a Component', resource: 'https://react.dev/learn/passing-props-to-a-component' },
+                { name: 'Passing Data Deeply with Context', resource: 'https://react.dev/learn/passing-data-deeply-with-context' },
+                { name: 'Props vs State in React', resource: 'https://www.youtube.com/watch?v=m7OWCtHI6p4' }
             ],
             questions: [
-                'What is a relation in the relational model? What properties must a relation satisfy?',
-                'What is a relation schema? Provide an example.',
-                'Define degree and cardinality of a relation.'
+                'What is the useCallback hook?',
+                'How can you create custom hooks in React?',
+                'What are the rules of hooks?',
+                'What is React Context and how does it work?',
+                'How do you use the useContext hook?'
             ]
         },
         {
-            name: 'Relational Algebra 7',
+            name: 'React Routing 6',
             resources: [
-                { name: 'Relational Algebra – GeeksforGeeks', resource: 'https://www.geeksforgeeks.org/introduction-of-relational-algebra-in-dbms/' },
-                { name: 'Relational Algebra – Tutorialspoint', resource: 'https://www.tutorialspoint.com/dbms/relational_algebra.htm' },
-                { name: 'Video: Relational Algebra Playlist', resource: 'https://www.youtube.com/playlist?list=PLxCzCOWd7aiFAN6I8CuViBuCdJgiOkT2Y' }
+                { name: 'React Router Official Tutorial', resource: 'https://reactrouter.com/en/main/start/tutorial' },
+                { name: 'React Router v6 Complete Guide', resource: 'https://www.freecodecamp.org/news/react-router-v6-tutorial/' },
+                { name: 'React Router v6 in 10 Minutes', resource: 'https://www.youtube.com/watch?v=Ul3y1LXxzdU' }
             ],
             questions: [
-                'What is relational algebra? Why is it called a procedural query language?',
-                'Explain the SELECT (σ), PROJECT (π), and RENAME (ρ) operations in relational algebra.',
-                'Explain UNION, INTERSECTION, and SET DIFFERENCE operations in relational algebra.',
-                'What is a JOIN operation? Explain natural join, theta join, and equi-join.',
-                'What is division operation in relational algebra and when is it useful?'
+                'What is React Router and why is it used?',
+                'How do you define routes in a React application?',
+                'Explain the difference between BrowserRouter and HashRouter.',
+                'How do you handle navigation programmatically in React Router?',
+                'What are route parameters and how do you access them?'
             ]
         },
         {
-            name: 'Keys and Constraints 8',
+            name: 'Styling in React 7',
             resources: [
-                { name: 'Keys in Relational Model – GfG', resource: 'https://www.geeksforgeeks.org/keys-in-relational-model-candidate-super-primary-alternate-and-foreign/' },
-                { name: 'Integrity Constraints – GfG', resource: 'https://www.geeksforgeeks.org/integrity-constraints-in-dbms/' },
-                { name: 'Video: Database Keys', resource: 'https://www.youtube.com/watch?v=3nTmjeqUbLg' }
+                { name: 'Different Ways to Style React Components', resource: 'https://www.digitalocean.com/community/tutorials/react-styling-react-components' },
+                { name: 'CSS Modules vs CSS-in-JS', resource: 'https://blog.logrocket.com/css-modules-vs-css-in-js-which-one-to-choose/' },
+                { name: 'Styling Options in React Explained', resource: 'https://www.youtube.com/watch?v=j5P9F1Vum9o' }
             ],
             questions: [
-                'Define super key, candidate key, primary key, and alternate key with examples.',
-                'What is a composite key? When would you use one?',
-                'What is a unique key? How is it different from a primary key?',
-                'What is a foreign key? How does it enforce referential integrity?',
-                'Explain entity integrity and referential integrity constraints.'
+                'How do you style components in React?',
+                'What are CSS Modules and how do they help in React?',
+                'Explain CSS-in-JS and name some popular libraries.',
+                'How do you use inline styles in React?',
+                'What is Tailwind CSS and how can it be used with React?'
             ]
         },
         {
-            name: 'Keys and Constraints (cont.) 9',
+            name: 'Performance Optimization 8',
             resources: [
-                { name: 'Keys in Relational Model – GfG', resource: 'https://www.geeksforgeeks.org/keys-in-relational-model-candidate-super-primary-alternate-and-foreign/' },
-                { name: 'Integrity Constraints – GfG', resource: 'https://www.geeksforgeeks.org/integrity-constraints-in-dbms/' },
-                { name: 'Video: Database Keys', resource: 'https://www.youtube.com/watch?v=3nTmjeqUbLg' }
+                { name: 'React Performance Optimization Guide', resource: 'https://legacy.reactjs.org/docs/optimizing-performance.html' },
+                { name: 'How to use React.memo effectively', resource: 'https://dmitripavlutin.com/use-react-memo-wisely/' },
+                { name: 'React Performance Tips for Developers', resource: 'https://www.youtube.com/watch?v=Qp2e0vX5r2Y' }
             ],
             questions: [
-                'What are check constraints? Give a practical example.',
-                'What is the difference between NOT NULL, UNIQUE, and PRIMARY KEY constraints?',
-                'What is a surrogate key? What are its pros and cons?',
-                'What is a domain constraint in DBMS?',
-                'What happens if you try to delete a referenced row in a parent table that has foreign-key references in a child table? Explain ON DELETE options (CASCADE, SET NULL, RESTRICT).'
+                'How can you optimize the performance of a React application?',
+                'What is React.memo and when should it be used?',
+                'Explain code splitting in React and how to achieve it.',
+                'What is lazy loading and how do you implement it for components?',
+                'How do you identify performance bottlenecks in a React app?'
             ]
         },
         {
-            name: 'Functional Dependencies 10',
+            name: 'Form Handling 9',
             resources: [
-                { name: 'Functional Dependency – GfG', resource: 'https://www.geeksforgeeks.org/functional-dependency-and-attribute-closure/' },
-                { name: 'FD & Attribute Closure Notes', resource: 'https://mrcet.com/downloads/digital_notes/CSE/II%20Year/DBMS.pdf' },
-                { name: 'Video: Functional Dependencies', resource: 'https://www.youtube.com/watch?v=Wa1_ZCv_lKE' }
+                { name: 'React Forms and Controlled Components', resource: 'https://react.dev/reference/react-dom/components/input' },
+                { name: 'React Hook Form: The Complete Guide', resource: 'https://blog.logrocket.com/react-hook-form-complete-guide/' },
+                { name: 'React Hook Form vs Formik', resource: 'https://www.youtube.com/watch?v=PnrJDPhR5fU' }
             ],
             questions: [
-                'Define functional dependency and give formal notation and example.'
+                'How do you handle forms in React?',
+                'What is the difference between controlled and uncontrolled components?',
+                'How do you handle form validation in React?',
+                'What are some popular libraries for form management in React?',
+                'How do you handle multiple input fields in a single state object?'
             ]
         },
         {
-            name: 'Normalization (1NF–3NF) 11',
+            name: 'Advanced React Topics 10',
             resources: [
-                { name: 'Normal Forms in DBMS – GfG', resource: 'https://www.geeksforgeeks.org/normal-forms-in-dbms/' },
-                { name: 'Normalization 1NF–BCNF – DigitalOcean', resource: 'https://www.digitalocean.com/community/tutorials/database-normalization' },
-                { name: 'Video: Normalization 1NF–5NF', resource: 'https://www.youtube.com/watch?v=GFQaEYEc8_8' }
+                { name: 'Higher-Order Components (HOCs) Guide', resource: 'https://legacy.reactjs.org/docs/higher-order-components.html' },
+                { name: 'Render Props Pattern in React', resource: 'https://legacy.reactjs.org/docs/render-props.html' },
+                { name: 'Advanced React Patterns & Concepts', resource: 'https://www.youtube.com/watch?v=YpD-Y8YwLpY' }
             ],
             questions: [
-                'What is normalization? Why is it important?',
-                'Explain First Normal Form (1NF) with an example.',
-                'Explain Second Normal Form (2NF) and partial dependency.',
-                'Explain Third Normal Form (3NF) and transitive dependency.',
-                'What is Boyce–Codd Normal Form (BCNF)? How is it stricter than 3NF?',
-                'What are multivalued dependencies? What is 4NF?',
-                'What is 5NF (Project-Join Normal Form)? In what kind of scenarios is it needed?',
-                'What is denormalization? When is it acceptable to denormalize a schema?',
-                'How would you normalize a table that stores customer and order details together into a good relational design?'
+                'What is a Higher-Order Component (HOC)?',
+                'Explain the concept of render props.',
+                'What are React Fragments and why are they used?',
+                'What is the purpose of the key prop in React lists?',
+                'How do you handle errors in React components using Error Boundaries?'
             ]
         },
         {
-            name: 'SQL Fundamentals 13',
+            name: 'React Patterns 11',
             resources: [
-                { name: 'SQL Tutorial – W3Schools', resource: 'https://www.w3schools.com/sql/sql_intro.asp' },
-                { name: 'SQL Basics – GeeksforGeeks', resource: 'https://www.geeksforgeeks.org/sql-tutorial/' },
-                { name: 'Video: SQL Full Course', resource: 'https://www.youtube.com/watch?v=HXV3zeQKqGY' }
+                { name: 'React Design Patterns - Patterns.dev', resource: 'https://www.patterns.dev/posts/react-patterns' },
+                { name: 'Guide to React Compound Components', resource: 'https://blog.logrocket.com/guide-to-react-compound-components-with-hooks/' },
+                { name: '5 React Design Patterns You Should Know', resource: 'https://www.youtube.com/watch?v=4FhJit4_A2I' }
             ],
             questions: [
-                'What are the different types of database languages (DDL, DML, DCL, TCL, DQL)? Give examples.',
-                'Write SQL to create a simple EMPLOYEE table with appropriate constraints.',
-                'Write SQL to insert, update, and delete rows in a table.',
-                'Explain the difference between WHERE and HAVING clauses with example queries.'
+                'What is the difference between useMemo and useCallback?',
+                'How do you use the useReducer hook?',
+                'What is the purpose of the useRef hook?',
+                'Explain the concept of portal in React.',
+                'What are React concurrent mode and transitions?'
             ]
         },
         {
-            name: 'SQL Joins & Views 14',
+            name: 'React Development Environment & Tooling 12',
             resources: [
-                { name: 'SQL Joins – GeeksforGeeks', resource: 'https://www.geeksforgeeks.org/sql-join-set-1-inner-left-right-and-full-joins/' },
-                { name: 'SQL Views – GeeksforGeeks', resource: 'https://www.geeksforgeeks.org/sql-views/' },
-                { name: 'Video: SQL Joins Explained', resource: 'https://www.youtube.com/watch?v=9yeOJ0ZMUYw' }
+                { name: 'Vite vs Create React App in 2024', resource: 'https://blog.logrocket.com/vite-vs-create-react-app/' },
+                { name: 'Setting up ESLint & Prettier for React', resource: 'https://javascript.plainenglish.io/setup-eslint-and-prettier-for-react-in-2024-f7b24345229d' },
+                { name: 'Getting Started with Vite and React', resource: 'https://www.youtube.com/watch?v=KzYsh3WvA4s' }
             ],
             questions: [
-                'What are INNER JOIN, LEFT JOIN, RIGHT JOIN, and FULL OUTER JOIN?',
-                'What is a self-join? Give a use case.',
-                'What is a view in SQL? What are its advantages and limitations?',
-                'What is the difference between a view and a materialized view?'
+                'What is Create React App (CRA)?',
+                'What are the alternatives to Create React App?',
+                'Explain the role of Webpack and Babel in a React project.',
+                'What is Vite and why is it gaining popularity?',
+                'How do you set up a React project from scratch?'
             ]
         },
         {
-            name: 'SQL Advanced Operations 15',
+            name: 'Testing in React 13',
             resources: [
-                { name: 'DELETE vs TRUNCATE vs DROP – GfG', resource: 'https://www.geeksforgeeks.org/difference-between-delete-truncate-and-drop-commands-in-sql/' },
-                { name: 'Subqueries in SQL – GfG', resource: 'https://www.geeksforgeeks.org/sql-subquery/' },
-                { name: 'Video: SQL Subqueries', resource: 'https://www.youtube.com/watch?v=HXV3zeQKqGY&t=7200s' }
+                { name: 'Testing React Overview (Official)', resource: 'https://legacy.reactjs.org/docs/testing.html' },
+                { name: 'React Testing Library Tutorial for Beginners', resource: 'https://www.freecodecamp.org/news/react-testing-library-tutorial-javascript-unit-testing-basics/' },
+                { name: 'RTL & Jest Crash Course', resource: 'https://www.youtube.com/watch?v=ML5egqL3YFE' }
             ],
             questions: [
-                'Differentiate between DELETE, TRUNCATE, and DROP with respect to rollback and logging.',
-                'What is a subquery? Differentiate between correlated and non-correlated subqueries.'
+                'Why is testing important in React development?',
+                'What is Jest and how is it used with React?',
+                'Explain React Testing Library and its benefits.',
+                'What is snapshot testing?',
+                'How do you mock API calls in tests?'
             ]
         },
         {
-            name: 'Indexing & Files 16',
+            name: 'State Management Libraries & GraphQL 14',
             resources: [
-                { name: 'Indexing in Databases – GfG', resource: 'https://www.geeksforgeeks.org/dbms-indexing-in-databases/' },
-                { name: 'B+ Tree in DBMS – GfG', resource: 'https://www.geeksforgeeks.org/introduction-of-b-plus-tree/' },
-                { name: 'Video: Indexing & B+ Trees', resource: 'https://www.youtube.com/watch?v=Le8efR0xTdg&t=2400s' }
+                { name: 'Redux Toolkit Quick Start', resource: 'https://redux-toolkit.js.org/tutorials/quick-start' },
+                { name: 'Zustand: A Simple State Manager', resource: 'https://blog.logrocket.com/guide-to-zustand-state-management/' },
+                { name: 'Zustand vs Redux Explained', resource: 'https://www.youtube.com/watch?v=O_O_nS7Sj-w' }
             ],
             questions: [
-                'What is an index in DBMS? Why is it used?',
-                'Differentiate between clustered and non-clustered indexes.',
-                'What is a B-tree/B+ tree index? Why are B+ trees commonly used in databases?',
-                'What is a covering index?',
-                'What is a composite (multi-column) index? When is it useful?',
-                'What is a hash index? How does it differ from B-tree based indexing?',
-                'What is fill factor in indexing?',
-                'What is index selectivity and how does it affect performance?'
+                'What is Redux and what are its core principles?',
+                'Explain the role of actions, reducers, and store in Redux.',
+                'What is Redux Toolkit?',
+                'What is GraphQL and how can it be used with React?',
+                'How do you use Apollo Client to fetch data in React?'
             ]
         },
         {
-            name: 'Query Optimization 17',
+            name: 'React with TypeScript 15',
             resources: [
-                { name: 'Query Processing – GeeksforGeeks', resource: 'https://www.geeksforgeeks.org/query-processing-in-dbms/' },
-                { name: 'Query Optimization – GfG', resource: 'https://www.geeksforgeeks.org/query-optimization-in-dbms/' },
-                { name: 'Video: Query Optimization', resource: 'https://www.youtube.com/watch?v=Le8efR0xTdg&t=3600s' }
+                { name: 'TypeScript Cheat Sheet for React', resource: 'https://react-typescript-cheatsheet.netlify.app/' },
+                { name: 'How to use TypeScript in React Apps', resource: 'https://www.freecodecamp.org/news/how-to-use-typescript-in-react-apps/' },
+                { name: 'React with TypeScript Tutorial', resource: 'https://www.youtube.com/watch?v=ydkQlJhodio' }
             ],
             questions: [
-                'Explain what query optimization is and why it is important.',
-                'What is a query execution plan and how do you use it to improve performance?'
+                'Why use TypeScript with React?',
+                'How do you define props using TypeScript?',
+                'How do you use TypeScript with React Hooks?',
+                'What are the benefits of using TypeScript in a React project?',
+                'How do you handle events with TypeScript in React?'
             ]
         },
         {
-            name: 'Transactions & Concurrency 19',
+            name: 'Integrations and API Handling 16',
             resources: [
-                { name: 'Transactions in DBMS – GfG', resource: 'https://www.geeksforgeeks.org/transaction-processing-concepts-in-dbms/' },
-                { name: 'Concurrency Control – GfG', resource: 'https://www.geeksforgeeks.org/concurrency-control-in-dbms/' },
-                { name: 'Video: Transactions & Concurrency', resource: 'https://www.youtube.com/playlist?list=PLxCzCOWd7aiHRHVUtR-O52MsrdUSrzuy4' }
+                { name: 'Fetching Data in React (Docs)', resource: 'https://react.dev/learn/synchronizing-with-effects#fetching-data' },
+                { name: 'Using Axios with React', resource: 'https://www.digitalocean.com/community/tutorials/react-axios-react' },
+                { name: 'Modern API Handling in React', resource: 'https://www.youtube.com/watch?v=vVWA8W2vN3c' }
             ],
             questions: [
-                'What is a transaction in DBMS? Give a real-world example.',
-                'Explain ACID properties (Atomicity, Consistency, Isolation, Durability).',
-                'What is concurrency control and why is it needed?',
-                'What are shared (read) and exclusive (write) locks?',
-                'What is a lock granularity (row-level, page-level, table-level)?',
-                'What is a deadlock? What are common strategies to prevent or handle deadlocks?',
-                'What is livelock? How does it differ from deadlock?',
-                'What is a schedule in concurrency control? Differentiate between serial and concurrent schedules.',
-                'What is conflict serializability?',
-                'What is strict and cascadeless schedule? Why are they important for recovery?'
+                'How do you integrate a third-party library in React?',
+                'How do you handle API calls in a React application?',
+                'What is Axios and why is it often used with React?',
+                'Explain the concept of interceptors in Axios.',
+                'How do you handle authentication in a React app?'
             ]
         },
         {
-            name: 'Recovery, Logging & Reliability 18',
+            name: 'Deployment and Optimization 17',
             resources: [
-                { name: 'Recovery in DBMS – GfG', resource: 'https://www.geeksforgeeks.org/recovery-system-in-dbms/' },
-                { name: 'Log-Based Recovery – GfG', resource: 'https://www.geeksforgeeks.org/log-based-recovery-in-dbms/' },
-                { name: 'Video: DBMS Recovery', resource: 'https://www.youtube.com/watch?v=Le8efR0xTdg&t=4200s' }
+                { name: 'Deploying React Apps (CRA Guide)', resource: 'https://create-react-app.dev/docs/deployment/' },
+                { name: 'Vercel vs Netlify for React Apps', resource: 'https://www.hostinger.com/tutorials/vercel-vs-netlify' },
+                { name: 'Deploying React with Best Practices', resource: 'https://www.youtube.com/watch?v=2hR-uWjBAgw' }
             ],
             questions: [
-                'What is a log-based recovery mechanism in DBMS?',
-                'What is a checkpoint? How does it help in crash recovery?',
-                'Explain the difference between immediate update and deferred update in recovery schemes.',
-                'What kinds of failures can occur in a database system (transaction, system, media, user errors)?',
-                'How do backup and restore strategies work in production databases?',
-                'What is durability in ACID and how is it ensured at the storage level?',
-                'What is RAID? Why is RAID used for database storage?',
-                'What is database replication and why is it used?'
+                'What are some common deployment strategies for React applications?',
+                'How do you optimize a React app for production?',
+                'What are service workers and how can they benefit a React application?',
+                'How do you configure HTTPS in a React app?',
+                'Why is accessibility important in web development?'
             ]
         },
         {
-            name: 'Distributed Systems, Security & Performance 20',
+            name: 'SEO & React Native 18',
             resources: [
-                { name: 'Distributed DBMS – GfG', resource: 'https://www.geeksforgeeks.org/distributed-database/' },
-                { name: 'DBMS Security – GfG', resource: 'https://www.geeksforgeeks.org/dbms-database-security/' },
-                { name: 'OLTP vs OLAP – GfG', resource: 'https://www.geeksforgeeks.org/difference-between-olap-and-oltp-in-dbms/' }
+                { name: 'SEO for Developers - Fireship', resource: 'https://www.youtube.com/watch?v=-B58GgsehKQ' },
+                { name: 'Next.js Metadata and SEO', resource: 'https://nextjs.org/docs/app/building-your-application/optimizing/metadata' },
+                { name: 'React SEO with Next.js Tutorial', resource: 'https://www.youtube.com/watch?v=8BrZeaw3sLQ' }
             ],
             questions: [
-                'Differentiate between 2-tier and 3-tier DBMS architectures.',
-                'What is a distributed database? What are its main challenges?',
-                'What is sharding in databases? How is it different from partitioning?',
-                'Explain OLTP vs OLAP with examples.',
-                'Compare SQL databases with NoSQL databases (key differences, use cases).',
-                'What is a stored procedure? What are its advantages and disadvantages?',
-                'What is a trigger? How is it different from a stored procedure?',
-                'What is a cursor in SQL? When would you use it?',
-                'What is a temporary table? How does it differ from a permanent table?',
-                'What security mechanisms are commonly provided by DBMSs (authentication, authorization, encryption, auditing)?',
-                'How would you design the database schema for an e-commerce application (high-level entities and relationships)?',
-                'If a production DB is slow, how would you systematically debug and improve its performance?'
+                'How can you make a React application accessible?',
+                'What is ARIA and how it is used in React?',
+                'What is internationalization (i18n) in React?',
+                'How do you implement localization (l10n) in a React app?',
+                'How do you structure large React applications?'
+            ]
+        },
+        {
+            name: 'Accessibility & Internationalization 19',
+            resources: [
+                { name: 'Accessibility in React (Legacy Docs)', resource: 'https://legacy.reactjs.org/docs/accessibility.html' },
+                { name: 'Introduction to React-i18next', resource: 'https://react.i18next.com/' },
+                { name: 'Web Accessibility in React Guide', resource: 'https://www.youtube.com/watch?v=9S62m9y9ZpQ' }
+            ],
+            questions: [
+                'What are some best practices when writing React code?',
+                'How do you ensure code quality and maintainability in a React project?',
+                'How do you manage feature branches in React development with Git?',
+                'What are your strategies for resolving merge conflicts in React projects?',
+                'How would you handle a feature request or bug report in an ongoing React project?'
+            ]
+        },
+        {
+            name: 'Best Practices & Career 20',
+            resources: [
+                { name: 'React Best Practices Guide (freeCodeCamp)', resource: 'https://www.freecodecamp.org/news/react-best-practices-ever-developer-should-know/' },
+                { name: 'Bulletproof React Architecture', resource: 'https://github.com/alan2207/bulletproof-react' },
+                { name: '10 React Antipatterns to Avoid', resource: 'https://www.youtube.com/watch?v=b0IZo2Aho9Y' }
+            ],
+            questions: [
+                'Describe your process for optimizing a component that has complex state.',
+                'How do you keep up with the latest trends and updates in React?',
+                'What are some useful resources for learning React?',
+                'How do you contribute to the React community?',
+                'What are your career goals as a React developer?'
             ]
         }
     ];
 
-    // Create topics and their resources
     for (const topicData of topicsWithResources) {
         const existingTopic = await topicRepo.model.findFirst({
-            where: {
-                name: topicData.name,
-                techId: dbms.techId
-            }
+            where: { name: topicData.name, techId: react.techId }
         });
 
-        let topic;
-        if (!existingTopic) {
-            topic = await topicRepo.create({
-                name: topicData.name,
-                techId: dbms.techId,
-                userId: adminUser.uuid
-            });
-            console.log(`✅ Created topic: ${topicData.name}`);
-        } else {
-            topic = existingTopic;
-            console.log(`📝 Topic exists: ${topicData.name}`);
-        }
+        let topic = existingTopic || await topicRepo.create({
+            name: topicData.name,
+            techId: react.techId,
+            userId: adminUser.uuid
+        });
 
-        // Add resources to the topic
+        console.log(`${existingTopic ? '📝 Topic exists:' : '✅ Created topic:'} ${topicData.name}`);
+
         for (const resourceData of topicData.resources) {
             const existingResource = await resourceRepo.model.findFirst({
-                where: {
-                    name: resourceData.name,
-                    resource: resourceData.resource,
-                    topicId: topic.topicId
-                }
+                where: { name: resourceData.name, topicId: topic.topicId }
             });
-
             if (!existingResource) {
-                await resourceRepo.create({
-                    name: resourceData.name,
-                    resource: resourceData.resource,
-                    topicId: topic.topicId
-                });
-                console.log(`   ➕ Added resource: ${resourceData.name}`);
-            } else {
-                console.log(`   📝 Resource exists: ${resourceData.name}`);
+                await resourceRepo.create({ ...resourceData, topicId: topic.topicId });
             }
         }
 
-        // Add questions to the topic
-        for (const questionText of (topicData.questions || [])) {
+        for (const questionText of topicData.questions) {
             const existingQuestion = await questionRepo.model.findFirst({
-                where: {
-                    question: questionText,
-                    topicId: topic.topicId
-                }
+                where: { question: questionText, topicId: topic.topicId }
             });
-
             if (!existingQuestion) {
                 await questionRepo.create({
                     question: questionText,
                     topicId: topic.topicId,
                     userId: adminUser.uuid
                 });
-                console.log(`   ❓ Added question: ${questionText.substring(0, 50)}...`);
-            } else {
-                console.log(`   📝 Question exists: ${questionText.substring(0, 50)}...`);
             }
         }
     }
 
-    console.log('🎉 DBMS topics, resources, and questions seeded successfully!');
-    await prisma.$disconnect();
+    console.log('🎉 React topics, resources, and questions seeded successfully!');
 }
 
-seedDbms().catch(console.error);
+async function main() {
+    try {
+        
+        await seedReact();
+    } catch (error) {
+        console.error('Seeding failed:', error);
+    } finally {
+        await prisma.$disconnect();
+    }
+}
+
+main();
