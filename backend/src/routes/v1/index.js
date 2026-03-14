@@ -7,6 +7,7 @@ const questionRoutes = require("./question-route");
 const evaluationRoutes = require("./evaluation-route");
 const progressRoutes = require("./progress-route");
 const paymentRoutes = require("./payment-routes");
+const cacheRoutes = require("./cache-route");
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ router.use("/question", questionRoutes);
 router.use("/evaluation", evaluationRoutes);
 router.use("/progress", progressRoutes);
 router.use("/payment", paymentRoutes);
+router.use("/cache", cacheRoutes);
 
 router.get("/health", (req, res) => {
     res.json({ status: "ok", message: "V1 Backend is running" });

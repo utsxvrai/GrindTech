@@ -82,6 +82,19 @@ export default function TechTopicGenericModal({
         }
     };
 
+    // Color map for modal styling
+    const modalColorMap = {
+        'neon-green': { headerBg: 'bg-neon-green/10 text-neon-green', btn: 'bg-neon-green hover:bg-[#5ab33e] shadow-neon-green/20 text-black' },
+        'blue-500': { headerBg: 'bg-blue-500/10 text-blue-500', btn: 'bg-blue-500 hover:bg-blue-600 shadow-blue-500/20 text-white' },
+        'aqua-blue': { headerBg: 'bg-aqua-blue/10 text-aqua-blue', btn: 'bg-aqua-blue hover:bg-cyan-400 shadow-aqua-blue/20 text-black' },
+        'cpp-white': { headerBg: 'bg-cpp-white/10 text-cpp-white', btn: 'bg-cpp-white hover:bg-gray-200 shadow-cpp-white/20 text-black' },
+        'python-blue': { headerBg: 'bg-python-blue/10 text-python-blue', btn: 'bg-python-blue hover:bg-[#2d6291] shadow-python-blue/20 text-white' },
+        'java-orange': { headerBg: 'bg-java-orange/10 text-java-orange', btn: 'bg-java-orange hover:bg-[#d47d00] shadow-java-orange/20 text-black' },
+        'javascript-gold': { headerBg: 'bg-javascript-gold/10 text-javascript-gold', btn: 'bg-javascript-gold hover:bg-[#e5cd1b] shadow-javascript-gold/20 text-black' },
+        'typescript-blue': { headerBg: 'bg-typescript-blue/10 text-typescript-blue', btn: 'bg-typescript-blue hover:bg-[#2868b0] shadow-typescript-blue/20 text-white' },
+    };
+    const modalColors = modalColorMap[accentColor] || modalColorMap['neon-green'];
+
     // Initialize Socket
     useEffect(() => {
         const s = io( import.meta.env.VITE_BACKEND_URL, {
@@ -318,7 +331,7 @@ export default function TechTopicGenericModal({
                         {/* Dialog Header */}
                         <div className="p-4 sm:p-6 border-b border-white/5 flex justify-between items-center bg-zinc-900/50">
                             <div className="flex items-center gap-2 sm:gap-3">
-                                <div className={`p-1.5 sm:p-2 rounded-lg ${accentColor === 'blue-500' ? 'bg-blue-500/10 text-blue-500' : 'bg-neon-green/10 text-neon-green'}`}>
+                                <div className={`p-1.5 sm:p-2 rounded-lg ${modalColors.headerBg}`}>
                                     <Hexagon className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </div>
                                 <div className="min-w-0">
@@ -395,7 +408,7 @@ export default function TechTopicGenericModal({
                             <div className="p-4 sm:p-6 border-t border-white/5 bg-zinc-900/50 flex justify-end">
                                 <button 
                                     onClick={handleStartPrepare}
-                                    className={`w-full sm:w-auto px-6 py-3 rounded-xl ${accentColor === 'blue-500' ? 'bg-blue-500 hover:bg-blue-600 shadow-blue-500/20' : 'bg-neon-green hover:bg-[#5ab33e] shadow-neon-green/20'} ${accentColor === 'blue-500' ? 'text-white' : 'text-black'} font-bold text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2`}
+                                    className={`w-full sm:w-auto px-6 py-3 rounded-xl ${modalColors.btn} font-bold text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2`}
                                 >
                                     Let's Prepare
                                     <ChevronRight className="w-4 h-4" />

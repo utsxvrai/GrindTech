@@ -26,6 +26,48 @@ const InterviewExperienceChannel = ({ accentColor = 'neon-green', userId, userna
             border: 'border-blue-500/30',
             glow: 'shadow-[0_0_15px_rgba(59,130,246,0.3)]',
             gradient: 'from-blue-500/20 to-transparent'
+        },
+        'aqua-blue': {
+            text: 'text-aqua-blue',
+            bg: 'bg-aqua-blue',
+            border: 'border-aqua-blue/30',
+            glow: 'shadow-[0_0_15px_rgba(0,255,255,0.3)]',
+            gradient: 'from-aqua-blue/20 to-transparent'
+        },
+        'cpp-white': {
+            text: 'text-cpp-white',
+            bg: 'bg-cpp-white',
+            border: 'border-cpp-white/30',
+            glow: 'shadow-[0_0_15px_rgba(255,255,255,0.3)]',
+            gradient: 'from-cpp-white/20 to-transparent'
+        },
+        'python-blue': {
+            text: 'text-python-blue',
+            bg: 'bg-python-blue',
+            border: 'border-python-blue/30',
+            glow: 'shadow-[0_0_15px_rgba(55,118,171,0.3)]',
+            gradient: 'from-python-blue/20 to-transparent'
+        },
+        'java-orange': {
+            text: 'text-java-orange',
+            bg: 'bg-java-orange',
+            border: 'border-java-orange/30',
+            glow: 'shadow-[0_0_15px_rgba(237,139,0,0.3)]',
+            gradient: 'from-java-orange/20 to-transparent'
+        },
+        'javascript-gold': {
+            text: 'text-javascript-gold',
+            bg: 'bg-javascript-gold',
+            border: 'border-javascript-gold/30',
+            glow: 'shadow-[0_0_15px_rgba(247,223,30,0.3)]',
+            gradient: 'from-javascript-gold/20 to-transparent'
+        },
+        'typescript-blue': {
+            text: 'text-typescript-blue',
+            bg: 'bg-typescript-blue',
+            border: 'border-typescript-blue/30',
+            glow: 'shadow-[0_0_15px_rgba(49,120,198,0.3)]',
+            gradient: 'from-typescript-blue/20 to-transparent'
         }
     };
 

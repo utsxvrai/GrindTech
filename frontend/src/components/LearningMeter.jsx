@@ -18,6 +18,36 @@ export default function LearningMeter({ techId, accentColor = 'neon-green' }) {
       text: 'text-blue-500',
       bar: 'bg-blue-500',
       shadow: 'shadow-[0_0_20px_rgba(59,130,246,0.6)]'
+    },
+    'aqua-blue': {
+      text: 'text-aqua-blue',
+      bar: 'bg-aqua-blue',
+      shadow: 'shadow-[0_0_20px_rgba(0,255,255,0.6)]'
+    },
+    'cpp-white': {
+      text: 'text-cpp-white',
+      bar: 'bg-cpp-white',
+      shadow: 'shadow-[0_0_20px_rgba(255,255,255,0.6)]'
+    },
+    'python-blue': {
+      text: 'text-python-blue',
+      bar: 'bg-python-blue',
+      shadow: 'shadow-[0_0_20px_rgba(55,118,171,0.6)]'
+    },
+    'java-orange': {
+      text: 'text-java-orange',
+      bar: 'bg-java-orange',
+      shadow: 'shadow-[0_0_20px_rgba(237,139,0,0.6)]'
+    },
+    'javascript-gold': {
+      text: 'text-javascript-gold',
+      bar: 'bg-javascript-gold',
+      shadow: 'shadow-[0_0_20px_rgba(247,223,30,0.6)]'
+    },
+    'typescript-blue': {
+      text: 'text-typescript-blue',
+      bar: 'bg-typescript-blue',
+      shadow: 'shadow-[0_0_20px_rgba(49,120,198,0.6)]'
     }
   };
 

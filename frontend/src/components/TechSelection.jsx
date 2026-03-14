@@ -19,18 +19,18 @@ const technologies = [
     name: 'React',
     icon: Globe,
     description: 'Build modern user interfaces with React',
-    available: false,
-    color: 'text-blue-500',
-    bg: 'bg-blue-500/10',
-    border: 'border-blue-500/20',
-    hover: 'hover:border-blue-500/50'
+    available: true,
+    color: 'text-cyan-400',
+    bg: 'bg-cyan-400/10',
+    border: 'border-cyan-400/20',
+    hover: 'hover:border-cyan-400/50'
   },
   {
     id: 'python',
     name: 'Python',
     icon: Code2,
     description: 'Data structures and algorithms in Python',
-    available: false,
+    available: true,
     color: 'text-yellow-500',
     bg: 'bg-yellow-500/10',
     border: 'border-yellow-500/20',
@@ -52,22 +52,44 @@ const technologies = [
     name: 'C++',
     icon: Cpu,
     description: 'High-performance computing and algorithms',
-    available: false,
-    color: 'text-blue-400',
-    bg: 'bg-blue-400/10',
-    border: 'border-blue-400/20',
-    hover: 'hover:border-blue-400/50'
+    available: true,
+    color: 'text-gray-300',
+    bg: 'bg-gray-300/10',
+    border: 'border-gray-300/20',
+    hover: 'hover:border-gray-300/50'
   },
   {
     id: 'java',
     name: 'Java',
     icon: Terminal,
     description: 'Enterprise application development',
-    available: false,
-    color: 'text-red-500',
-    bg: 'bg-red-500/10',
-    border: 'border-red-500/20',
-    hover: 'hover:border-red-500/50'
+    available: true,
+    color: 'text-orange-500',
+    bg: 'bg-orange-500/10',
+    border: 'border-orange-500/20',
+    hover: 'hover:border-orange-500/50'
+  },
+  {
+    id: 'javascript',
+    name: 'JavaScript',
+    icon: Code2,
+    description: 'Master core JavaScript fundamentals',
+    available: true,
+    color: 'text-yellow-400',
+    bg: 'bg-yellow-400/10',
+    border: 'border-yellow-400/20',
+    hover: 'hover:border-yellow-400/50'
+  },
+  {
+    id: 'typescript',
+    name: 'TypeScript',
+    icon: Code2,
+    description: 'Type-safe JavaScript development',
+    available: true,
+    color: 'text-blue-500',
+    bg: 'bg-blue-500/10',
+    border: 'border-blue-500/20',
+    hover: 'hover:border-blue-500/50'
   }
 ];
 
@@ -75,11 +97,7 @@ export default function TechSelection({ onClose }) {
   const navigate = useNavigate();
 
   const handleTechClick = (techId) => {
-    if (techId === 'nodejs') {
-      navigate('/preparation/nodejs');
-    } else if (techId === 'dbms') {
-      navigate('/preparation/dbms');
-    }
+    navigate(`/preparation/${techId}`);
   };
 
   return (

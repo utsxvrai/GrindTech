@@ -54,6 +54,48 @@ export default function TechPageLoader({ accentColor = 'neon-green' }) {
       text: 'text-blue-500',
       bar: 'bg-blue-500',
       glow: 'bg-blue-500/20'
+    },
+    'aqua-blue': {
+      bg: 'bg-aqua-blue/5',
+      border: 'border-aqua-blue/30',
+      text: 'text-aqua-blue',
+      bar: 'bg-aqua-blue',
+      glow: 'bg-aqua-blue/20'
+    },
+    'cpp-white': {
+      bg: 'bg-cpp-white/5',
+      border: 'border-cpp-white/30',
+      text: 'text-cpp-white',
+      bar: 'bg-cpp-white',
+      glow: 'bg-cpp-white/20'
+    },
+    'python-blue': {
+      bg: 'bg-python-blue/5',
+      border: 'border-python-blue/30',
+      text: 'text-python-blue',
+      bar: 'bg-python-blue',
+      glow: 'bg-python-blue/20'
+    },
+    'java-orange': {
+      bg: 'bg-java-orange/5',
+      border: 'border-java-orange/30',
+      text: 'text-java-orange',
+      bar: 'bg-java-orange',
+      glow: 'bg-java-orange/20'
+    },
+    'javascript-gold': {
+      bg: 'bg-javascript-gold/5',
+      border: 'border-javascript-gold/30',
+      text: 'text-javascript-gold',
+      bar: 'bg-javascript-gold',
+      glow: 'bg-javascript-gold/20'
+    },
+    'typescript-blue': {
+      bg: 'bg-typescript-blue/5',
+      border: 'border-typescript-blue/30',
+      text: 'text-typescript-blue',
+      bar: 'bg-typescript-blue',
+      glow: 'bg-typescript-blue/20'
     }
   };
 

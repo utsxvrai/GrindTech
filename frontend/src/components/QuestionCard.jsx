@@ -51,6 +51,54 @@ export default function QuestionCard({
             bar: 'bg-blue-500',
             lock: 'text-blue-500',
             focus: 'focus:ring-blue-500/20'
+        },
+        'aqua-blue': {
+            primary: 'bg-aqua-blue hover:bg-cyan-400 text-black shadow-aqua-blue/20',
+            icon: 'text-aqua-blue',
+            border: 'border-aqua-blue/50 focus:border-aqua-blue/70',
+            bar: 'bg-aqua-blue',
+            lock: 'text-aqua-blue',
+            focus: 'focus:ring-aqua-blue/20'
+        },
+        'cpp-white': {
+            primary: 'bg-cpp-white hover:bg-gray-200 text-black shadow-cpp-white/20',
+            icon: 'text-cpp-white',
+            border: 'border-cpp-white/50 focus:border-cpp-white/70',
+            bar: 'bg-cpp-white',
+            lock: 'text-cpp-white',
+            focus: 'focus:ring-cpp-white/20'
+        },
+        'python-blue': {
+            primary: 'bg-python-blue hover:bg-[#2d6291] text-white shadow-python-blue/20',
+            icon: 'text-python-blue',
+            border: 'border-python-blue/50 focus:border-python-blue/70',
+            bar: 'bg-python-blue',
+            lock: 'text-python-blue',
+            focus: 'focus:ring-python-blue/20'
+        },
+        'java-orange': {
+            primary: 'bg-java-orange hover:bg-[#d47d00] text-black shadow-java-orange/20',
+            icon: 'text-java-orange',
+            border: 'border-java-orange/50 focus:border-java-orange/70',
+            bar: 'bg-java-orange',
+            lock: 'text-java-orange',
+            focus: 'focus:ring-java-orange/20'
+        },
+        'javascript-gold': {
+            primary: 'bg-javascript-gold hover:bg-[#e5cd1b] text-black shadow-javascript-gold/20',
+            icon: 'text-javascript-gold',
+            border: 'border-javascript-gold/50 focus:border-javascript-gold/70',
+            bar: 'bg-javascript-gold',
+            lock: 'text-javascript-gold',
+            focus: 'focus:ring-javascript-gold/20'
+        },
+        'typescript-blue': {
+            primary: 'bg-typescript-blue hover:bg-[#2868b0] text-white shadow-typescript-blue/20',
+            icon: 'text-typescript-blue',
+            border: 'border-typescript-blue/50 focus:border-typescript-blue/70',
+            bar: 'bg-typescript-blue',
+            lock: 'text-typescript-blue',
+            focus: 'focus:ring-typescript-blue/20'
         }
     };
 

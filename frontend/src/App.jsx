@@ -2,6 +2,12 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import AuthPage from './pages/AuthPage'
 import NodeJsPage from './pages/NodeJsPage'
+import ReactPage from './pages/ReactPage'
+import CppPage from './pages/CppPage'
+import PythonPage from './pages/PythonPage'
+import JavaPage from './pages/JavaPage'
+import JavaScriptPage from './pages/JavaScriptPage'
+import TypeScriptPage from './pages/TypeScriptPage'
 import DbmsPage from './pages/DbmsPage'
 import AdminLayout from './pages/admin/AdminLayout'
 import AdminUsersPage from './pages/admin/AdminUsersPage'
@@ -54,6 +60,12 @@ function App() {
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/auth/sso-callback" element={<AuthenticateWithRedirectCallback />} />
         <Route path="/preparation/nodejs" element={<NodeJsPage />} />
+        <Route path="/preparation/react" element={<ReactPage />} />
+        <Route path="/preparation/cpp" element={<CppPage />} />
+        <Route path="/preparation/python" element={<PythonPage />} />
+        <Route path="/preparation/java" element={<JavaPage />} />
+        <Route path="/preparation/javascript" element={<JavaScriptPage />} />
+        <Route path="/preparation/typescript" element={<TypeScriptPage />} />
         <Route path="/preparation/dbms" element={<DbmsPage />} />
         <Route path="/payment" element={<PaymentPage />} />
 

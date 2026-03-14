@@ -101,6 +101,7 @@ async function getByName(name) {
         if (cached) return { status: StatusCodes.OK, data: cached };
 
         const tech = await techRepository.findByName(name);
+        console.log(`Found tech: ${tech ? tech.techName : 'null'} with id ${tech ? tech.techId : 'null'} for name ${name}`);
         if (!tech) {
             return {
                 status: StatusCodes.NOT_FOUND,

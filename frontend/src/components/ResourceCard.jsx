@@ -10,12 +10,54 @@ export default function ResourceCard({ resources = [], accentColor = 'neon-green
             bg: 'bg-neon-green/5',
             glow: 'shadow-neon-green/10'
         },
-        'blue-500': { 
-            icon: 'text-blue-500', 
-            border: 'hover:border-blue-500/30', 
-            text: 'text-blue-500', 
+        'blue-500': {
+            icon: 'text-blue-500',
+            border: 'hover:border-blue-500/30',
+            text: 'text-blue-500',
             bg: 'bg-blue-500/5',
             glow: 'shadow-blue-500/10'
+        },
+        'aqua-blue': {
+            icon: 'text-aqua-blue',
+            border: 'hover:border-aqua-blue/30',
+            text: 'text-aqua-blue',
+            bg: 'bg-aqua-blue/5',
+            glow: 'shadow-aqua-blue/10'
+        },
+        'cpp-white': {
+            icon: 'text-cpp-white',
+            border: 'hover:border-cpp-white/30',
+            text: 'text-cpp-white',
+            bg: 'bg-cpp-white/5',
+            glow: 'shadow-cpp-white/10'
+        },
+        'python-blue': {
+            icon: 'text-python-blue',
+            border: 'hover:border-python-blue/30',
+            text: 'text-python-blue',
+            bg: 'bg-python-blue/5',
+            glow: 'shadow-python-blue/10'
+        },
+        'java-orange': {
+            icon: 'text-java-orange',
+            border: 'hover:border-java-orange/30',
+            text: 'text-java-orange',
+            bg: 'bg-java-orange/5',
+            glow: 'shadow-java-orange/10'
+        },
+        'javascript-gold': {
+            icon: 'text-javascript-gold',
+            border: 'hover:border-javascript-gold/30',
+            text: 'text-javascript-gold',
+            bg: 'bg-javascript-gold/5',
+            glow: 'shadow-javascript-gold/10'
+        },
+        'typescript-blue': {
+            icon: 'text-typescript-blue',
+            border: 'hover:border-typescript-blue/30',
+            text: 'text-typescript-blue',
+            bg: 'bg-typescript-blue/5',
+            glow: 'shadow-typescript-blue/10'
         }
     };
 

@@ -87,9 +87,14 @@ async function remove(id){
     try{
         const topic = await topicRepository.findById(id);
         const res = await topicRepository.delete(id);
-        await redis.del("topic:all", `topic:id:${id}`);
+        // Remove all relevant topic cache keys
+        await redis.del("topic:all");
+        await redis.del(`topic:id:${id}`);
         if (topic && topic.techId) {
             await redis.del(`topic:tech:${topic.techId}`);
+        }
+        if (topic && topic.name) {
+            await redis.del(`topic:name:${topic.name}`);
         }
         return{
             status : StatusCodes.OK,
@@ -101,7 +106,6 @@ async function remove(id){
             error   
         }
     }
-
 }
 
 async function getByName(name){
@@ -134,9 +138,13 @@ async function getTopicsByTechId(techId){
     try{
         const cacheKey = `topic:tech:${techId}`;
         const cached = await redis.get(cacheKey);
-        if (cached) return { status: StatusCodes.OK, data: cached };
+        if (cached) {
+            console.log(`Returning ${cached.length} cached topics for techId ${techId}`);
+            return { status: StatusCodes.OK, data: cached };
+        }
 
         const topics = await topicRepository.findAllByTechId(techId);
+        console.log(`Found ${topics.length} topics for techId ${techId}`);
         if(!topics) {
             return {
                 status: StatusCodes.OK,
