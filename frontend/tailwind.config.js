@@ -48,9 +48,10 @@ export default {
           '100%': { transform: 'translateX(100%)' },
         },
         meteor: {
-          '0%': { transform: 'translateX(-100px) translateY(-100px)', opacity: '1' },
+          '0%': { transform: 'translateY(-300px)', opacity: '0' },
+          '3%': { opacity: '1' },
           '70%': { opacity: '1' },
-          '100%': { transform: 'translateX(800px) translateY(800px)', opacity: '0' },
+          '100%': { transform: 'translateY(800px)', opacity: '0' },
         },
         aurora: {
           '0%, 100%': { transform: 'translateX(0%) translateY(0%) rotate(0deg) scale(1)' },

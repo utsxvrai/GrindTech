@@ -31,13 +31,14 @@ const wordVariants = {
 
 function MeteorShower() {
   const meteors = useMemo(() => (
-    Array.from({ length: 12 }, (_, i) => ({
+    Array.from({ length: 16 }, (_, i) => ({
       id: i,
-      top: Math.random() * 60 + '%',
-      left: Math.random() * 40 + '%',
-      delay: Math.random() * 8,
-      duration: Math.random() * 3 + 5,
-      size: Math.random() * 1.5 + 0.5,
+      top: Math.random() * 50 - 10 + '%',
+      left: Math.random() * 80 + 10 + '%',
+      delay: Math.random() * 15,
+      duration: Math.random() * 4 + 6,
+      tailLength: Math.random() * 80 + 100,
+      brightness: Math.random() * 0.5 + 0.5,
     }))
   ), [])
 
@@ -52,14 +53,23 @@ function MeteorShower() {
             left: m.left,
             animationDelay: `${m.delay}s`,
             animationDuration: `${m.duration}s`,
+            transform: 'rotate(215deg)',
           }}
         >
           <div
-            className="rounded-full bg-gradient-to-r from-white/80 to-transparent"
+            className="absolute top-0 left-0 rounded-full bg-white"
             style={{
-              width: `${m.size * 80}px`,
-              height: `${m.size}px`,
-              boxShadow: `0 0 ${m.size * 4}px rgba(255,255,255,0.3)`,
+              width: '3px',
+              height: '3px',
+              boxShadow: `0 0 6px 2px rgba(255,255,255,${m.brightness}), 0 0 14px 4px rgba(167,139,250,${m.brightness * 0.4})`,
+            }}
+          />
+          <div
+            style={{
+              width: `${m.tailLength}px`,
+              height: '1.5px',
+              background: `linear-gradient(90deg, rgba(255,255,255,${m.brightness * 0.8}) 0%, rgba(167,139,250,${m.brightness * 0.3}) 30%, transparent 100%)`,
+              borderRadius: '999px',
             }}
           />
         </div>
@@ -134,13 +144,13 @@ export default function HeroSection({ onGetStarted }) {
         <div className="absolute bottom-[20%] left-[-5%] w-[400px] h-[400px] bg-green-500/[0.03] rounded-full blur-[120px] animate-aurora" style={{ animationDelay: '6s' }} />
       </div>
 
-      {/* Animated grid */}
+      {/* Static grid */}
       <div className="absolute inset-0" style={{
         backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
         backgroundSize: '80px 80px',
       }} />
 
-      {/* Meteor shower */}
+      {/* Shooting stars */}
       <MeteorShower />
 
       {/* Floating particles */}
