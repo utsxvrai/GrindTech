@@ -47,31 +47,37 @@ function MeteorShower() {
       {meteors.map(m => (
         <div
           key={m.id}
-          className="absolute animate-meteor"
+          className="absolute"
           style={{
             top: m.top,
             left: m.left,
-            animationDelay: `${m.delay}s`,
-            animationDuration: `${m.duration}s`,
             transform: 'rotate(215deg)',
           }}
         >
           <div
-            className="absolute top-0 left-0 rounded-full bg-white"
+            className="animate-meteor"
             style={{
-              width: '3px',
-              height: '3px',
-              boxShadow: `0 0 6px 2px rgba(255,255,255,${m.brightness}), 0 0 14px 4px rgba(167,139,250,${m.brightness * 0.4})`,
+              animationDelay: `${m.delay}s`,
+              animationDuration: `${m.duration}s`,
             }}
-          />
-          <div
-            style={{
-              width: `${m.tailLength}px`,
-              height: '1.5px',
-              background: `linear-gradient(90deg, rgba(255,255,255,${m.brightness * 0.8}) 0%, rgba(167,139,250,${m.brightness * 0.3}) 30%, transparent 100%)`,
-              borderRadius: '999px',
-            }}
-          />
+          >
+            <div
+              className="absolute top-0 left-0 rounded-full bg-white"
+              style={{
+                width: '3px',
+                height: '3px',
+                boxShadow: `0 0 6px 2px rgba(255,255,255,${m.brightness}), 0 0 14px 4px rgba(167,139,250,${m.brightness * 0.4})`,
+              }}
+            />
+            <div
+              style={{
+                width: `${m.tailLength}px`,
+                height: '1.5px',
+                background: `linear-gradient(90deg, rgba(255,255,255,${m.brightness * 0.8}) 0%, rgba(167,139,250,${m.brightness * 0.3}) 30%, transparent 100%)`,
+                borderRadius: '999px',
+              }}
+            />
+          </div>
         </div>
       ))}
     </div>
