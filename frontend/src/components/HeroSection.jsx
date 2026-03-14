@@ -51,7 +51,7 @@ function MeteorShower() {
           style={{
             top: m.top,
             left: m.left,
-            transform: 'rotate(215deg)',
+            transform: 'rotate(35deg)',
           }}
         >
           <div
