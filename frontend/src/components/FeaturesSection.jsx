@@ -48,7 +48,7 @@ export default function FeaturesSection() {
   })
 
   return (
-    <section ref={ref} className="relative py-32 px-4 sm:px-6 lg:px-8 overflow-hidden bg-black">
+    <section ref={ref} className="relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-black">
       {/* Background */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(99,102,241,0.05)_0%,_transparent_60%)]" />
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
@@ -59,18 +59,18 @@ export default function FeaturesSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-20"
+          className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] mb-6">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-400">Why GrindTech</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-5">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">Why GrindTech</span>
           </div>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-5">
             Everything You Need to{' '}
             <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
               Crack Interviews
             </span>
           </h2>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+          <p className="text-base text-gray-400 max-w-xl mx-auto">
             A complete system designed to take you from unprepared to unstoppable.
           </p>
         </motion.div>
@@ -86,7 +86,7 @@ export default function FeaturesSection() {
               whileHover={{ y: -6 }}
               className="group relative"
             >
-              <div className="h-full p-7 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 relative overflow-hidden">
+              <div className="h-full p-6 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 relative overflow-hidden">
                 {/* Hover glow */}
                 <div
                   className="absolute -top-20 -right-20 w-40 h-40 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -95,17 +95,17 @@ export default function FeaturesSection() {
 
                 {/* Icon */}
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-transform group-hover:scale-110 duration-300"
+                  className="w-10 h-10 rounded-lg flex items-center justify-center mb-4 transition-transform group-hover:scale-110 duration-300"
                   style={{ backgroundColor: feature.color + '12' }}
                 >
-                  <feature.icon className="w-6 h-6" style={{ color: feature.color }} />
+                  <feature.icon className="w-5 h-5" style={{ color: feature.color }} />
                 </div>
 
                 {/* Content */}
-                <h3 className="text-lg font-bold text-white mb-3 group-hover:text-white transition-colors">
+                <h3 className="text-base font-bold text-white mb-2.5 group-hover:text-white transition-colors">
                   {feature.title}
                 </h3>
-                <p className="text-sm text-gray-400 leading-relaxed">
+                <p className="text-xs text-gray-400 leading-relaxed">
                   {feature.description}
                 </p>
               </div>

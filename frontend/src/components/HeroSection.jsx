@@ -135,7 +135,7 @@ export default function HeroSection({ onGetStarted }) {
       </div>
 
       {/* Animated grid */}
-      <div className="absolute inset-0 animate-grid-fade" style={{
+      <div className="absolute inset-0" style={{
         backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
         backgroundSize: '80px 80px',
       }} />
@@ -157,14 +157,14 @@ export default function HeroSection({ onGetStarted }) {
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="mb-10"
+          className="mb-8"
         >
-          <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm">
-            <div className="relative flex h-2 w-2">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm">
+            <div className="relative flex h-1.5 w-1.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-400" />
             </div>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-400">AI-Powered Interview Preparation</span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">AI-Powered Interview Preparation</span>
           </div>
         </motion.div>
 
@@ -176,13 +176,13 @@ export default function HeroSection({ onGetStarted }) {
           className="mb-8"
         >
           <div className="flex items-center justify-center gap-3 sm:gap-4 flex-wrap">
-            <motion.span variants={wordVariants} className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white tracking-tight">
+            <motion.span variants={wordVariants} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight">
               Grind
             </motion.span>
-            <motion.span variants={wordVariants} className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white tracking-tight">
+            <motion.span variants={wordVariants} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight">
               Top
             </motion.span>
-            <motion.span variants={wordVariants} className="relative text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight">
+            <motion.span variants={wordVariants} className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight">
               <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">100</span>
               <motion.div
                 className="absolute -bottom-2 left-0 w-full h-1.5 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500"
@@ -194,19 +194,19 @@ export default function HeroSection({ onGetStarted }) {
           </div>
 
           <div className="flex items-center justify-center gap-3 sm:gap-4 mt-2 flex-wrap">
-            <motion.span variants={wordVariants} className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white tracking-tight">
+            <motion.span variants={wordVariants} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight">
               Interview
             </motion.span>
-            <motion.span variants={wordVariants} className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white tracking-tight">
+            <motion.span variants={wordVariants} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight">
               Questions
             </motion.span>
           </div>
 
           <div className="flex items-center justify-center gap-3 sm:gap-4 mt-2 flex-wrap">
-            <motion.span variants={wordVariants} className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-500 tracking-tight">
+            <motion.span variants={wordVariants} className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-500 tracking-tight">
               of
             </motion.span>
-            <motion.span variants={wordVariants} className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight bg-gradient-to-r from-green-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
+            <motion.span variants={wordVariants} className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight bg-gradient-to-r from-green-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
               Different Techs
             </motion.span>
           </div>
@@ -217,7 +217,7 @@ export default function HeroSection({ onGetStarted }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.6 }}
-          className="text-base sm:text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed mb-10"
+          className="text-sm sm:text-base md:text-lg text-gray-400 max-w-xl mx-auto leading-relaxed mb-8"
         >
           Real interview questions. Instant AI evaluation. Level up across every technology that matters.
         </motion.p>
@@ -227,7 +227,7 @@ export default function HeroSection({ onGetStarted }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.6 }}
-          className="flex flex-wrap items-center justify-center gap-2.5 mb-12 max-w-3xl"
+          className="flex flex-wrap items-center justify-center gap-2 mb-10 max-w-2xl"
         >
           {techs.map((tech, i) => (
             <motion.div
@@ -240,13 +240,13 @@ export default function HeroSection({ onGetStarted }) {
                 boxShadow: `0 0 20px ${tech.shadow}`,
                 borderColor: tech.color + '60'
               }}
-              className="px-4 py-2 rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm flex items-center gap-2.5 cursor-default transition-all duration-300"
+              className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm flex items-center gap-2 cursor-default transition-all duration-300"
             >
               <div
-                className="w-2.5 h-2.5 rounded-full"
+                className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: tech.color, boxShadow: `0 0 6px ${tech.shadow}` }}
               />
-              <span className="text-sm font-medium text-gray-300">{tech.name}</span>
+              <span className="text-xs font-medium text-gray-300">{tech.name}</span>
             </motion.div>
           ))}
         </motion.div>
@@ -256,7 +256,7 @@ export default function HeroSection({ onGetStarted }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.4, duration: 0.6 }}
-          className="flex flex-col sm:flex-row items-center gap-5 mb-16"
+          className="flex flex-col sm:flex-row items-center gap-4 mb-14"
         >
           {/* Primary CTA */}
           <motion.button
@@ -269,10 +269,10 @@ export default function HeroSection({ onGetStarted }) {
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 p-[2px]">
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 blur-lg opacity-40 group-hover:opacity-70 transition-opacity duration-300" />
             </div>
-            <div className="relative bg-white rounded-[14px] px-10 py-4 flex items-center justify-center gap-3">
-              <Zap className="w-5 h-5 text-indigo-600" />
-              <span className="font-bold text-base text-black">Start Grinding</span>
-              <ArrowRight className="w-4 h-4 text-gray-600 group-hover:translate-x-1.5 group-hover:text-indigo-600 transition-all duration-300" />
+            <div className="relative bg-white rounded-[14px] px-8 py-3.5 flex items-center justify-center gap-2.5">
+              <Zap className="w-4.5 h-4.5 text-indigo-600" />
+              <span className="font-bold text-sm text-black">Start Grinding</span>
+              <ArrowRight className="w-3.5 h-3.5 text-gray-600 group-hover:translate-x-1.5 group-hover:text-indigo-600 transition-all duration-300" />
             </div>
             {/* Shimmer sweep */}
             <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
@@ -289,8 +289,8 @@ export default function HeroSection({ onGetStarted }) {
           >
             {/* Subtle border */}
             <div className="absolute inset-0 rounded-2xl border border-white/[0.12] group-hover:border-white/[0.25] transition-colors duration-300" />
-            <div className="relative px-10 py-4 flex items-center justify-center gap-2 bg-white/[0.03] group-hover:bg-white/[0.06] rounded-2xl backdrop-blur-sm transition-all duration-300">
-              <span className="font-bold text-base text-gray-300 group-hover:text-white transition-colors duration-300">View Pricing</span>
+            <div className="relative px-8 py-3.5 flex items-center justify-center gap-2 bg-white/[0.03] group-hover:bg-white/[0.06] rounded-2xl backdrop-blur-sm transition-all duration-300">
+              <span className="font-bold text-sm text-gray-300 group-hover:text-white transition-colors duration-300">View Pricing</span>
             </div>
           </motion.button>
         </motion.div>
@@ -308,12 +308,12 @@ export default function HeroSection({ onGetStarted }) {
             { value: '100+', label: 'Questions / tech' },
           ].map((stat, i, arr) => (
             <div key={i} className="flex items-center">
-              <div className="text-center px-6 sm:px-10">
-                <div className="text-2xl sm:text-3xl font-black text-white">{stat.value}</div>
-                <div className="text-[10px] sm:text-xs text-gray-500 font-semibold uppercase tracking-[0.15em] mt-1.5">{stat.label}</div>
+              <div className="text-center px-5 sm:px-8">
+                <div className="text-xl sm:text-2xl font-black text-white">{stat.value}</div>
+                <div className="text-[9px] sm:text-[11px] text-gray-500 font-semibold uppercase tracking-[0.15em] mt-1">{stat.label}</div>
               </div>
               {i < arr.length - 1 && (
-                <div className="w-px h-10 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+                <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
               )}
             </div>
           ))}
