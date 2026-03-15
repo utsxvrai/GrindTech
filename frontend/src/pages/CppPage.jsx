@@ -69,16 +69,23 @@ export default function CppPage() {
 
     const fetchTopics = async () => {
         try {
+              console.log('🔍 Starting to fetch C++ topics...');
               // Always use 'C++' for tech name
-              const techResponse = await api.get('/tech/name/C++');
+              const techResponse = await api.get('/tech/name/Cpp');
+              console.log('📡 Tech response:', techResponse);
 
             if (techResponse && techResponse.data && techResponse.data.data) {
                 const techId = techResponse.data.data.techId;
+                console.log('🆔 Tech ID:', techId);
                 setTechId(techId);
                 // Fetch sorted topics
                 const topicsResponse = await api.get(`/topic/tech/${techId}`);
+                console.log('📋 Topics response:', topicsResponse);
                 if (topicsResponse.data && Array.isArray(topicsResponse.data.data)) {
+                    console.log('✅ Setting topics:', topicsResponse.data.data.length);
                     setFetchedTopics(topicsResponse.data.data);
+                } else {
+                    console.log('❌ Topics data not an array or missing');
                 }
                 
                 // Fetch completed topics for this tech
@@ -163,7 +170,7 @@ export default function CppPage() {
       }
       
       // Refresh topics and completed status
-      const techResponse = await api.get('/tech/name/C++');
+      const techResponse = await api.get('/tech/name/Cpp');
       if (techResponse?.data?.data) {
         const techId = techResponse.data.data.techId;
         setTechId(techId);
@@ -225,7 +232,7 @@ export default function CppPage() {
             </Link>
             
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cpp-white to-gray-300 flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.4)]">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cpp-black to-gray-300 flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.4)]">
                 {/* C++ Icon */}
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none">
                   <text x="12" y="16" textAnchor="middle" fill="currentColor" fontSize="11" fontWeight="bold" fontFamily="Arial, sans-serif">C++</text>
@@ -424,7 +431,7 @@ export default function CppPage() {
               userId={userData?.uuid} 
               username={userData?.username}
               techId={techId}
-              techName="C++"
+              techName="Cpp"
             />
           </div>
         </div>
@@ -466,7 +473,7 @@ export default function CppPage() {
                 userId={userData?.uuid} 
                 username={userData?.username}
                 techId={techId}
-                techName="C++"
+                techName="Cpp"
                 hideHeader={true}
               />
             </div>
@@ -480,7 +487,7 @@ export default function CppPage() {
         isOpen={!!selectedTopic}
         onClose={() => setSelectedTopic(null)}
         topic={selectedTopic}
-        techName="C++"
+        techName="Cpp"
         isPro={isPro}
         accentColor="cpp-white"
         levelIndex={selectedTopic?.levelIndex ?? 0}
