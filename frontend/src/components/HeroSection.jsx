@@ -31,14 +31,12 @@ const wordVariants = {
 
 function MeteorShower() {
   const meteors = useMemo(() => (
-    Array.from({ length: 16 }, (_, i) => ({
+    Array.from({ length: 20 }, (_, i) => ({
       id: i,
-      top: Math.random() * 50 - 10 + '%',
-      left: Math.random() * 80 + 10 + '%',
-      delay: Math.random() * 15,
-      duration: Math.random() * 4 + 6,
-      tailLength: Math.random() * 80 + 100,
-      brightness: Math.random() * 0.5 + 0.5,
+      top: Math.random() * 80 + 5 + '%',
+      left: Math.random() * 85 + 5 + '%',
+      tailLength: Math.random() * 80 + 120,
+      brightness: Math.random() * 0.4 + 0.4,
     }))
   ), [])
 
@@ -51,33 +49,25 @@ function MeteorShower() {
           style={{
             top: m.top,
             left: m.left,
-            transform: 'rotate(35deg)',
+            transform: 'rotate(215deg)',
           }}
         >
           <div
-            className="animate-meteor"
+            className="absolute top-0 left-0 rounded-full bg-white"
             style={{
-              animationDelay: `${m.delay}s`,
-              animationDuration: `${m.duration}s`,
+              width: '3px',
+              height: '3px',
+              boxShadow: `0 0 6px 2px rgba(255,255,255,${m.brightness}), 0 0 12px 4px rgba(167,139,250,${m.brightness * 0.2})`,
             }}
-          >
-            <div
-              className="absolute top-0 left-0 rounded-full bg-white"
-              style={{
-                width: '3px',
-                height: '3px',
-                boxShadow: `0 0 6px 2px rgba(255,255,255,${m.brightness}), 0 0 14px 4px rgba(167,139,250,${m.brightness * 0.4})`,
-              }}
-            />
-            <div
-              style={{
-                width: `${m.tailLength}px`,
-                height: '1.5px',
-                background: `linear-gradient(90deg, rgba(255,255,255,${m.brightness * 0.8}) 0%, rgba(167,139,250,${m.brightness * 0.3}) 30%, transparent 100%)`,
-                borderRadius: '999px',
-              }}
-            />
-          </div>
+          />
+          <div
+            style={{
+              width: `${m.tailLength}px`,
+              height: '1.5px',
+              background: `linear-gradient(90deg, rgba(255,255,255,${m.brightness * 0.7}) 0%, rgba(167,139,250,${m.brightness * 0.25}) 30%, transparent 100%)`,
+              borderRadius: '999px',
+            }}
+          />
         </div>
       ))}
     </div>

@@ -47,12 +47,25 @@ export default {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(100%)' },
         },
-        meteor: {
-          '0%': { transform: 'translateY(-300px)', opacity: '0' },
-          '3%': { opacity: '1' },
-          '70%': { opacity: '1' },
-          '100%': { transform: 'translateY(800px)', opacity: '0' },
-        },
+       
+meteor: {
+  '0%': { 
+    transform: 'rotate(215deg) translateY(0)', 
+    opacity: '0' 
+  },
+  '1%': { 
+    opacity: '1' 
+  },
+  '10%': { 
+    
+    transform: 'rotate(-90deg) translateY(-1000px)', 
+    opacity: '0' 
+  },
+  '100%': { 
+    transform: 'rotate(-90deg) translateY(-1000px)', 
+    opacity: '0' 
+  },
+},
         aurora: {
           '0%, 100%': { transform: 'translateX(0%) translateY(0%) rotate(0deg) scale(1)' },
           '33%': { transform: 'translateX(30%) translateY(-20%) rotate(120deg) scale(1.1)' },

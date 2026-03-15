@@ -145,6 +145,7 @@ async function getTopicsByTechId(techId){
 
         const topics = await topicRepository.findAllByTechId(techId);
         console.log(`Found ${topics.length} topics for techId ${techId}`);
+        console.log('Topics:', topics.map(t => ({ name: t.name, techId: t.techId })));
         if(!topics) {
             return {
                 status: StatusCodes.OK,

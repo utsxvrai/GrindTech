@@ -21,7 +21,8 @@ class TopicRepository extends CrudRepository {
     }
 
     async findAllByTechId(techId) {
-        return await this.model.findMany({
+        console.log(`Repository: finding topics for techId ${techId}`);
+        const result = await this.model.findMany({
             where: {
                 techId: techId
             },
@@ -30,6 +31,8 @@ class TopicRepository extends CrudRepository {
                 questions: true
             }
         });
+        console.log(`Repository: found ${result.length} topics`);
+        return result;
     }
 }
 
