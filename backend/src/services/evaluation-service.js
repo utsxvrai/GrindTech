@@ -31,6 +31,26 @@ function normalizeTechName(techName) {
 
     "system design": "system_design",
     "systemdesign": "system_design",
+    "system_design": "system_design",
+
+    "python": "Python",
+    "py": "Python",
+
+    "cpp": "Cpp",
+    "c++": "Cpp",
+    "cplusplus": "Cpp",
+
+    "java": "Java",
+
+    "javascript": "JavaScript",
+    "js": "JavaScript",
+
+    "typescript": "TypeScript",
+    "ts": "TypeScript",
+
+    "next": "Next",
+    "nextjs": "Next",
+    "next.js": "Next",
   };
 
   return techMap[normalized] || techName;

@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx vite:*)"
+      "Bash(npx vite:*)",
+      "Bash(grep -r 'model Tech' /c/Users/acer/Desktop/GrindTech/backend --include=*.prisma)",
+      "Bash(grep -r evaluate /c/Users/acer/Desktop/GrindTech/frontend/src --include=*.jsx --include=*.js -l)"
     ]
   }
 }
